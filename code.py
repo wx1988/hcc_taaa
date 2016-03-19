@@ -5,7 +5,7 @@ client = MongoClient('localhost', 27017)
 #https://api.mongodb.org/python/current/examples/authentication.html
 #client = MongoClient('mongodb://hcc:tti@54.201.125.48')
 #client = MongoClient('mongodb://hcc:tti@54.201.125.48:27117')
-#client = MongoClient('54.201.125.48', '27117')
+#client = MongoClient('54.201.125.48', 27117)
 db = client.tti
 acc_col = db.accident
 veh_col = db.vehicle
