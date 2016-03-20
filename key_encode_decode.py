@@ -2,12 +2,7 @@
 This is used to code and decode the item in the json file
 """
 
-def gen_svg_graph(encode_nodes, links):
-    """
-    create svg graph
-    """
-    pass
-    
+
 
 def encode_acc_info(acc_info):
     """
@@ -25,7 +20,7 @@ def encode_acc_info(acc_info):
     package1['attributes'] = []
     for k in acc_info['acc'].keys():
     	package1['attributes'].append({
-    		'key' : 'acc|%s'%(k),
+    		'key' : 'acc %s'%(k),
     		'value' : acc_info['acc'][k]
     		})
     package_list.append(package1)
@@ -34,10 +29,11 @@ def encode_acc_info(acc_info):
     for veh in acc_info['veh_list']:
     	tmp_package = {}
     	tmp_package['type'] = 'vehicle'
+        tmp_package['index'] = int(veh['vehno'])        
     	tmp_package['attributes'] = []
     	for k in veh.keys():
     		tmp_package['attributes'].append({
-    			'key' : 'vehicle|%d|%s'%(veh['vehno'], k), 
+    			'key' : 'vehicle %d %s'%(veh['vehno'], k), 
     			'value' : veh[k]
     			})
     	package_list.append( tmp_package )

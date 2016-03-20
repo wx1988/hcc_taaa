@@ -40,6 +40,7 @@ def get_acc_info_by_caseno(caseno):
 ####
 # causal links part
 ####
+
 def check_link_exists(cl_info):
 	check_exist = cl_col.find_one(cl_info)
 	if check_exist:
@@ -49,3 +50,10 @@ def check_link_exists(cl_info):
 
 def create_new_link(cl_info):
 	cl_col.insert(cl_info)
+
+def get_links(caseno, user_id):
+	res = []
+	for l in cl_col.find({'caseno':caseno,'user_id':user_id}):
+		res.append(l)
+	return res
+
