@@ -1,4 +1,5 @@
 import web,json
+import simplejson
 
 
 from hsis_codebook import *
@@ -7,7 +8,9 @@ from db_api import check_link_exists, create_new_link
 from user import get_cur_user_id
 from key_encode_decode import encode_acc_info
 
+
 urls = (
+    '/annotate', 'annotate_page',
     '/view_accident', 'view_accident',
     '/view_accident_raw', 'view_accident_raw',
 
@@ -16,9 +19,16 @@ urls = (
     '/get_nodes', 'get_nodes'
     )
 
+class annotate_page:
+    def GET(self):
+        render = web.template.render('templates/')
+        return render.annotation()
+
+
 class view_accident:
     def GET(self):
         pass
+
 
 class view_accident_raw:
     def GET(self):
@@ -27,10 +37,19 @@ class view_accident_raw:
         data = get_acc_info_by_caseno(caseno)
         if data == None:
             return "Not found"
-        #data = encode_acc_info(data)
-        return json.dumps(data, indent=2)
+        data = encode_acc_info(data)
 
-### 
+        res = {
+            'status':0,
+            'data':data}
+        #return json.dumps(data, indent=2)
+        return simplejson.dumps(res, ignore_nan=True)
+        # This ignore_nan function is not enabled in the default json package
+
+    def POST(self):
+        return self.GET()
+
+###
 # API, build the annotation between factors within one accident
 ###
 class get_nodes:
@@ -64,12 +83,12 @@ class add_causal_link:
         # add the link to database
 
         # first check whether there exist such a causal link
-        check_exist = check_link_exists(casual_link_info)            
+        check_exist = check_link_exists(casual_link_info)
         if not check_exist:
             # update the causal graph
             create_new_link(casual_link_info)
             return json.dumps( { 'status':0 } )
-        else:        
+        else:
             return json.dumps( { 'status':1 } )
 
 if __name__ == "__main__":
