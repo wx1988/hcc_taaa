@@ -15,6 +15,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
     <script type="text/javascript" src="/static/js/annotation.js"></script>
+    <script type="text/javascript" src="/static/js/annotation_visual.js"></script>
+    <script type="text/javascript" src="/static/js/annotation_link.js"></script>
     <script type="text/javascript" src="/static/js/common_util.js"></script>
 
 </head>
@@ -23,20 +25,25 @@
     <div class="container">
 
         <div class="row">
-            <div class="col-sm-8">
+            <div class="col-sm-6">
                 <!--show information-->
                 <div id="showinfo">
                     <!-- The element are clickable -->
                 </div>
 
+
+            </div>
+
+            <div class="col-sm-6">
                 <!--add link interaction-->
                 <div id="buildlink">
                     <!-- mainly the feed back on the click -->
                 </div>
-            </div>
 
-            <div class="col-sm-4">
                 <!--Visualization-->
+                <div id="cgraph">
+                    <!-- Visually show the causal graph -->
+                </div>
             </div>
         </div>
 

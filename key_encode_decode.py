@@ -46,5 +46,13 @@ def encode_acc_info(acc_info):
     return package_list
 
 
-def decode_acc(encodon):
-    pass
+def decode_acc(acc_info, encodon):
+    ws = encodon.split(" ")
+    if ws[0] == 'acc':
+        return acc_info[ ws[0] ][ ws[1] ]
+    elif ws[0] == 'vehicle':
+        for veh in acc_info['veh_list']:
+            if veh['vehno'] == int(ws[1]):
+                return veh[ws[2]]
+    return None
+

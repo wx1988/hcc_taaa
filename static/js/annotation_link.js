@@ -14,7 +14,19 @@ function node_click(node_name){
         //link_state = "secondnode";
         link_state = "start";
         // upload this link
+        console.log("First node: "+firstnode);
+        console.log("Second node: "+secondnode);
 
+        // send requrest
+        var caseno = urlParam('caseno');
+        jQuery.post(
+            '/add_causal_link',
+            {'caseno':caseno,
+            'from_node':firstnode,
+            'to_node':secondnode,
+            'node_type':'cause'},
+            create_link_cb,
+            'json');
     }else{
         alert("Unknow state "+link_state);
     }
@@ -23,6 +35,7 @@ function node_click(node_name){
 
 function create_link_cb(data){
     // callback of create link function
+    console.log(data);
 }
 
 

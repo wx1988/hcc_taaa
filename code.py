@@ -4,10 +4,11 @@ import simplejson
 
 from hsis_codebook import *
 from db_api import get_acc_info_by_caseno
-from db_api import check_link_exists, create_new_link
+from db_api import check_link_exists, create_new_link, get_link_id
 from user import get_cur_user_id
 from key_encode_decode import encode_acc_info
 
+from user import get_user_info
 
 urls = (
     '/annotate', 'annotate_page',
@@ -16,7 +17,9 @@ urls = (
 
     # restful api part
     '/add_causal_link', 'add_causal_link',
-    '/get_nodes', 'get_nodes'
+    '/get_nodes', 'get_nodes',
+    '/get_links', 'get_links',
+    '/get_user_info', 'get_user_info'
     )
 
 class annotate_page:
@@ -63,6 +66,19 @@ class get_nodes:
         #return json.dumps(data, indent=2)
         return data
 
+class get_links:
+    def GET(self):
+        from db_api import get_links_by_case_user
+        d = web.input()
+        caseno = int(d['caseno'])
+        user_id = get_cur_user_id(self)
+        links = get_links_by_case_user(caseno, user_id)
+        res_dic = {'status':0, 'data':links}
+        return json.dumps(res_dic)
+
+    def POST(self):
+        return self.GET()
+
 class add_causal_link:
     """
     Test URL
@@ -70,6 +86,7 @@ class add_causal_link:
     Test Done
     """
     def GET(self):
+        from db_api import update_graph
         d = web.input()
         # get current user id
         casual_link_info = {
@@ -84,12 +101,21 @@ class add_causal_link:
 
         # first check whether there exist such a causal link
         check_exist = check_link_exists(casual_link_info)
+        res_dic = {}
         if not check_exist:
             # update the causal graph
             create_new_link(casual_link_info)
-            return json.dumps( { 'status':0 } )
+            res_dic = { 'status':0 }
         else:
-            return json.dumps( { 'status':1 } )
+            res_dic = { 'status':1 }
+        res_dic['data'] = {'linkid':get_link_id(casual_link_info)}
+        # graph changed
+        update_graph(
+            int( d['caseno'] ), get_cur_user_id(self) )
+        return json.dumps(res_dic)
+
+    def POST(self):
+        return self.GET()
 
 if __name__ == "__main__":
     app = web.application(urls, globals())

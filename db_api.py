@@ -18,7 +18,7 @@ cl_col = db.causal_links
 
 def get_acc_info_by_caseno(caseno):
     """
-    get the accident infor by case number    
+    get the accident infor by case number
     """
     data = {}
     acc = acc_col.find_one( {'caseno':caseno} )
@@ -42,18 +42,35 @@ def get_acc_info_by_caseno(caseno):
 ####
 
 def check_link_exists(cl_info):
-	check_exist = cl_col.find_one(cl_info)
-	if check_exist:
-		return True
-	else:
-		return False
+    check_exist = cl_col.find_one(cl_info)
+    if check_exist:
+        return True#str(check_exist['_id'])
+    else:
+        return False
+
+def get_link_id(cl_info):
+    check_exist = cl_col.find_one(cl_info)
+    if check_exist:
+        return str(check_exist['_id'])
+    else:
+        return None
+
 
 def create_new_link(cl_info):
-	cl_col.insert(cl_info)
+    cl_col.insert(cl_info)
 
-def get_links(caseno, user_id):
-	res = []
-	for l in cl_col.find({'caseno':caseno,'user_id':user_id}):
-		res.append(l)
-	return res
 
+def get_links_by_case_user(caseno, user_id):
+    res = []
+    for l in cl_col.find({'caseno':caseno,'user_id':user_id}):
+        l['id'] = str(l['_id'])
+        del l['_id']
+        res.append(l)
+        # TODO, decode the informatio here
+
+    return res
+
+def update_graph(caseno, user_id):
+    from graph_visual import gen_svg_graph_neat_warper
+    outpath = "static/imgs/tmp/"+str(caseno)+'-'+str(user_id)+'.png'
+    gen_svg_graph_neat_warper(caseno, user_id, outpath)
