@@ -5,11 +5,9 @@ All action related with database operation here
 from hsis_codebook import *
 
 from pymongo import MongoClient
-client = MongoClient('localhost', 27017)
-#https://api.mongodb.org/python/current/examples/authentication.html
-#client = MongoClient('mongodb://hcc:tti@54.201.125.48')
-#client = MongoClient('mongodb://hcc:tti@54.201.125.48:27117')
-#client = MongoClient('54.201.125.48', 27117)
+#client = MongoClient('localhost', 27017)
+client = MongoClient('128.194.140.206', 27017)
+
 db = client.tti
 acc_col = db.accident
 veh_col = db.vehicle
