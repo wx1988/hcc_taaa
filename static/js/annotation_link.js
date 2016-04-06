@@ -36,6 +36,10 @@ function node_click(node_name){
 function create_link_cb(data){
     // callback of create link function
     console.log(data);
+
+    // rerender
+    var caseno_val = urlParam('caseno');
+    render_accident_by_caseno(caseno_val);
 }
 
 
