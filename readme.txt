@@ -1,5 +1,7 @@
 To run the service, `python code.py 8080`. You could access the website at http://localhost:8080/ .
 
+Setup on Windows environment is not supported for now. 
+
 Software required:
 * Python
 * pymongo, mongdo database
