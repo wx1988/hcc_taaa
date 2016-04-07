@@ -3,10 +3,10 @@ All action related with database operation here
 """
 
 from hsis_codebook import *
+from consts import MG_HOST, MG_PORT
 
 from pymongo import MongoClient
-#client = MongoClient('localhost', 27017)
-client = MongoClient('128.194.140.206', 27017)
+client = MongoClient(MG_HOST, MG_PORT)
 
 db = client.tti
 acc_col = db.accident

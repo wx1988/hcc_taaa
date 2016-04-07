@@ -1,12 +1,13 @@
+import sys
+sys.path.append('../')
+
+from consts import PG_HOST, PG_DB, PG_USER, PG_PASSWD
+from consts import MG_HOST, MG_PORT
+
 import psycopg2
 from pymongo import MongoClient
 
-PG_HOST = "128.194.140.229"
-PG_DB = "hpms"
-PG_USER = "xingwang"
-PG_PASSWD = "xingwang"
-
-client = MongoClient("128.194.140.206", 27017)
+client = MongoClient(MG_HOST, MG_PORT)
 db = client.tti
 acc_col = db.accident
 lrs_col = db.lrs
