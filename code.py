@@ -3,8 +3,9 @@ import simplejson
 
 
 from hsis_codebook import *
-from db_api import get_acc_info_by_caseno
+from db_api import get_acc_info_by_caseno, get_acc_raw_by_caseno
 from db_api import check_link_exists, create_new_link, get_link_id
+from db_api import get_accidents_by_bound, get_roads_by_bound
 from user import get_cur_user_id
 from key_encode_decode import encode_acc_info
 
@@ -15,23 +16,48 @@ urls = (
     '/view_accident', 'view_accident',
     '/view_accident_raw', 'view_accident_raw',
 
+    # demo page
+    '/heatmapdemo', 'heatmapdemo',
+    '/markerdemo', 'markerdemo',
+    '/roaddemo', 'roaddemo',
+
     # restful api part
-    '/add_causal_link', 'add_causal_link',
-    '/get_nodes', 'get_nodes',
-    '/get_links', 'get_links',
+    '/get_accidents', 'get_accidents',
+    '/get_roads', 'get_roads',
+
+    # user management
     '/get_user_info', 'get_user_info'
     )
 
+# demo pages
+class heatmapdemo:
+    def GET(self):
+        render = web.template.render('templates/')
+        return render.heatmap_demo()
+
+class markerdemo:
+    def GET(self):
+        render = web.template.render('templates/')
+        return render.marker_demo()
+
+# other
 class annotate_page:
     def GET(self):
         render = web.template.render('templates/')
         return render.annotation()
 
-
+# debug page
 class view_accident:
     def GET(self):
-        pass
+        d = web.input()
+        caseno = int(d['caseno'])
+        data = get_acc_raw_by_caseno(caseno)
 
+        res = {
+            'status':0,
+            'data':data}
+        #return json.dumps(data, indent=2)
+        return simplejson.dumps(res, ignore_nan=True, indent=4 * ' ')
 
 class view_accident_raw:
     def GET(self):
@@ -46,7 +72,7 @@ class view_accident_raw:
             'status':0,
             'data':data}
         #return json.dumps(data, indent=2)
-        return simplejson.dumps(res, ignore_nan=True)
+        return simplejson.dumps(res, ignore_nan=True, indent=4 * ' ')
         # This ignore_nan function is not enabled in the default json package
 
     def POST(self):
@@ -55,67 +81,50 @@ class view_accident_raw:
 ###
 # API, build the annotation between factors within one accident
 ###
-class get_nodes:
+class get_accidents:
     def GET(self):
         d = web.input()
-        caseno = int(d['caseno'])
-        data = get_acc_info_by_caseno(caseno)
-        if data == None:
-            return "Not found"
-        data = encode_acc_info(data)
-        #return json.dumps(data, indent=2)
-        return data
-
-class get_links:
-    def GET(self):
-        from db_api import get_links_by_case_user
-        d = web.input()
-        caseno = int(d['caseno'])
-        user_id = get_cur_user_id(self)
-        links = get_links_by_case_user(caseno, user_id)
-        res_dic = {'status':0, 'data':links}
-        return json.dumps(res_dic)
-
-    def POST(self):
-        return self.GET()
-
-class add_causal_link:
-    """
-    Test URL
-    http://rtds9.cse.tamu.edu:8099/add_causal_link?caseno=102484009&from_node=acc|weather1&to_node=acc|rdsurf&node_type=cause
-    Test Done
-    """
-    def GET(self):
-        from db_api import update_graph
-        d = web.input()
-        # get current user id
-        casual_link_info = {
-            "caseno" : int( d['caseno'] ),
-            "from_node" :  d['from_node'],
-            "to_node" : d['to_node'],
-            "node_type" :  d['node_type'],
-            "user_id" : get_cur_user_id(self)
-        }
-
-        # add the link to database
-
-        # first check whether there exist such a causal link
-        check_exist = check_link_exists(casual_link_info)
-        res_dic = {}
-        if not check_exist:
-            # update the causal graph
-            create_new_link(casual_link_info)
-            res_dic = { 'status':0 }
+        if d['filtertype'] == 'bound':
+            bound = {
+                    'left':d['left'],
+                    'right':d['right'],
+                    'top':d['top'],
+                    'down':d['down']}
+            data = get_accidents_by_bound(bound)
+            #return simplejson.dumps(res, )
+            return simplejson.dumps({
+                'status':0,
+                'data':data},
+                ignore_nan=True)
         else:
-            res_dic = { 'status':1 }
-        res_dic['data'] = {'linkid':get_link_id(casual_link_info)}
-        # graph changed
-        update_graph(
-            int( d['caseno'] ), get_cur_user_id(self) )
-        return json.dumps(res_dic)
+            return simplejson.dumps({
+                'status':1,
+                'data':'Unknown filter type'})
 
     def POST(self):
         return self.GET()
+
+class get_roads:
+    def GET(self):
+        d = web.input()
+        if d['filtertype'] == 'bound':
+            bound = {
+                    'left':d['left'],
+                    'right':d['right'],
+                    'top':d['top'],
+                    'down':d['down']}
+            data = get_roads_by_bound(bound)
+            return simplejson.dumps({
+                'status':0,
+                'data':data})
+        else:
+            return simplejson.dumps({
+                'status':1,
+                'data':'Unknown filter type'})
+
+    def POST(self):
+        return self.GET()
+
 
 if __name__ == "__main__":
     app = web.application(urls, globals())
