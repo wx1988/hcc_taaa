@@ -1,0 +1,172 @@
+<!--
+TODO, for the line segments part:
+1. need to for each segment, get the accident number.
+2. show the segment with color adjusted based on the event number.
+3. after click each road seg, show information.
+
+
+TODO, make the heatmap flexible to show the events as markers as well.
+1. draw each marker one by one.
+2. after click on each marker, show some information
+
+-->
+
+<html>
+<head>
+
+	<style>
+	  html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+
+	</style>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUZzippHXKw9q2Il2OGD57Zz04CfxIrpY&signed_in=true&libraries=visualization">
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+
+<script>
+
+
+// create the callback get event here
+// 1. init map
+// 2. get the boundary of the map
+// 3. create Ajax call to get the events
+// 4. init the heatmap based on the events
+
+var map, heatmap;
+
+jQuery(window).load(initMap);
+
+function initMap() {
+	map = new google.maps.Map(
+		document.getElementById('map'), {
+	  		zoom: 13,
+			center: {lat: 35, lng: -78},
+			mapTypeId: google.maps.MapTypeId.SATELLITE
+			}
+		);
+
+	getEvents();
+}
+
+function getEvents(){
+	bound = map.getBounds();
+	if(bound == undefined){
+		bounddic = {
+			'filtertype':'bound',
+			'left':-78.1,
+			'right':-78,
+			'top':35.1,
+			'down':35
+		};
+	}else{
+		ne = bound.getNorthEast();
+		sw = bound.getSouthWest();
+
+		// access the map bound
+		bounddic = {
+			'filtertype':'bound',
+			'left':-sw.lng,
+			'right':ne.lng,
+			'top':ne.lat,
+			'down':sw.lat
+		};
+	}
+
+	jQuery.post(
+		"/get_segs",
+		bounddic,
+		geteventcb,
+		'json');
+}
+
+function sigmoid(t) {
+    return 1/(1+Math.pow(Math.E, -t));
+}
+
+function geteventcb(data){
+	if(data.status != 0){
+		alert(data.data);
+		return;
+	}
+
+	console.log("get events");
+	seg_list = data.data;
+
+	for(var i=0;i < seg_list.length;i++){
+		// for each seg, draw line string
+		var plist = seg_list[i].plist;
+		var tmpCoords = [];
+		for(var j=0;j < plist;j++){
+			tmpCoords[j] = {lat: plist[1], lng:plist[0]};
+		}
+		// TODO, automatic generation of the weight
+		var acc_num = seg_list[i].casenolist.length;
+
+		var segment = new google.maps.Polyline({
+			path: tmpCoords,
+			geodesic:true,
+			strokeColor: HSVtoRGB( sigmoid(acc_num), 1,1 ),
+			strokeOpacity: 1.0,
+			strokeWeight: 1+sigmoid(acc_num)
+		});
+
+		segment.addListener('click', function(){
+			do_log(seg_list[i]);
+		});
+	}
+}
+
+function decimalToHex(d, padding) {
+    var hex = Number(d).toString(16);
+    padding = typeof (padding) === "undefined" || padding === null ? padding = 2 : padding;
+
+    while (hex.length < padding) {
+        hex = "0" + hex;
+    }
+
+    return hex;
+}
+
+function HSVtoRGB(h, s, v) {
+    var r, g, b, i, f, p, q, t;
+    if (arguments.length === 1) {
+        s = h.s, v = h.v, h = h.h;
+    }
+    i = Math.floor(h * 6);
+    f = h * 6 - i;
+    p = v * (1 - s);
+    q = v * (1 - f * s);
+    t = v * (1 - (1 - f) * s);
+    switch (i % 6) {
+        case 0: r = v, g = t, b = p; break;
+        case 1: r = q, g = v, b = p; break;
+        case 2: r = p, g = v, b = t; break;
+        case 3: r = p, g = q, b = v; break;
+        case 4: r = t, g = p, b = v; break;
+        case 5: r = v, g = p, b = q; break;
+    }
+
+    return "#"+decimalToHex(Math.round(r * 255))+decimalToHex(Math.round(g * 255))+decimalToHex(Math.round(b * 255));
+}
+
+function do_log(info){
+	console.log(info);
+}
+
+</script>
+</head>
+
+<body>
+<div id="map">
+</div>
+</body>
+
+</html>

@@ -5,7 +5,7 @@ import simplejson
 from hsis_codebook import *
 from db_api import get_acc_info_by_caseno, get_acc_raw_by_caseno
 from db_api import check_link_exists, create_new_link, get_link_id
-from db_api import get_accidents_by_bound, get_roads_by_bound
+from db_api import get_accidents_by_bound, get_segs_by_bound
 from user import get_cur_user_id
 from key_encode_decode import encode_acc_info
 
@@ -24,6 +24,7 @@ urls = (
     # restful api part
     '/get_accidents', 'get_accidents',
     '/get_roads', 'get_roads',
+    '/get_segs', 'get_segs',
 
     # user management
     '/get_user_info', 'get_user_info'
@@ -104,16 +105,17 @@ class get_accidents:
     def POST(self):
         return self.GET()
 
-class get_roads:
+class get_segs:
     def GET(self):
         d = web.input()
         if d['filtertype'] == 'bound':
             bound = {
-                    'left':d['left'],
-                    'right':d['right'],
-                    'top':d['top'],
-                    'down':d['down']}
-            data = get_roads_by_bound(bound)
+                    'left':float(d['left']),
+                    'right':float(d['right']),
+                    'top':float(d['top']),
+                    'down':float(d['down'])}
+            data = get_segs_by_bound(bound)
+            print "number of segs", len(data)
             return simplejson.dumps({
                 'status':0,
                 'data':data})

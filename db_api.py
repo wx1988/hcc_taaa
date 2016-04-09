@@ -12,7 +12,8 @@ client = MongoClient(MG_HOST, MG_PORT)
 db = client.tti
 acc_col = db.accident
 veh_col = db.vehicle
-route_col = db.route
+route_col = db.route2
+rtn_col = db.route2
 cl_col = db.causal_links
 
 ######
@@ -100,16 +101,29 @@ def get_accidents_by_bound(bound):
 def get_segs_by_rid(rid):
     return None
 
-def get_roads_by_bound(bound):
+def get_segs_by_bound(bound):
     """
     bound, dictionary containing up, down, left, right
     """
-    filter_dict = {
-            'bound.up': {'$gt':bound['down']},
-            'bound.down': {'$lt':bound['up']},
-            'bound.left': {'$lt':bound['right']},
-            'bound.right': {'$gt':bound['left']}
-            }
+    # TODO, check intersection rule
+    # NOTE, this rule is not OK.
+    filter_dict = { '$or' : [
+            { 'bound.top': {'$gt':bound['down']} },
+            { 'bound.down': {'$lt':bound['top']} },
+            { 'bound.left': {'$lt':bound['right']} },
+            { 'bound.right': {'$gt':bound['left']} }
+        ]}
+    #print filter_dict
+    rtn_list = []
+    for rtn in rtn_col.find(filter_dict):
+        rtn['id'] = str(rtn['_id'])
+        rtn['yradd'] = str(rtn['yradd'])
+        rtn['yr_impr1'] = str(rtn['yr_impr1'])
+
+        del rtn['_id']
+        rtn_list.append(rtn)
+    return rtn_list
+    """
     lrs_iter = lrs_col.find(filter_dict)
     road_list = []
     for lrs in lrs_iter:
@@ -117,6 +131,7 @@ def get_roads_by_bound(bound):
         seg_list = get_segs_by_rid(lrs['rid'])
         road_list.append(seg_list)
     return road_list
+    """
 
 ####
 # causal links part

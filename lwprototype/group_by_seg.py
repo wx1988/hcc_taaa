@@ -2,6 +2,10 @@ import sys
 import pickle
 from shapely.geometry import LineString, Point
 
+from consolidate_lrs import cnty_rte2linestring
+
+import numpy as np
+
 sys.path.append('../')
 from consts import MG_HOST
 from pymongo import MongoClient
@@ -114,6 +118,9 @@ def seg2ls_one(seg):
     cntyrte = seg['cntyrte']
     rid = cntyrte[2:] + cntyrte[0:2]
     route = lrs_col.find_one({'rid':rid})
+    if not route:
+        cnty_rte2linestring(rid)
+        route = lrs_col.find_one({'rid':rid})
     mp_len = route['rlist'][-1]['endmp']
 
     # total length of each LRS
@@ -141,6 +148,26 @@ def seg2ls():
         except Exception as e:
             print e
 
+def update_seg_bound():
+    filter_cond = {
+        '$and':[
+            {'plist':{'$exists':True}},
+            {'bound':{'$exists':False}}
+            ]}
+    for seg in rtn_col.find(filter_cond):
+        print seg['_id']
+        pt_mat = np.array(seg['plist'])
+        #print pt_mat
+        min_lng, min_lat = np.min(pt_mat, axis=0)
+        max_lng, max_lat = np.max(pt_mat, axis=0)
+        bound = {
+            'top': max_lat,
+            'down': min_lat,
+            'left':min_lng,
+            'right': max_lng}
+        rtn_col.update(
+            {'_id':seg['_id']},
+            {'$set':{'bound':bound}})
 
 
 def show_info():
@@ -161,6 +188,9 @@ if __name__ == "__main__":
     #test()
 
 
-    # TODO, re-run this function again to fill the empty things
+    # re-run this function again to fill the empty things
     # due to depedency on another program to create lrs.
-    seg2ls()
+    # done by add function to create lrs that not exist
+    #seg2ls()
+
+    update_seg_bound()
