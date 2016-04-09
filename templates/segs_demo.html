@@ -73,7 +73,7 @@ function getEvents(){
 		// access the map bound
 		bounddic = {
 			'filtertype':'bound',
-			'left':-sw.lng,
+			'left':sw.lng,
 			'right':ne.lng,
 			'top':ne.lat,
 			'down':sw.lat
@@ -104,19 +104,23 @@ function geteventcb(data){
 		// for each seg, draw line string
 		var plist = seg_list[i].plist;
 		var tmpCoords = [];
-		for(var j=0;j < plist;j++){
-			tmpCoords[j] = {lat: plist[1], lng:plist[0]};
+		for(var j=0;j < plist.length; j++){
+			tmpCoords[j] = {lat: plist[j][1], lng:plist[j][0]};
 		}
 		// TODO, automatic generation of the weight
-		var acc_num = seg_list[i].casenolist.length;
+		var acc_num = 0;
+		if(seg_list[i].casenolist != undefined)
+			acc_num = seg_list[i].casenolist.length;
 
+		var tmpColor = HSVtoRGB( sigmoid(acc_num), 1,1 );
 		var segment = new google.maps.Polyline({
 			path: tmpCoords,
 			geodesic:true,
-			strokeColor: HSVtoRGB( sigmoid(acc_num), 1,1 ),
+			strokeColor: tmpColor,
 			strokeOpacity: 1.0,
 			strokeWeight: 1+sigmoid(acc_num)
 		});
+		segment.setMap(map);
 
 		segment.addListener('click', function(){
 			do_log(seg_list[i]);

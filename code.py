@@ -41,6 +41,12 @@ class markerdemo:
         render = web.template.render('templates/')
         return render.marker_demo()
 
+class roaddemo:
+    def GET(self):
+        render = web.template.render('templates/')
+        return render.segs_demo()
+
+
 # other
 class annotate_page:
     def GET(self):
@@ -118,11 +124,13 @@ class get_segs:
             print "number of segs", len(data)
             return simplejson.dumps({
                 'status':0,
-                'data':data})
+                'data':data},
+                ignore_nan=True)
         else:
             return simplejson.dumps({
                 'status':1,
-                'data':'Unknown filter type'})
+                'data':'Unknown filter type'},
+                ignore_nan=True)
 
     def POST(self):
         return self.GET()
