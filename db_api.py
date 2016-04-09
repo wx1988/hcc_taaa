@@ -107,12 +107,33 @@ def get_segs_by_bound(bound):
     """
     # TODO, check intersection rule
     # NOTE, this rule is not OK.
-    filter_dict = { '$or' : [
-            { 'bound.top': {'$gt':bound['down']} },
-            { 'bound.down': {'$lt':bound['top']} },
-            { 'bound.left': {'$lt':bound['right']} },
-            { 'bound.right': {'$gt':bound['left']} }
-        ]}
+    filter_dict = { '$not' : {
+        '$and':
+            [
+                { 'bound.top': {'$lt':bound['down']} },
+                { 'bound.down': {'$gt':bound['top']} },
+                { 'bound.left': {'$gt':bound['right']} },
+                { 'bound.right': {'$lt':bound['left']} }
+            ]
+        }}
+    # check two reference point in the bound 
+    # 1. top left
+    cond1 = {'$and':[
+                {'bound.top': {'$lt': bound['top']}},
+                {'bound.top': {'$gt': bound['down']}},
+                {'bound.left': {'$lt': bound['right']}},
+                {'bound.left': {'$gt':bound['left']}}
+            ]}
+
+    # 2. down right
+    cond2 = {'$and':[
+                {'bound.down': {'$lt': bound['top']}},
+                {'bound.down': {'$gt': bound['down']}},
+                {'bound.right': {'$lt': bound['right']}},
+                {'bound.right': {'$gt':bound['left']}}
+            ]}
+    filter_dict = {'$or':[cond1, cond2]}
+
     #print filter_dict
     rtn_list = []
     for rtn in rtn_col.find(filter_dict):
