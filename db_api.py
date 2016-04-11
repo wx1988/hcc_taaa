@@ -190,3 +190,25 @@ def update_graph(caseno, user_id):
     from graph_visual import gen_svg_graph_neat_warper
     outpath = "static/imgs/tmp/"+str(caseno)+'-'+str(user_id)+'.png'
     gen_svg_graph_neat_warper(caseno, user_id, outpath)
+
+def example_export_csv():
+    bound = {'left':-78.1, 'right':-78, 'top':35.1, 'down':35}
+    acc_list = get_accidents_by_bound(bound)
+    acc_fields = ['acc_date', 'time', 'lat','lng','weather1','light', 'rdsurf']
+    head_line = ''
+    for acc_field in acc_fields:
+        head_line += acc_field +','
+    head_line += "\n"
+    for acc in acc_list:
+        tmp_line = ""
+        for acc_field in acc_fields:
+            tmp_line += str( acc[ acc_field ]  )+','
+        head_line += tmp_line + "\n"
+    with open('tmp.csv', 'w') as f:
+        print>>f, head_line
+
+
+
+
+if __name__ == "__main__":
+    example_export_csv()

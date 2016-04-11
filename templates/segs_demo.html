@@ -1,4 +1,5 @@
 <!--
+https://stackoverflow.com/questions/1663309/pass-parameter-to-callback-function/1663771#1663771
 TODO, for the line segments part:
 1. need to for each segment, get the accident number.
 2. show the segment with color adjusted based on the event number.
@@ -122,10 +123,13 @@ function geteventcb(data){
 		});
 		segment.setMap(map);
 
-		segment.addListener('click', function(){
-			do_log(seg_list[i]);
-		});
-	}
+		with ({tseg: seg_list[i]}){
+			segment.addListener('click', 
+					function(){
+						do_log(tseg);
+			});
+		}
+			}
 }
 
 function decimalToHex(d, padding) {

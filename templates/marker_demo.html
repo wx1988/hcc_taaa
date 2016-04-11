@@ -108,21 +108,19 @@ function geteventcb(data){
 			icon: '/static/imgs/red_cross_12.png'
 		});
 
-
-		function marker_click_cb(){
-			// TODO, could not work well on the local variables
-			console.log(tmp_acc_info);
-		}
 		// TODO,
-		marker_list[i].addListener('click', marker_click_cb);
+		with({accinfo: acc_list[i]}){
+			marker_list[i].addListener('click',function(){
+					render_acc_detail(accinfo)});
+		}
 
 		// TODO, add click callback function to each marker
 	}
 
 }
 
-function render_acc_detail(){
-	// TODO
+function render_acc_detail(accinfo){
+	console.log(accinfo);
 }
 
 </script>
