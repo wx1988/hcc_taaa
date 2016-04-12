@@ -198,14 +198,22 @@ def example_export_csv():
     head_line = ''
     for acc_field in acc_fields:
         head_line += acc_field +','
+
+    light2count = {}
+
     head_line += "\n"
     for acc in acc_list:
         tmp_line = ""
         for acc_field in acc_fields:
             tmp_line += str( acc[ acc_field ]  )+','
         head_line += tmp_line + "\n"
+        if not light2count.has_key( acc['light'] ):
+            light2count[ acc['light'] ] = 0
+        light2count[ acc['light'] ] += 1
+
     with open('tmp.csv', 'w') as f:
         print>>f, head_line
+    print light2count
 
 
 
