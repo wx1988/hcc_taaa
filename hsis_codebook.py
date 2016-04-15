@@ -174,3 +174,36 @@ def replace_veh_coding(veh):
             if not np.isnan(veh[k]):
                 veh[k] = event[veh[k]]
     return veh
+
+loc_type = {
+    0 :"No Feature",
+    1 :"Bridge",
+    2 :"Bridge Approach",
+    3 :"Underpass",
+    4 :"Driveway, Public",
+    5 :"Driveway, Private",
+    6 :"Alleyway Intersection",
+    7:"Four-Way Intersection",
+    8:"T-Intersection",
+    9:"Y-Intersection",
+    10:"Traffic Circle/Roundabout",
+    11:"Five Point or More",
+    12:"Related to Intersection",
+    13 :"Non-Intersection Median Crossing",
+    14 :"End or Beginning Divided Highway",
+    15:"Off Ramp Entry",
+    16:"Off Ramp Proper",
+    17:"Off Ramp Terminal on Crossroad",
+    18:"Merge Lane Between On and Off Ramp",
+    19:"On Ramp Entry",
+    20:"On Ramp Proper",
+    21:"On Ramp Terminal on Crossroad",
+    22 :"Railroad Crossing",
+    23 :"Tunnel",
+    24 :"Shared Use Path or Trails",
+    25 :"Other",
+    26:"Not stated (Pre 2000)",
+    27:"Intersection of Roadway (Pre 2000)",
+    28:"Interchange Ramp (Pre 2000)",
+    29:"Interchange Service Road (Pre 2000)"
+}

@@ -25,6 +25,7 @@ urls = (
     '/get_accidents', 'get_accidents',
     '/get_roads', 'get_roads',
     '/get_segs', 'get_segs',
+    '/get_faceted_info', 'get_faceted_info',
 
     # user management
     '/get_user_info', 'get_user_info'
@@ -135,6 +136,30 @@ class get_segs:
     def POST(self):
         return self.GET()
 
+class get_faceted_info:
+    def GET(self):
+        from hsis_codebook import event as event_dict
+        from hsis_codebook import rdsurf as rdsurf_dict
+        from hsis_codebook import loc_type as loc_type_dict
+
+        d = web.input()
+        res = {}
+        if d['type'] == "collision":
+            # collision type
+            res = event_dict
+
+        if d['type'] == "roadsurf":
+            res = rdsurf_dict
+
+        if d['type'] == "loc_type":
+            res = loc_type_dict
+
+        return simplejson.dumps({
+            'status':0,
+            'data': res })
+
+    def POST(self):
+        return self.GET()
 
 if __name__ == "__main__":
     app = web.application(urls, globals())
