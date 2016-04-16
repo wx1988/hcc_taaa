@@ -30,10 +30,8 @@ TODO, make the heatmap flexible to show the events as markers as well.
 </script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-
+<script src="/static/js/record.js"></script>
 <script>
-
-
 // create the callback get event here
 // 1. init map
 // 2. get the boundary of the map
@@ -42,6 +40,7 @@ TODO, make the heatmap flexible to show the events as markers as well.
 
 var map, heatmap;
 
+add_record(1);
 jQuery(window).load(initMap);
 
 function initMap() {
@@ -104,7 +103,8 @@ function geteventcb(data){
 	heatmap = new google.maps.visualization.HeatmapLayer({
 		data: pt_list,
 		map: map
-	});
+  });
+  add_record(1);
 }
 
 </script>

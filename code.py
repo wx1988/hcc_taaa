@@ -25,6 +25,7 @@ urls = (
     '/get_accidents', 'get_accidents',
     '/get_roads', 'get_roads',
     '/get_segs', 'get_segs',
+    '/add_log', 'add_log',
 
     # user management
     '/get_user_info', 'get_user_info'
@@ -107,6 +108,21 @@ class get_accidents:
             return simplejson.dumps({
                 'status':1,
                 'data':'Unknown filter type'})
+
+    def POST(self):
+        return self.GET()
+
+class add_log:
+    def GET(self):
+        from db_api import create_log
+        d = web.input()
+        log_info = {
+            "user_id" : get_cur_user_id(self),
+            "action" : d['action'],
+            "timestamp" : d['timestamp']
+        }
+        create_log(log_info)
+        return 0
 
     def POST(self):
         return self.GET()

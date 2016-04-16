@@ -15,6 +15,7 @@ veh_col = db.vehicle
 route_col = db.route2
 rtn_col = db.route2
 cl_col = db.causal_links
+log_col = db.log
 
 ######
 # accidents part
@@ -65,6 +66,11 @@ def get_acc_info_by_caseno(caseno):
     data['veh_list'] = veh_list
     return data
 
+####
+# log part
+####
+def create_log(log_entry):
+    log_col.insert(log_entry)
 
 def get_accidents_by_bound(bound):
     """
