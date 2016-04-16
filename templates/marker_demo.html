@@ -1,0 +1,134 @@
+<!--
+TODO, for the line segments part:
+1. need to for each segment, get the accident number.
+2. show the segment with color adjusted based on the event number.
+3. after click each road seg, show information.
+
+
+TODO, make the heatmap flexible to show the events as markers as well.
+1. draw each marker one by one.
+2. after click on each marker, show some information
+
+-->
+
+<html>
+<head>
+
+	<style>
+	  html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+
+	</style>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUZzippHXKw9q2Il2OGD57Zz04CfxIrpY&signed_in=true&libraries=visualization">
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+
+<script>
+
+
+// create the callback get event here
+// 1. init map
+// 2. get the boundary of the map
+// 3. create Ajax call to get the events
+// 4. init the heatmap based on the events
+
+var map, heatmap;
+
+jQuery(window).load(initMap);
+
+function initMap() {
+	map = new google.maps.Map(
+		document.getElementById('map'), {
+	  		zoom: 13,
+			center: {lat: 35, lng: -78},
+			mapTypeId: google.maps.MapTypeId.SATELLITE
+			}
+		);
+
+	getEvents();
+}
+
+function getEvents(){
+	bound = map.getBounds();
+	if(bound == undefined){
+		bounddic = {
+			'filtertype':'bound',
+			'left':-78.1,
+			'right':-78,
+			'top':35.1,
+			'down':35
+		};
+	}else{
+		ne = bound.getNorthEast();
+		sw = bound.getSouthWest();
+
+		// access the map bound
+		bounddic = {
+			'filtertype':'bound',
+			'left':-sw.lng,
+			'right':ne.lng,
+			'top':ne.lat,
+			'down':sw.lat
+		};
+	}
+
+	jQuery.post(
+		"/get_accidents",
+		bounddic,
+		geteventcb,
+		'json');
+}
+
+
+function geteventcb(data){
+	if(data.status != 0){
+		alert(data.data);
+		return;
+	}
+
+	console.log("get events");
+	acc_list = data.data;
+
+	pt_list = [];
+	marker_list = [];
+	for(var i=0;i < acc_list.length;i++){
+		pt_list[i] = new google.maps.LatLng(
+			acc_list[i].lat, acc_list[i].lng);
+		marker_list[i] = new google.maps.Marker({
+			position: pt_list[i],
+			map: map,
+			icon: '/static/imgs/red_cross_12.png'
+		});
+
+		// TODO,
+		with({accinfo: acc_list[i]}){
+			marker_list[i].addListener('click',function(){
+					render_acc_detail(accinfo)});
+		}
+
+		// TODO, add click callback function to each marker
+	}
+
+}
+
+function render_acc_detail(accinfo){
+	console.log(accinfo);
+}
+
+</script>
+</head>
+
+<body>
+<div id="map">
+</div>
+</body>
+
+</html>

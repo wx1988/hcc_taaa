@@ -1,18 +1,50 @@
 """
 All action related with database operation here
 """
+import copy
 
 from hsis_codebook import *
+from consts import MG_HOST, MG_PORT
 
 from pymongo import MongoClient
-#client = MongoClient('localhost', 27017)
-client = MongoClient('128.194.140.206', 27017)
+client = MongoClient(MG_HOST, MG_PORT)
 
 db = client.tti
 acc_col = db.accident
 veh_col = db.vehicle
+route_col = db.route2
+rtn_col = db.route2
 cl_col = db.causal_links
 log_col = db.log
+
+######
+# accidents part
+######
+def get_acc_raw_by_caseno(caseno):
+    data = {}
+    acc = acc_col.find_one( {'caseno':caseno} )
+    if not acc:
+        return "Not found"
+    del acc['_id']
+    data['acc'] = acc#replace_acc_coding(acc)
+
+    veh_cur = veh_col.find({'caseno':caseno})
+    veh_list = []
+    for veh in veh_cur:
+        del veh['_id']
+        #veh = replace_veh_coding(veh)
+        veh_list.append(veh)
+    data['veh_list'] = veh_list
+
+    r = route_col.find_one({'cntyrte':acc['cnty_rte']})
+    del r['_id']
+    for k in r.keys():
+        r[k] = str(r[k])
+    data['route'] = r
+
+    #print r
+
+    return data
 
 def get_acc_info_by_caseno(caseno):
     """
@@ -40,10 +72,97 @@ def get_acc_info_by_caseno(caseno):
 def create_log(log_entry)
     log_col.insert(log_entry)
 
+def get_accidents_by_bound(bound):
+    """
+    get all accident within the range
+    """
+
+    # TODO, create index on these field
+    filter_dict = {
+		    'lat':{
+                '$gt':float(bound['down']),
+                '$lt':float(bound['top']) },
+		    'lng':{
+                '$gt':float(bound['left']),
+                '$lt':float(bound['right'])},
+		    }
+
+    print filter_dict
+
+    acc_iter = acc_col.find(filter_dict)
+    acc_info_list = []
+    for acc in acc_iter:
+        # TODO, too slow here
+        #acc_info = get_acc_info_by_caseno( acc['caseno'] )
+
+        # the following version might be faster
+        acc_info = copy.copy(acc)
+        del acc_info['_id']
+        acc_info_list.append( acc_info )
+    return acc_info_list
+
+#####
+# road parts
+#####
+def get_segs_by_rid(rid):
+    return None
+
+def get_segs_by_bound(bound):
+    """
+    bound, dictionary containing up, down, left, right
+    """
+    # TODO, check intersection rule
+    # NOTE, this rule is not OK.
+    filter_dict = { '$not' : {
+        '$and':
+            [
+                { 'bound.top': {'$lt':bound['down']} },
+                { 'bound.down': {'$gt':bound['top']} },
+                { 'bound.left': {'$gt':bound['right']} },
+                { 'bound.right': {'$lt':bound['left']} }
+            ]
+        }}
+    # check two reference point in the bound 
+    # 1. top left
+    cond1 = {'$and':[
+                {'bound.top': {'$lt': bound['top']}},
+                {'bound.top': {'$gt': bound['down']}},
+                {'bound.left': {'$lt': bound['right']}},
+                {'bound.left': {'$gt':bound['left']}}
+            ]}
+
+    # 2. down right
+    cond2 = {'$and':[
+                {'bound.down': {'$lt': bound['top']}},
+                {'bound.down': {'$gt': bound['down']}},
+                {'bound.right': {'$lt': bound['right']}},
+                {'bound.right': {'$gt':bound['left']}}
+            ]}
+    filter_dict = {'$or':[cond1, cond2]}
+
+    #print filter_dict
+    rtn_list = []
+    for rtn in rtn_col.find(filter_dict):
+        rtn['id'] = str(rtn['_id'])
+        rtn['yradd'] = str(rtn['yradd'])
+        rtn['yr_impr1'] = str(rtn['yr_impr1'])
+
+        del rtn['_id']
+        rtn_list.append(rtn)
+    return rtn_list
+    """
+    lrs_iter = lrs_col.find(filter_dict)
+    road_list = []
+    for lrs in lrs_iter:
+        # TODO, get segments of this roads here
+        seg_list = get_segs_by_rid(lrs['rid'])
+        road_list.append(seg_list)
+    return road_list
+    """
+
 ####
 # causal links part
 ####
-
 def check_link_exists(cl_info):
     check_exist = cl_col.find_one(cl_info)
     if check_exist:
@@ -77,3 +196,33 @@ def update_graph(caseno, user_id):
     from graph_visual import gen_svg_graph_neat_warper
     outpath = "static/imgs/tmp/"+str(caseno)+'-'+str(user_id)+'.png'
     gen_svg_graph_neat_warper(caseno, user_id, outpath)
+
+def example_export_csv():
+    bound = {'left':-78.1, 'right':-78, 'top':35.1, 'down':35}
+    acc_list = get_accidents_by_bound(bound)
+    acc_fields = ['acc_date', 'time', 'lat','lng','weather1','light', 'rdsurf']
+    head_line = ''
+    for acc_field in acc_fields:
+        head_line += acc_field +','
+
+    light2count = {}
+
+    head_line += "\n"
+    for acc in acc_list:
+        tmp_line = ""
+        for acc_field in acc_fields:
+            tmp_line += str( acc[ acc_field ]  )+','
+        head_line += tmp_line + "\n"
+        if not light2count.has_key( acc['light'] ):
+            light2count[ acc['light'] ] = 0
+        light2count[ acc['light'] ] += 1
+
+    with open('tmp.csv', 'w') as f:
+        print>>f, head_line
+    print light2count
+
+
+
+
+if __name__ == "__main__":
+    example_export_csv()

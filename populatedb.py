@@ -4,6 +4,7 @@ db = client.tti
 acc_col = db.accident
 veh_col = db.vehicle
 rtn_col = db.route
+rtn_col2 = db.route2
 
 from sas7bdat import SAS7BDAT
 
@@ -28,5 +29,24 @@ def populate():
                 #print res_dict
                 col_list[i].insert( res_dict )
 
+def populate2():
+    ylist = ['09']
+    nlist = ['road']
+    col_list = [rtn_col2]
+
+    for ttttt,y in enumerate(ylist):
+        for i,name in enumerate(nlist):
+            f = SAS7BDAT('%s/NC/nc%s%s.sas7bdat'%(hsis_data_folder,y,name))
+            df = f.to_data_frame()
+
+            print y,name, df.columns
+            rn,cn = df.shape
+            for j in range(rn):
+                tmp_dict = df.iloc[[j]].to_dict()
+                res_dict = {k: tmp_dict[k].values()[0] for k in tmp_dict.keys()}
+                #print res_dict
+                col_list[i].insert( res_dict )
+
 if __name__ == '__main__':
-    populate()
+    #populate()
+    populate2()
