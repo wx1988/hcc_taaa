@@ -116,7 +116,7 @@ def get_segs_by_bound(bound):
                 { 'bound.right': {'$lt':bound['left']} }
             ]
         }}
-    # check two reference point in the bound 
+    # check two reference point in the bound
     # 1. top left
     cond1 = {'$and':[
                 {'bound.top': {'$lt': bound['top']}},
@@ -191,32 +191,100 @@ def update_graph(caseno, user_id):
     outpath = "static/imgs/tmp/"+str(caseno)+'-'+str(user_id)+'.png'
     gen_svg_graph_neat_warper(caseno, user_id, outpath)
 
+
 def example_export_csv():
+    from hsis_codebook import event as event_dict
+    from hsis_codebook import loc_type as loc_type_dict
     bound = {'left':-78.1, 'right':-78, 'top':35.1, 'down':35}
     acc_list = get_accidents_by_bound(bound)
+
     acc_fields = ['acc_date', 'time', 'lat','lng','weather1','light', 'rdsurf']
     head_line = ''
     for acc_field in acc_fields:
         head_line += acc_field +','
+    head_line += "Intersection, "
+    head_line += "Road Segment,"
+    head_line += "HeadOn,"
+    head_line += "RearEnd,"
+    head_line += "Collision,"
+    #head_line += "\n"
 
     light2count = {}
+    collision2count = {}
 
-    head_line += "\n"
+
+    content = ""
     for acc in acc_list:
         tmp_line = ""
         for acc_field in acc_fields:
             tmp_line += str( acc[ acc_field ]  )+','
-        head_line += tmp_line + "\n"
+
+        # whether intersection related
+        print acc['loc_type']
+        if not np.isnan(acc['loc_type']) and \
+            loc_type_dict[ acc['loc_type'] ].count("Intersection") > 0:
+            tmp_line += "1,"
+        else:
+            tmp_line += "0,"
+
+        # the segments
+        find_seg_dict = {
+                    'cntyrte': acc['cnty_rte'],
+                    'begmp': {'$lt': acc['milepost']},
+                    'endmp': {'$gt': acc['milepost']}}
+        seg = rtn_col.find_one(find_seg_dict)
+        if seg:
+            tmp_line += str(seg['_id'])+','
+        else:
+            tmp_line += ','
+
+        # head on
+        # rear end
+        head_on = 0
+        rear_end = 0
+        soe_list_str = "\""
+        for soe in acc['events']:
+            if event_dict[ soe].lower().count("head on") > 0:
+                head_on = 1
+            if event_dict[ soe].lower().count("rear end") > 0:
+                rear_end = 1
+            soe_list_str += str(int(soe))+","
+        if head_on:
+            tmp_line += "1,"
+        else:
+            tmp_line += "0,"
+
+        if rear_end:
+            tmp_line += "1,"
+        else:
+            tmp_line += "0,"
+
+        soe_list_str = soe_list_str[:-1]+"\""
+        tmp_line += soe_list_str
+
+        content += tmp_line + "\n"
+
+        # for statistics
         if not light2count.has_key( acc['light'] ):
             light2count[ acc['light'] ] = 0
         light2count[ acc['light'] ] += 1
+        #print acc['events']
+        for soe in acc['events']:
+            if not collision2count.has_key(soe):
+                collision2count[soe] = 0
+            collision2count[soe] +=1
 
     with open('tmp.csv', 'w') as f:
         print>>f, head_line
+        print>>f, content
+
+    # print the data
     print light2count
 
-
-
+    soe_list = collision2count.keys()
+    soe_list = sorted(soe_list, key=lambda k: -1*collision2count[k])
+    for soe in soe_list:
+        print "['%s',%d],"%(event_dict[soe], collision2count[soe])
 
 if __name__ == "__main__":
     example_export_csv()

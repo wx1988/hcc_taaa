@@ -86,19 +86,21 @@ class view_accident_raw:
     def POST(self):
         return self.GET()
 
+
 ###
 # API, build the annotation between factors within one accident
 ###
 class get_accidents:
     def GET(self):
         d = web.input()
+        # first is the boundary type
         if d['filtertype'] == 'bound':
             bound = {
                     'left':d['left'],
                     'right':d['right'],
                     'top':d['top'],
                     'down':d['down']}
-            data = get_accidents_by_bound(bound)
+            data = get_accidents_by_bound( bound )
             #return simplejson.dumps(res, )
             return simplejson.dumps({
                 'status':0,
