@@ -12,7 +12,7 @@ db = client.tti
 acc_col = db.accident
 veh_col = db.vehicle
 cl_col = db.causal_links
-
+log_col = db.log
 
 def get_acc_info_by_caseno(caseno):
     """
@@ -34,6 +34,11 @@ def get_acc_info_by_caseno(caseno):
     data['veh_list'] = veh_list
     return data
 
+####
+# log part
+####
+def create_log(log_entry)
+    log_col.insert(log_entry)
 
 ####
 # causal links part

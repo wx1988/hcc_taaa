@@ -79,6 +79,21 @@ class get_links:
     def POST(self):
         return self.GET()
 
+class add_log:
+    def GET(self):
+        from db_api import create_log
+        d = web.input()
+        log_info = {
+            "user_id" : get_cur_user_id(self),
+            "action" : d['action'],
+            "timestamp" : d['timestamp']
+        }
+        create_log(log_info)
+        return 0
+
+    def POST(self):
+        return self.GET()
+
 class add_causal_link:
     """
     Test URL
