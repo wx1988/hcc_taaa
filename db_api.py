@@ -69,7 +69,7 @@ def get_acc_info_by_caseno(caseno):
 ####
 # log part
 ####
-def create_log(log_entry)
+def create_log(log_entry):
     log_col.insert(log_entry)
 
 def get_accidents_by_bound(bound):

@@ -25,6 +25,7 @@ urls = (
     '/get_accidents', 'get_accidents',
     '/get_roads', 'get_roads',
     '/get_segs', 'get_segs',
+    '/add_log', 'add_log',
 
     # user management
     '/get_user_info', 'get_user_info'
