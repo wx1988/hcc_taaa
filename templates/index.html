@@ -1,0 +1,33 @@
+<!--
+TODO, for the line segments part:
+1. need to for each segment, get the accident number.
+2. show the segment with color adjusted based on the event number.
+3. after click each road seg, show information.
+
+
+TODO, make the heatmap flexible to show the events as markers as well.
+1. draw each marker one by one.
+2. after click on each marker, show some information
+
+-->
+<html>
+<head>
+	<style>
+	  html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+	</style>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUZzippHXKw9q2Il2OGD57Zz04CfxIrpY&signed_in=true&libraries=visualization"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+	<script src="static/js/home.js"></script>
+</head>
+	<body>
+		<div id="map">
+		</div>
+	</body>
+</html>

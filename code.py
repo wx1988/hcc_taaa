@@ -18,7 +18,7 @@ urls = (
 
     # demo page
     '/heatmapdemo', 'heatmapdemo',
-    '/markerdemo', 'markerdemo',
+    '/', 'index',
     '/roaddemo', 'roaddemo',
 
     # restful api part
@@ -36,10 +36,10 @@ class heatmapdemo:
         render = web.template.render('templates/')
         return render.heatmap_demo()
 
-class markerdemo:
+class index:
     def GET(self):
         render = web.template.render('templates/')
-        return render.marker_demo()
+        return render.index()
 
 class roaddemo:
     def GET(self):
