@@ -3,6 +3,7 @@
  */
 
 var map, heatmap;
+var facetObj;
 
 function initMap() {
     map = new google.maps.Map(
@@ -35,7 +36,7 @@ function getEvents(){
             'right':ne.lng,
             'top':ne.lat,
             'down':sw.lat,
-            'time_of_day_range': [0, 6*60*60]
+            'facetObj':facetObj
         };
     }
     jQuery.post(
@@ -76,5 +77,17 @@ function render_acc_detail(accinfo){
 }
 
 $(function() {
-   initMap();
+    facetObj = constructEmptyFacetObj(facetObj);
+    $('#facets :checkbox').click(function(){
+        getFacetsCheckboxes(facetObj.collisionType, facetObj.severity, facetObj.noOfLanes);
+        logFacetObj(facetObj);
+        initMap();
+    });
+
+    $('#facets :radio').click(function(){
+        getFacetsRadiobuttons(facetObj);
+        logFacetObj(facetObj);
+        initMap();
+    });
+    initMap();
 });
