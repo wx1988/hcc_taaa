@@ -1,4 +1,8 @@
 """
+Data downloaded from this page,
+https://connect.ncdot.gov/resources/gis/pages/gis-data-layers.aspx
+The cooridnate system of the shapefile is transformed into latitude and longitude.
+
 County:
     NAME_LOCAS
     POP2010PRJ
@@ -14,7 +18,7 @@ Municipal:
     Shape_Leng
     Bound
 
-Try regex search
+Varinder might want to try regex search
 https://docs.mongodb.org/manual/reference/operator/query/regex/
 """
 from pymongo import MongoClient

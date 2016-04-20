@@ -1,4 +1,6 @@
 """
+TODO, comment and move this to database
+
 Import additional features:
     accident: alcflag
     road: terrain

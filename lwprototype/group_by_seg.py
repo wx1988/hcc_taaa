@@ -19,7 +19,6 @@ rtn_col = db.route2
 lrs_col = db.lrs
 
 
-
 ###########
 # identify a region of interest for light weight prototype
 ###########

@@ -1,6 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 This file provide the web interface, RESTful API
 """
+
 import web,json
 import simplejson
 
@@ -34,22 +37,28 @@ urls = (
     '/get_user_info', 'get_user_info'
     )
 
+
+class index:
+    """This page is the main user interface
+    """
+    def GET(self):
+        render = web.template.render('templates/')
+        return render.index()
+
+
+
 # demo pages
 class heatmapdemo:
     def GET(self):
         render = web.template.render('templates/')
         return render.heatmap_demo()
 
-class index:
-    def GET(self):
-        render = web.template.render('templates/')
-        return render.index()
+
 
 class roaddemo:
     def GET(self):
         render = web.template.render('templates/')
         return render.segs_demo()
-
 
 # other
 class annotate_page:
