@@ -1,3 +1,6 @@
+"""
+This file provide the web interface, RESTful API
+"""
 import web,json
 import simplejson
 

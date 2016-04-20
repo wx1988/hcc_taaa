@@ -21,6 +21,11 @@ log_col = db.log
 # accidents part
 ######
 def get_acc_raw_by_caseno(caseno):
+    """This function will return the detail information about an accident given the caseno. 
+
+    :param caseno: The case number of the accident
+    :returns: A dictionary containing the accident basic information, involved vehicles, and road information.
+    """
     data = {}
     acc = acc_col.find_one( {'caseno':caseno} )
     if not acc:
@@ -41,8 +46,6 @@ def get_acc_raw_by_caseno(caseno):
     for k in r.keys():
         r[k] = str(r[k])
     data['route'] = r
-
-    #print r
 
     return data
 
