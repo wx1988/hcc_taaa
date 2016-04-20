@@ -59,7 +59,7 @@ function geteventcb(data){
 $(function() {
     facetObj = constructEmptyFacetObj(facetObj);
     $('#facets :checkbox').click(function(){
-        getFacetsCheckboxes(facetObj.collisionType, facetObj.severity, facetObj.noOfLanes);
+        getFacetsCheckboxes(facetObj);
         logFacetObj(facetObj);
         initMap();
     });
