@@ -4,7 +4,6 @@ This file provide the web interface, RESTful API
 import web,json
 import simplejson
 
-
 from hsis_codebook import *
 from db_api import get_acc_info_by_caseno, get_acc_raw_by_caseno
 from db_api import check_link_exists, create_new_link, get_link_id
