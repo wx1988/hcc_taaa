@@ -1,6 +1,44 @@
-import numpy as np
+function render_markers(map, accidents)
+{
+  pt_list = [];
+  marker_list = [];
+  var infowindow = new google.maps.InfoWindow();
+  for(var i = 0; i < accidents.length; ++i)
+  {
+    pt_list[i] = new google.maps.LatLng(
+        accidents[i].lat, accidents[i].lng);
 
-# PAGE 64
+    marker_list[i] = new google.maps.Marker({
+      position: pt_list[i],
+      map: map,
+      icon: '/static/imgs/red_cross_12.png'
+    });
+    make_acc_infowindow_event(map, infowindow, get_acc_details(accidents[i]), marker_list[i]);
+  }
+}
+
+function make_acc_infowindow_event(map, infowindow, contentString, marker)
+{
+  google.maps.event.addListener(marker, 'click', function() {
+    infowindow.setContent(contentString);
+    infowindow.open(map, marker);
+  });
+}
+
+function get_acc_details(accident)
+{
+  acc_info = 'Lat: ' + accident.lat + '<br />' + 'Lng: ' + accident.lng;
+  if(accident.acc_date != 'NAN') { acc_info += '<br />' + 'Data: ' + accident.acc_date; }
+  if(accident.time != 'NAN') { acc_info += '<br />' + 'Time: ' + accident.time; }
+  if(accident.weather1 != 'NAN') { acc_info += '<br />' + 'Weather: ' + weather[accident.weather1]; }
+  if(accident.rdsurf != 'NAN') { acc_info += '<br />' + 'Road Surface: ' + rdsurf[accident.rdsurf]; }
+  if(accident.caseno != 'NAN') { acc_info += '<br />' + 'Case Number: ' + accident.caseno; }
+  if(accident.rte_nbr != 'NAN') { acc_info += '<br />' + 'Route Number: ' + accident.rte_nbr; }
+  return acc_info;
+}
+
+//TODO Find somewhere else to put the following codes
+//PAGE 64
 weather = {
     0:"Not Stated",
     1:"Clear",
@@ -14,7 +52,7 @@ weather = {
     9 :"Other"
 }
 
-# page 42
+// page 42
 light = {
     0 :"Not Stated (Pre 2000)",
     1 :"Daylight",
@@ -27,7 +65,7 @@ light = {
     8 :"Unknown"
 }
 
-#roadsurf, page 54
+//roadsurf, page 54
 rdsurf = {
     0 :"Not Stated",
     1 :"Dry",
@@ -42,21 +80,7 @@ rdsurf = {
     10 :"Unknown"
 }
 
-
-def replace_acc_coding(acc):
-    if not np.isnan(acc['weather1']):
-        acc['weather1'] = weather[ acc['weather1'] ]
-    if not np.isnan(acc['weather2']):
-        acc['weather2'] = weather[ acc['weather2'] ]
-    if not np.isnan(acc['rdsurf']):
-        acc['rdsurf'] = rdsurf[ acc['rdsurf'] ]
-    if not np.isnan(acc['light']):
-        acc['light'] = light[ acc['light'] ]
-    return acc
-
-# sob test, TODO, only the test done, not the results of the test
-
-#
+//contrib
 contrib = {
     0 :"No Contributing Factors",
     1 :"Disregarded Yield Sign",
@@ -163,47 +187,4 @@ event = {
     62 :"Construction Barrier",
     63 :"Crash Cushion",
     64 :"Other Fixed Object",
-}
-
-def replace_veh_coding(veh):
-    for k in veh.keys():
-        if k.startswith('contrib'):
-            if not np.isnan(veh[k]):
-                veh[k] = contrib[veh[k]]
-        if k.startswith('event'):
-            if not np.isnan(veh[k]):
-                veh[k] = event[veh[k]]
-    return veh
-
-loc_type = {
-    0 :"No Feature",
-    1 :"Bridge",
-    2 :"Bridge Approach",
-    3 :"Underpass",
-    4 :"Driveway, Public",
-    5 :"Driveway, Private",
-    6 :"Alleyway Intersection",
-    7:"Four-Way Intersection",
-    8:"T-Intersection",
-    9:"Y-Intersection",
-    10:"Traffic Circle/Roundabout",
-    11:"Five Point or More",
-    12:"Related to Intersection",
-    13 :"Non-Intersection Median Crossing",
-    14 :"End or Beginning Divided Highway",
-    15:"Off Ramp Entry",
-    16:"Off Ramp Proper",
-    17:"Off Ramp Terminal on Crossroad",
-    18:"Merge Lane Between On and Off Ramp",
-    19:"On Ramp Entry",
-    20:"On Ramp Proper",
-    21:"On Ramp Terminal on Crossroad",
-    22 :"Railroad Crossing",
-    23 :"Tunnel",
-    24 :"Shared Use Path or Trails",
-    25 :"Other",
-    26:"Not stated (Pre 2000)",
-    27:"Intersection of Roadway (Pre 2000)",
-    28:"Interchange Ramp (Pre 2000)",
-    29:"Interchange Service Road (Pre 2000)"
 }

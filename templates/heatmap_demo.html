@@ -31,6 +31,7 @@ TODO, make the heatmap flexible to show the events as markers as well.
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
 <script src="/static/js/record.js"></script>
+<script src="/static/js/render_heatmap.js"></script>
 <script>
 // create the callback get event here
 // 1. init map
@@ -52,6 +53,7 @@ function initMap() {
 			}
 		);
 
+  console.log("get events");
 	getEvents();
 }
 
@@ -94,16 +96,9 @@ function geteventcb(data){
 	}
 
 	console.log("get events");
-	acc_list = data.data;
-	pt_list = [];
-	for(var i=0;i < acc_list.length;i++){
-		pt_list[i] = new google.maps.LatLng(
-			acc_list[i].lat, acc_list[i].lng);
-	}
-	heatmap = new google.maps.visualization.HeatmapLayer({
-		data: pt_list,
-		map: map
-  });
+  acc_list = data.data;
+
+  render_heatmap(map, acc_list);
   add_record(1);
 }
 

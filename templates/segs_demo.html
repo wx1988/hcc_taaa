@@ -31,7 +31,7 @@ TODO, make the heatmap flexible to show the events as markers as well.
 </script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-
+<script src="/static/js/render_roadsegments.js"></script>
 <script>
 
 
@@ -55,6 +55,19 @@ function initMap() {
 		);
 
 	getEvents();
+	drawColorMap();
+}
+
+
+function drawColorMap(){
+	var tmp_res = "";
+	for(var acc_num =0; acc_num < 30;acc_num+=4){
+		var tmpColor = HSVtoRGB( sigmoid(acc_num), 1,1 );
+		tmp_res += "<span style='background-color:"+tmpColor+";'>";
+		tmp_res += acc_num+"|";
+		tmp_res += "</span>";
+	}
+	jQuery("#colormap").html(tmp_res);
 }
 
 function getEvents(){
@@ -88,9 +101,12 @@ function getEvents(){
 		'json');
 }
 
+
 function sigmoid(t) {
-    return 1/(1+Math.pow(Math.E, -t));
+	// re-scaled illustration
+    return 1/(1+Math.pow(Math.E, -0.1*t));
 }
+
 
 function geteventcb(data){
 	if(data.status != 0){
@@ -99,37 +115,8 @@ function geteventcb(data){
 	}
 
 	console.log("get events");
-	seg_list = data.data;
-
-	for(var i=0;i < seg_list.length;i++){
-		// for each seg, draw line string
-		var plist = seg_list[i].plist;
-		var tmpCoords = [];
-		for(var j=0;j < plist.length; j++){
-			tmpCoords[j] = {lat: plist[j][1], lng:plist[j][0]};
-		}
-		// TODO, automatic generation of the weight
-		var acc_num = 0;
-		if(seg_list[i].casenolist != undefined)
-			acc_num = seg_list[i].casenolist.length;
-
-		var tmpColor = HSVtoRGB( sigmoid(acc_num), 1,1 );
-		var segment = new google.maps.Polyline({
-			path: tmpCoords,
-			geodesic:true,
-			strokeColor: tmpColor,
-			strokeOpacity: 1.0,
-			strokeWeight: 1+sigmoid(acc_num)
-		});
-		segment.setMap(map);
-
-		with ({tseg: seg_list[i]}){
-			segment.addListener('click', 
-					function(){
-						do_log(tseg);
-			});
-		}
-			}
+  seg_list = data.data;
+  render_roadsegments(map, seg_list);
 }
 
 function decimalToHex(d, padding) {
@@ -175,6 +162,11 @@ function do_log(info){
 <body>
 <div id="map">
 </div>
+
+<div id="colormap">
+
+</div>
+
 </body>
 
 </html>
