@@ -1,6 +1,26 @@
-function render_markers(map, accidents){
-	// parameters the same with the render_heatmap function
-	// This function will do following thing:
-	// 1. show each accident as one marker on the map
-	// 2. for each accident marker, add callback function, when clicked, there will be a popup
+function render_markers(map, accidents)
+{
+  pt_list = [];
+  marker_list = [];
+  var infowindow = new google.maps.InfoWindow();
+  for(var i = 0; i < accidents.length; ++i)
+  {
+    pt_list[i] = new google.maps.LatLng(
+        accidents[i].lat, accidents[i].lng);
+
+    marker_list[i] = new google.maps.Marker({
+      position: pt_list[i],
+      map: map,
+      icon: '/static/imgs/red_cross_12.png'
+    });
+    makeInfoWindowEvent(map, infowindow, "test" + i, marker_list[i]);
+  }
+}
+
+function makeInfoWindowEvent(map, infowindow, contentString, marker)
+{
+  google.maps.event.addListener(marker, 'click', function() {
+    infowindow.setContent(contentString);
+    infowindow.open(map, marker);
+  });
 }
