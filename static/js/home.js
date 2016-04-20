@@ -52,28 +52,7 @@ function geteventcb(data){
   }
   console.log("get events");
   acc_list = data.data;
-  pt_list = [];
-  marker_list = [];
-  var infowindow = new google.maps.InfoWindow();
-
-  for(var i=0;i < acc_list.length;i++){
-    pt_list[i] = new google.maps.LatLng(
-        acc_list[i].lat, acc_list[i].lng);
-    marker_list[i] = new google.maps.Marker({
-      position: pt_list[i],
-      map: map,
-      icon: '/static/imgs/red_cross_12.png'
-    });
-
-    makeInfoWindowEvent(map, infowindow, "test" + i, marker_list[i]);
-  }
-}
-
-function makeInfoWindowEvent(map, infowindow, contentString, marker) {
-  google.maps.event.addListener(marker, 'click', function() {
-    infowindow.setContent(contentString);
-    infowindow.open(map, marker);
-  });
+  render_markers(map, acc_list);
 }
 
 $(function() {
