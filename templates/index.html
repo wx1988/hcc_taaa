@@ -11,24 +11,153 @@ TODO, make the heatmap flexible to show the events as markers as well.
 
 -->
 <html>
-<head>
-	<style>
-	  html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-      #map {
-        height: 100%;
-      }
-	</style>
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUZzippHXKw9q2Il2OGD57Zz04CfxIrpY&signed_in=true&libraries=visualization"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-  <script src="static/js/home.js"></script>
-  <script src="static/js/render_markers.js"></script>
-</head>
+	<head>
+		<meta charset="utf-8">
+   	 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">
+    	<meta name="description" content="">
+    	<meta name="author" content="">
+    	<title>TAAA</title>
+    	<!-- Bootstrap Core CSS -->
+    	<link href="static/css/bootstrap.min.css" rel="stylesheet">
+		<link rel='stylesheet' type='text/css' href='http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css'/>
+		<link rel="stylesheet" href="static/css/jquery.timepicker.min.css">
+		<link rel="stylesheet" href="static/css/jquery.timepicker.css">
+		<!-- Custom CSS -->
+    	<link href="static/css/home.css" rel="stylesheet">
+    	<!--css for tabs-->
+    	<link href="static/css/buttons.css" rel="stylesheet">
+		<style>
+	 	 html, body {
+       		 height: 100%;
+        	 margin: 0;
+        	 padding: 0;
+      	}
+      	#map {
+        	height: 100%;
+      	}
+
+		.controls {
+        	margin-top: 10px;
+        	border: 1px solid transparent;
+        	border-radius: 2px 0 0 2px;
+        	box-sizing: border-box;
+        	-moz-box-sizing: border-box;
+        	height: 32px;
+        	outline: none;
+        	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+     	 #pac-input {
+        	background-color: #fff;
+        	font-family: Roboto;
+        	font-size: 15px;
+        	font-weight: 300;
+        	margin-left: 12px;
+        	padding: 0 11px 0 13px;
+        	text-overflow: ellipsis;
+        	width: 300px;
+		 }
+
+      	#pac-input:focus {
+        	border-color: #4d90fe;
+	  	}
+
+      	.pac-container {
+        	font-family: Roboto;
+      	}
+
+      	#type-selector {
+       		 color: #fff;
+       	 	background-color: #4d90fe;
+        	padding: 5px 11px 0px 11px;
+      	}
+
+      	#type-selector label {
+        	font-family: Roboto;
+        	font-size: 13px;
+        	font-weight: 300;
+      	}
+      	#target {
+        	width: 345px;
+      	}
+		</style>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUZzippHXKw9q2Il2OGD57Zz04CfxIrpY&signed_in=true&libraries=places,visualization"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="static/js/jquery.timepicker.min.js"></script>
+		<script type="text/javascript" src="static/js/jquery.timepicker.js"></script>
+		<script src="static/js/common_util.js"></script>
+		<script src="static/js/render_markers.js"></script>
+		<script src="/static/js/render_heatmap.js"></script>
+		<script src="/static/js/render_roadsegments.js"></script>
+	</head>
 	<body>
-		<div id="map">
-		</div>
+		<div class="container">
+			 <div class="row">
+        		<div class="col-md-3">
+        		</div>
+        		<div class="col-md-9">
+
+        		</div>
+			  </div>
+       		  <div class="row">
+				  <div class="col-md-3" id="facets">
+					  <div class="location-type">
+					  		<h4>Location Type</h4>
+              				<input type="radio" name="loc-type" value="intersection"> Intersection <br>
+                			<input type="radio" name="loc-type" value="segment"> Segment <br>
+						    <input type="radio" name="loc-type" value="both"> Both
+					  </div>
+              		  <div class="collision-type">
+						  <h4>Collision Type</h4>
+					      <input type="checkbox" name="Col-type" value="21"> rear-end <br>
+					      <input type="checkbox" name="Col-type" value="27"> head-on <br>
+                    	  <input type="checkbox" name="Col-type" value="14"> pedestrian <br>
+					      <input type="checkbox" name="Col-type" value="15"> bicycle <br>
+					  </div>
+					  <div class="time-period">
+						  <h4>Time Period</h4>
+						  Start Date : <input type="text" id="start-date"> <br>
+						  End Date : <input type="text" id="end-date">
+					  </div>
+					  <div class="time-of-day">
+						  <h4>Time of day</h4>
+						  Start time : <input type="text" id="start-time"> <br>
+						  End time : <input type="text" id="end-time">
+					  </div>
+					  <div class="severity">
+						  <h4>Severity</h4>
+						  <input type="checkbox" name="severity" value="k"> K
+						  <input type="checkbox" name="severity" value="a"> A
+						  <input type="checkbox" name="severity" value="b"> B
+               			  <input type="checkbox" name="severity" value="c"> C
+					  </div>
+					  <div class="no-of-lanes">
+						  <h4>No. Of Lanes</h4>
+						  <input type="checkbox" name="Col-type" value="2"> 2
+						  <input type="checkbox" name="Col-type" value="4"> 4
+						  <input type="checkbox" name="Col-type" value="6"> 6
+					  </div>
+					  <br/>
+					  <a class="btn btn-success">View Details</a><br><br>
+             		  <a class="btn btn-success">Export Data</a>
+				  </div>
+				  <div class="col-md-9">
+					  <div class="row">
+					  	  <button class="btn btn-info btn-pressure pull-right" id="accidents" >Accidents</button>
+                          <button class="btn btn-success btn-pressure pull-right" id="roadsegments">RoadSegments</button>
+					      <button class="btn btn-danger btn-pressure pull-right" id="heatpmap">HeatMap</button>
+					  </div>
+					  <div class="row">
+						  <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+						  <div id="map"></div>
+					  </div>
+				  </div>
+
+			  </div>
+        </div>
+		<script src="static/js/home.js"></script>
+    <!-- /.container -->
 	</body>
 </html>
