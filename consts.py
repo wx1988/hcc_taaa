@@ -1,5 +1,4 @@
-"""
-This file contains common constant values
+"""This file contains common constant values
 """
 PG_HOST = "128.194.140.229"
 PG_DB = "hpms"
