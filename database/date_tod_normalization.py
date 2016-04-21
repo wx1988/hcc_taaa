@@ -13,10 +13,8 @@ acc_col = db.accident
 from datetime import date, datetime, timedelta
 
 
-
-
 def batch_process_dt():
-    """
+    """ Convert the string date and time to integer seconds
     acc_date -> n_acc_date
     time -> n_time
     """
@@ -53,7 +51,6 @@ def batch_process_dt():
                 'n_acc_date': timestamp,
                 'n_time': seconds
             }})
-
 
 if __name__ == '__main__':
     batch_process_dt()

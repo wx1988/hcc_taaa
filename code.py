@@ -87,23 +87,21 @@ class add_log:
 class get_segs:
     def GET(self):
         d = web.input()
-        if d['filtertype'] == 'bound':
-            bound = {
-                    'left':float(d['left']),
-                    'right':float(d['right']),
-                    'top':float(d['top']),
-                    'down':float(d['down'])}
-            data = get_segs_by_bound(bound)
-            print "number of segs", len(data)
-            return simplejson.dumps({
-                'status':0,
-                'data':data},
-                ignore_nan=True)
-        else:
-            return simplejson.dumps({
-                'status':1,
-                'data':'Unknown filter type'},
-                ignore_nan=True)
+
+        bound = {
+                'left':float(d['left']),
+                'right':float(d['right']),
+                'top':float(d['top']),
+                'down':float(d['down'])}
+
+        # TODO, filter the related accident based on
+        # the actual retrieved events.
+        data = get_segs_by_bound(bound)
+        print "number of segs", len(data)
+        return simplejson.dumps({
+            'status':0,
+            'data':data},
+            ignore_nan=True)
 
     def POST(self):
         return self.GET()

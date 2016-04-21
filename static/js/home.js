@@ -2,10 +2,12 @@
  * Created by sumeetsingharora on 4/16/16.
  */
 
-var map, heatmap;
+var map = undefined;
+var heatmap;
 var facetObj;
 var searchBox;
 var maptToPlot = "heatmap";
+
 function initMap() {
 
     map = new google.maps.Map(
@@ -22,8 +24,10 @@ function initMap() {
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
     // Bias the SearchBox results towards current map's viewport.
-    map.addListener('bounds_changed', function() {
+    //map.addListener('bounds_changed', function() {
+    map.addListener('idle', function() {
           searchBox.setBounds(map.getBounds());
+          console.log('bound changed');
     });
 
     searchBox.addListener('places_changed', function() {
@@ -51,26 +55,20 @@ function initMap() {
 function getEvents(){
     bound = map.getBounds();
     if(bound == undefined){
-        bounddic = {
-            'filtertype':'bound',
-            'left':-78.1,
-            'right':-78,
-            'top':35.1,
-            'down':35
-        };
-    } else {
-        ne = bound.getNorthEast();
-        sw = bound.getSouthWest();
-        // access the map bound
-        bounddic = {
-            'filtertype':'bound',
-            'left':sw.lng,
-            'right':ne.lng,
-            'top':ne.lat,
-            'down':sw.lat,
-            'facetObj':JSON.stringify(facetObj)
-        };
+        // call this function later until the map is loaded
+        setTimeout(getEvents, 100);
     }
+
+    ne = bound.getNorthEast();
+    sw = bound.getSouthWest();
+    // access the map bound
+    bounddic = {
+        'left':sw.lng,
+        'right':ne.lng,
+        'top':ne.lat,
+        'down':sw.lat,
+        'facetObj':JSON.stringify(facetObj)
+    };
 
     if(maptToPlot == "roadsegments") {
         jQuery.post(

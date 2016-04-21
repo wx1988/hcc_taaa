@@ -1,28 +1,32 @@
+"""
+TODO, need to split into several files
+
+This file mainly contain two functions:
+1. Match each road segment with LRS to get the LineString representation
+2. ???? Calculate the lat/lng of each accident
+3. add index to get related events of one segment quickly
+"""
 import sys
 import pickle
 from shapely.geometry import LineString, Point
-
-from consolidate_lrs import cnty_rte2linestring
-
 import numpy as np
 
 sys.path.append('../')
-from consts import MG_HOST
-from pymongo import MongoClient
-client = MongoClient(MG_HOST, 27017)
+from consts import MG_HOST, MG_PORT
+from consolidate_lrs import cnty_rte2linestring
 
+from pymongo import MongoClient
+client = MongoClient(MG_HOST, MG_PORT)
 db = client.tti
 acc_col = db.accident
 veh_col = db.vehicle
-
 rtn_col = db.route2
 lrs_col = db.lrs
 
-
-###########
-# identify a region of interest for light weight prototype
-###########
 def group_case_by_cnty_rte():
+    """This function is intended to find interest road segment for the lightweight prototype
+    However, it is not useful
+    """
     seg2caselist = {}
     for acc in acc_col.find():
         if not seg2caselist.has_key( acc['cnty_rte'] ):
@@ -38,10 +42,22 @@ def group_case_by_cnty_rte():
     with open('seginfo.pkl','w') as f:
         pickle.dump( res, f)
 
-########
-# add each event to the corresponding roads
-########
+def find_max_accident_segs():
+    """Find segments with the largest accident rates
+    """
+    seginfo = pickle.load(open('seginfo.pkl','r'))
+    sorted_seg_list = seginfo['sorted_seg_list']
+    seg2caselist = seginfo['seg2caselist']
+
+    for i in range(10):
+        segid = sorted_seg_list[-1*i-1]
+        print segid , len( seg2caselist[segid] )
+
+
 def process_one_event2seg(arm):
+    """Add each event to the corresponding roads
+    :param arm: three-size tuple, accident number, road id, milepost
+    """
     #print arm
     condition = {"$and":[
             {'cntyrte':arm[1]},
@@ -64,7 +80,15 @@ def process_one_event2seg(arm):
             {"_id":r['_id']},
             {"$set":{'casenolist':casenolist}})
 
+def test_arm():
+    """A manual test function for process_one_event2seg
+    """
+    arm = [102506561.0, u'7740001318', 10.257]
+    process_one_event2seg(arm)
+
 def add_event_2_seg():
+    """Batch add the accident to the corresponding road segments
+    """
     aid_rid_mp_list = []
     for acc in acc_col.find():
         aid_rid_mp_list.append([
@@ -74,10 +98,6 @@ def add_event_2_seg():
         if i % 100 == 0:
             print "processing ", i, "events"
         process_one_event2seg(arm)
-
-def test_arm():
-    arm = [102506561.0, u'7740001318', 10.257]
-    process_one_event2seg(arm)
 
 ########
 # This is about get the actual linestring for each segments
@@ -168,21 +188,10 @@ def update_seg_bound():
             {'_id':seg['_id']},
             {'$set':{'bound':bound}})
 
-
-def show_info():
-    seginfo = pickle.load(open('seginfo.pkl','r'))
-
-    sorted_seg_list = seginfo['sorted_seg_list']
-    seg2caselist = seginfo['seg2caselist']
-
-    for i in range(10):
-        segid = sorted_seg_list[-1*i-1]
-        print segid , len( seg2caselist[segid] )
-
-
 if __name__ == "__main__":
     #group_case_by_cnty_rte()
-    #show_info()
+    #find_max_accident_segs()
+
     #add_event_2_seg()
     #test()
 
