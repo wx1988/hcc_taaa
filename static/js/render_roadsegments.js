@@ -23,7 +23,7 @@ function render_roadsegments(map, roadsegments)
         ,geodesic: true
         ,strokeColor: localColor
         ,strokeOpacity: 1.0
-        ,strokeWeight: 1 + sigmoid(acc_num)
+        ,strokeWeight: 1 + sigmoid(acc_num) * 5
     });
     segment.setMap(map);
     make_seg_infowindow_event(map, infowindow, get_seg_details(roadsegments[i]), segment)
