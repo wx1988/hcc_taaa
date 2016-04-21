@@ -112,9 +112,6 @@ function geteventcb(data){
 }
 
 $(function() {
-<<<<<<< HEAD
-	initMap();
-=======
     facetObj = constructEmptyFacetObj(facetObj);
     $('#facets :checkbox').click(function(){
         getFacetsCheckboxes(facetObj);
@@ -128,5 +125,4 @@ $(function() {
         initMap();
     });
     initMap();
->>>>>>> 741e2f9116dce0d02ed56b62a45cf71ce211f179
 });
