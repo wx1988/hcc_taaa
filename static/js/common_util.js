@@ -26,9 +26,9 @@ function urlParam(name){
 }
 
 function getFacetsCheckboxes(facetObj) {
-        facetObj.collisionType.length = 0 ;
+        facetObj.collision.length = 0 ;
         $('.collision-type input:checked').each(function() {
-            facetObj.collisionType.push($(this).attr('value'));
+            facetObj.collision.push($(this).attr('value'));
         });
 
         facetObj.severity.length = 0;
@@ -36,49 +36,38 @@ function getFacetsCheckboxes(facetObj) {
             facetObj.severity.push($(this).attr('value'));
         });
 
-        facetObj.noOfLanes.length = 0;
+        facetObj.no_of_lanes.length = 0;
         $('.no-of-lanes input:checked').each(function() {
-            facetObj.noOfLanes.push($(this).attr('value'));
+            facetObj.no_of_lanes.push($(this).attr('value'));
         });
 }
 
 function getFacetsRadiobuttons(facetObj) {
-        facetObj.locationType = $('input[name=loc-type]:checked', '.location-type').val();
-        facetObj.timePeriod = $('input[name=time-period]:checked', '.time-period').val();
-        facetObj.timeOfDay = $('input[name=time-of-day]:checked', '.time-of-day').val();
-
-        if(facetObj.locationType == undefined) {
-            facetObj.locationType = "";
-        }
-
-        if(facetObj.timePeriod == undefined) {
-            facetObj.timePeriod = "";
-        }
-
-        if(facetObj.timeOfDay == undefined) {
-            facetObj.timeOfDay = "";
+        facetObj.loc_type = $('input[name=loc-type]:checked', '.location-type').val();
+        if(facetObj.loc_type == undefined) {
+            facetObj.loc_type = "both";
         }
 }
 
 function constructEmptyFacetObj(facetObj) {
-     var collisionType = [];
+     var collision = [];
      var severity = [];
-     var noOfLanes = [];
-     var locationType = "";
-     var timePeriod = "";
-     var timeOfDay = "";
+     var no_of_lanes = [];
+     var loc_type = "both";
+     var timePeriod = ["-1/-1/-1", "-1/-1/-1"];
+     var timeOfDay = ["-1", "-1"];
 
-    facetObj = {'collisionType' : collisionType, 'severity' : severity, 'noOfLanes' : noOfLanes, 'locationType' : locationType,
-    'timePeriod' : timePeriod, 'timeOfDay' : timeOfDay};
+    facetObj = {'collision' : collision, 'severity' : severity, 'no_of_lanes' : no_of_lanes, 'loc_type' : loc_type,
+    'date_range' : timePeriod, 'timeofday_range' : timeOfDay};
     return facetObj;
 }
 
 function  logFacetObj(facetObj) {
     console.log("Started logging the faceted filter object");
-    console.log("The collision array is " + facetObj.collisionType);
+    console.log("The collision array is " + facetObj.collision);
     console.log("The Severity array is " + facetObj.severity);
-    console.log("Number of lanes array is " + facetObj.noOfLanes);
-    console.log("Location type is " + facetObj.locationType);
-    console.log("Time period is " +  facetObj.timePeriod);
-    console.log("Time of day is " + facetObj.timeOfDay);
+    console.log("Number of lanes array is " + facetObj.no_of_lanes);
+    console.log("Location type is " + facetObj.loc_type);
+    console.log("Time period is " +  facetObj.date_range);
+    console.log("Time of day is " + facetObj.timeofday_range );
 }
