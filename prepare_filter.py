@@ -3,6 +3,8 @@
 Prepare the filter from the user request to the mongodb filtering
 """
 import copy
+from datetime import datetime
+
 """
 Accident filtering part
 """
@@ -38,50 +40,79 @@ def af_collision_type(webinput):
     collision_list = []
     for k in webinput['collision']:
         collision_list.append(int(k))
-    tmp_dic = {'events':{'$in':collision_list}}}
+    tmp_dic = {'events':{'$in':collision_list}}
     return tmp_dic
 
 def af_date_range(webinput):
     """set up the date range filter for mongodb query
     check whether there is intersection with events field
 
-    TODO, for the database part, need convert the date string to date object
+    For the database part, need convert the date string to date object
 
     :param webinput: dictionary, related keys date_range
     :returns: dictionary, mongodb filter dictionary
     """
-
+    timestamp = (datetime( YYYY, MM, DD, hour, minute ) - \
+            datetime(1970, 1, 1, )).total_seconds()
     pass
 
 def af_tod_range(webinput):
     # time of day range
     """set up the time of day filter for mongodb query
-    TODO, for the database part, need convert the time of string to second
+    For the database part, need convert the time of string to second
 
     :param webinput: dictionary, related keys timeofday_range
     :returns: dictionary, mongodb filter dictionary
     """
+    if not webinput.has_key('timeofday_range'):
+        return {}
+    tmp_dic = {}
 
-    pass
+    start_second = int(webinput['timeofday_range'][0])
+    if start_second >= 0:
+        tmp_dic['n_time'] ={ '$gte':start_second }
+
+    end_second = int(webinput['timeofday_range'][1])
+    if end_second >=0:
+        tmp_dic['n_time'] ={ '$lte':end_second }
+
+    return tmp_dic
 
 
 def af_driver_age(webinput):
-    """set up the time of day filter for mongodb query
-    TODO, consolidate the corresponding drivers sex assuming vehno = 1
+    """set up the driver age filter for mongodb query
+    consolidate the corresponding drivers sex assuming vehno = 1
 
     :param webinput: dictionary, related keys driver_age_range, [min_age, max_age]
     :returns: dictionary, mongodb filter dictionary
     """
-
-    pass
+    if not webinput.has_key('driver_age_range'):
+        return {}
+    min_age, max_age = webinput['driver_age_range']
+    if min_age < 0 and max_age < 0:
+        return {}
+    cond_dic = {}
+    if min_age >= 0:
+        cond_dic['$gte'] = min_age
+    if max_age >=0:
+        cond_dic['$lte'] = max_age
+    tmp_dic = {'drv_age':cond_dic}
+    return tmp_dic
 
 def af_driver_sex(webinput):
-    """
+    """set up the driver sex filter for mongodb query
+    consolidate the corresponding drivers sex assuming vehno = 1
 
-    TODO, consolidate the corresponding drivers sex assuming vehno = 1
-    male | female | both
+    :param webinput: dictionary, related keys driver_sex, male | female | both
     """
-    pass
+    if not webinput.has_key('driver_sex'):
+        return {}
+    if webinput['driver_sex'] == 'male':
+        return {'drv_sex': 1}
+    if webinput['driver_sex'] == 'female':
+        return {'drv_sex': 2}
+    if webinput['driver_sex'] == 'both':
+        return {'drv_sex': {'$in':[1,2]}}
 
 def af_severity(webinput):
     """set up the severity filter for mongodb query
@@ -125,6 +156,16 @@ def af_loc_type(webinput):
         return { 'loc_type': 0 }
     if webinput['loc_type'] == 'both':
         return { 'loc_type': { '$in':both_code_list } }
+
+def af_lane_number(webinput):
+    """set up the lane number filter for mongodb query
+
+    :param webinput: dictionary, related keys no_of_lanes , list of integers
+    :returns: dictionary, mongodb filter dictionary
+    """
+    if not webinput.has_key('no_of_lanes'):
+        return {}
+    raise Exception("TODO")
 
 def accident_filter(webinput):
     final_dict = {}
