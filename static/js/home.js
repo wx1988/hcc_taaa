@@ -3,6 +3,7 @@
  */
 
 var map, heatmap;
+var facetObj;
 
 function initMap()
 {
@@ -71,33 +72,33 @@ function initMap()
 }
 
 function getEvents(){
-	bound = map.getBounds();
-	if(bound == undefined){
-		bounddic = {
-			'filtertype':'bound',
-			'left':-78.1,
-			'right':-78,
-			'top':35.1,
-			'down':35
-		};
-	} else {
-		ne = bound.getNorthEast();
-		sw = bound.getSouthWest();
-		// access the map bound
-		bounddic = {
-			'filtertype':'bound',
-			'left':-sw.lng,
-			'right':ne.lng,
-			'top':ne.lat,
-			'down':sw.lat,
-			'time_of_day_range': [0, 6*60*60]
-		};
-	}
-	jQuery.post(
-			"/get_accidents",
-			bounddic,
-			geteventcb,
-			'json');
+    bound = map.getBounds();
+    if(bound == undefined){
+        bounddic = {
+            'filtertype':'bound',
+            'left':-78.1,
+            'right':-78,
+            'top':35.1,
+            'down':35
+        };
+    } else {
+        ne = bound.getNorthEast();
+        sw = bound.getSouthWest();
+        // access the map bound
+        bounddic = {
+            'filtertype':'bound',
+            'left':-sw.lng,
+            'right':ne.lng,
+            'top':ne.lat,
+            'down':sw.lat,
+            'facetObj':facetObj
+        };
+    }
+    jQuery.post(
+        "/get_accidents",
+        bounddic,
+        geteventcb,
+        'json');
 }
 
 function geteventcb(data){
@@ -111,5 +112,21 @@ function geteventcb(data){
 }
 
 $(function() {
+<<<<<<< HEAD
 	initMap();
+=======
+    facetObj = constructEmptyFacetObj(facetObj);
+    $('#facets :checkbox').click(function(){
+        getFacetsCheckboxes(facetObj);
+        logFacetObj(facetObj);
+        initMap();
+    });
+
+    $('#facets :radio').click(function(){
+        getFacetsRadiobuttons(facetObj);
+        logFacetObj(facetObj);
+        initMap();
+    });
+    initMap();
+>>>>>>> 741e2f9116dce0d02ed56b62a45cf71ce211f179
 });

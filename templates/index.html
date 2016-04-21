@@ -11,24 +11,115 @@ TODO, make the heatmap flexible to show the events as markers as well.
 
 -->
 <html>
-<head>
-	<style>
-	  html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-      #map {
-        height: 100%;
-      }
-	</style>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-<script src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=drawing"></script>
-  <script src="static/js/home.js"></script>
-  <script src="static/js/render_markers.js"></script>
-</head>
+	<head>
+		<meta charset="utf-8">
+   	 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">
+    	<meta name="description" content="">
+    	<meta name="author" content="">
+    	<title>TAAA</title>
+    	<!-- Bootstrap Core CSS -->
+    	<link href="static/css/bootstrap.min.css" rel="stylesheet">
+    	<!-- Custom CSS -->
+    	<link href="static/css/home.css" rel="stylesheet">
+    	<!--css for tabs-->
+    	<link href="static/css/tabs.css" rel="stylesheet">
+		<style>
+	 	 html, body {
+       		 height: 100%;
+        	 margin: 0;
+        	 padding: 0;
+      	}
+      	#map {
+        	height: 100%;
+      	}
+		</style>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUZzippHXKw9q2Il2OGD57Zz04CfxIrpY&signed_in=true&libraries=visualization"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+		<script src="static/js/common_util.js"></script>
+		<script src="static/js/render_markers.js"></script>
+	</head>
 	<body>
-		<div id="map">
-		</div>
+		<div class="container">
+			 <div class="row">
+        		<div class="col-md-3">
+        		</div>
+        		<div class="col-md-9">
+
+        		</div>
+			  </div>
+       		  <div class="row">
+				  <div class="col-md-3" id="facets">
+					  <div class="location-type">
+					  		<h4>Location Type</h4>
+              				<input type="radio" name="loc-type" value="0"> Intersection <br>
+                			<input type="radio" name="loc-type" value="1"> Segment <br>
+						    <input type="radio" name="loc-type" value=""> Both
+					  </div>
+              		  <div class="collision-type">
+						  <h4>Collision Type</h4>
+					      <input type="checkbox" name="Col-type" value="0"> rear-end <br>
+					      <input type="checkbox" name="Col-type" value="1"> head-on <br>
+                    	  <input type="checkbox" name="Col-type" value="2"> pedestrian <br>
+					      <input type="checkbox" name="Col-type" value="3"> bicycle <br>
+					  </div>
+					  <div class="time-period">
+						  <h4>Time Period</h4>
+						  <input type="radio" name="time-period" value="0"> last month <br>
+						  <input type="radio" name="time-period" value="1"> last week <br>
+						  <input type="radio" name="time-period" value="2"> self Define <br>
+					  </div>
+					  <div class="time-of-day">
+						  <h4>Time of day</h4>
+						  <input type="radio" name="time-of-day" value="0"> morning peak(7am - 9am) <br>
+						  <input type="radio" name="time-of-day" value="1"> evening peak(5pm - 7pm) <br>
+                	      <input type="radio" name="time-of-day" value="2"> self define <br>
+
+					  </div>
+					  <div class="severity">
+						  <h4>Severity</h4>
+						  <input type="checkbox" name="severity" value="0"> K
+						  <input type="checkbox" name="severity" value="1"> A
+						  <input type="checkbox" name="severity" value="2"> B
+               			  <input type="checkbox" name="severity" value="3"> C
+					  </div>
+					  <div class="no-of-lanes">
+						  <h4>No. Of Lanes</h4>
+						  <input type="checkbox" name="Col-type" value="0"> 2
+						  <input type="checkbox" name="Col-type" value="1"> 4
+						  <input type="checkbox" name="Col-type" value="2"> 6
+					  </div>
+					  <br/>
+					  <a class="btn btn-success">View Details</a><br><br>
+             		  <a class="btn btn-success">Export Data</a>
+				  </div>
+				  <div class="col-md-9">
+					<input type="text" placeholder="Search..." required>
+					<input type="button" value="Search">
+              		<div class="tabs">
+                		<ul class="tab-links">
+               	   			<li class="active"><a href="#tab1">Heat Maps</a></li>
+							<li><a href="#tab2">Road Segments</a></li>
+                  			<li><a href="#tab3">Accidents</a></li>
+                		</ul>
+                		<div class="tab-content">
+                  			<div id="tab1" class="tab active">
+				  				<div id="map"></div>
+				  			</div>
+                  			<div id="tab2" class="tab">
+                    			<p>Tab #2 content goes here!</p>
+                    			<p>Donec pulvinar neque sed semper lacinia. Curabitur lacinia ullamcorper nibh; quis imperdiet velit eleifend ac. Donec blandit mauris eget aliquet lacinia! Donec pulvinar massa interdum risus ornare mollis. In hac habitasse platea dictumst. Ut euismod tempus hendrerit. Morbi ut adipiscing nisi. Etiam rutrum sodales gravida! Aliquam tellus orci, iaculis vel.</p>
+                  			</div>
+                  			<div id="tab3" class="tab">
+                    			<p>Tab #3 content goes here!</p>
+                   				 <p>Donec pulvinar neque sed semper lacinia. Curabitur lacinia ullamcorper nibh; quis imperdiet velit eleifend ac. Donec blandit mauris eget aliquet lacinia! Donec pulvinar massa interdum ri.</p>
+                  			</div>
+						</div>
+              		</div>
+				  </div>
+			  </div>
+        </div>
+		<script src="static/js/home.js"></script>
+    <!-- /.container -->
 	</body>
 </html>
