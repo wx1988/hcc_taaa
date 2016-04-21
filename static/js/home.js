@@ -64,18 +64,27 @@ function getEvents(){
         // access the map bound
         bounddic = {
             'filtertype':'bound',
-            'left':-sw.lng,
+            'left':sw.lng,
             'right':ne.lng,
             'top':ne.lat,
             'down':sw.lat,
-            'facetObj':facetObj
+            'facetObj':JSON.stringify(facetObj)
         };
     }
-    jQuery.post(
-        "/get_accidents",
-        bounddic,
-        geteventcb,
-        'json');
+
+    if(maptToPlot == "roadsegments") {
+        jQuery.post(
+            "/get_segs",
+            bounddic,
+            geteventcb,
+            'json');
+    }else{
+        jQuery.post(
+            "/get_accidents",
+            bounddic,
+            geteventcb,
+            'json');
+    }
 }
 
 function geteventcb(data){

@@ -17,11 +17,13 @@ rtn_col = db.route2
 cl_col = db.causal_links
 log_col = db.log
 
+from prepare_filter import accident_filter
+
 ######
 # accidents part
 ######
 def get_acc_raw_by_caseno(caseno):
-    """This function will return the detail information about an accident given the caseno. 
+    """This function will return the detail information about an accident given the caseno.
 
     :param caseno: The case number of the accident
     :returns: A dictionary containing the accident basic information, involved vehicles, and road information.
@@ -75,12 +77,13 @@ def get_acc_info_by_caseno(caseno):
 def create_log(log_entry):
     log_col.insert(log_entry)
 
-def get_accidents_by_bound(bound):
-    """
-    get all accident within the range
+
+def get_accidents_api(facet_obj):
+    """ get all accident based on the facet requirement
     """
 
     # TODO, create index on these field
+    """
     filter_dict = {
 		    'lat':{
                 '$gt':float(bound['down']),
@@ -89,7 +92,9 @@ def get_accidents_by_bound(bound):
                 '$gt':float(bound['left']),
                 '$lt':float(bound['right'])},
 		    }
+    """
 
+    filter_dict = accident_filter(facet_obj)
     print filter_dict
 
     acc_iter = acc_col.find(filter_dict)

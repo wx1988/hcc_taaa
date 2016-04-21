@@ -4,6 +4,7 @@ Prepare the filter from the user request to the mongodb filtering
 """
 import copy
 from datetime import datetime
+from consts import DEBUG
 
 """
 Accident filtering part
@@ -16,7 +17,7 @@ def af_bound(webinput):
     tmp_dic = {
             'lat':{
                 '$gt':float(webinput['down']),
-                '$lt':float(webinput['up'])},
+                '$lt':float(webinput['top'])},
             'lng':{
                 '$gt':float(webinput['left']),
                 '$lt':float(webinput['right'])
@@ -40,6 +41,8 @@ def af_collision_type(webinput):
     collision_list = []
     for k in webinput['collision']:
         collision_list.append(int(k))
+    if len(collision_list) == 0:
+        return {}
     tmp_dic = {'events':{'$in':collision_list}}
     return tmp_dic
 
@@ -52,9 +55,29 @@ def af_date_range(webinput):
     :param webinput: dictionary, related keys date_range
     :returns: dictionary, mongodb filter dictionary
     """
-    timestamp = (datetime( YYYY, MM, DD, hour, minute ) - \
-            datetime(1970, 1, 1, )).total_seconds()
-    pass
+    start_date = webinput['date_range'][0]
+    s_MM, s_DD, s_YYYY = [int(w) for w in start_date.split('/')]
+    end_date = webinput['date_range'][1]
+    e_MM, e_DD, e_YYYY = [int(w) for w in end_date.split('/')]
+    if s_YYYY == -1 and e_YYYY == -1:
+        return {}
+
+    if DEBUG:
+        print s_YYYY, s_MM, s_DD
+        print e_YYYY, e_MM, e_DD
+
+    tmp_dic = {}
+    tmp_dic['n_acc_date'] = {}
+    if s_YYYY != -1:
+        s_timestamp = (datetime( s_YYYY, s_MM, s_DD, 0, 0 ) - \
+                datetime(1970, 1, 1, )).total_seconds()
+        tmp_dic['n_acc_date']['$gte'] = s_timestamp
+    if e_YYYY != -1:
+        e_timestamp = (datetime( e_YYYY, e_MM, e_DD, 23, 59 ) - \
+                datetime(1970, 1, 1, )).total_seconds()
+        tmp_dic['n_acc_date']['$lte'] = e_timestamp
+    return tmp_dic
+
 
 def af_tod_range(webinput):
     # time of day range
@@ -122,7 +145,10 @@ def af_severity(webinput):
     """
     if not webinput.has_key('severity'):
         return {}
-    if len(webinput['severity']) == 1:
+
+    if len(webinput['severity']) == 0:
+        return {}
+    elif len(webinput['severity']) == 1:
         return { 'num_'+webinput['severity'][0]: {'$gt':0} }
     else:
         severity_list = []
@@ -147,7 +173,7 @@ def af_loc_type(webinput):
     """
     if not webinput.has_key('loc_type'):
         return {}
-    intersection_code_list = [6,7,8,,9,12,27]
+    intersection_code_list = [6,7,8,9,12,27]
     both_code_list = copy.copy(intersection_code_list)
     both_code_list.append(0)
     if webinput['loc_type'] == 'intersection':
@@ -165,6 +191,8 @@ def af_lane_number(webinput):
     """
     if not webinput.has_key('no_of_lanes'):
         return {}
+    if len(webinput['no_of_lanes']) == 0:
+        return {}
     raise Exception("TODO")
 
 def accident_filter(webinput):
@@ -175,7 +203,7 @@ def accident_filter(webinput):
     for af in filter_list:
         tmpdic = af(webinput)
         final_dict.update( tmpdic )
-    return filter_list
+    return final_dict
 
 """
 Segment filtering part
