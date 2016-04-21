@@ -71,3 +71,23 @@ function  logFacetObj(facetObj) {
     console.log("Time period is " +  facetObj.date_range);
     console.log("Time of day is " + facetObj.timeofday_range );
 }
+
+function  getSeconds(time) {
+    var timeArray = time.split(' ');
+
+    var timeParts = timeArray[0].split(':');
+    var hours = parseInt(timeParts[0]);
+    var minutes = parseInt(timeParts[1]);
+
+    var seconds;
+    if(hours == 12) {
+            hours = 0;
+    }
+
+    if(timeArray[1] == "PM") {
+
+        hours = hours + 12;
+    }
+    seconds = hours * 60 * 60 + minutes * 60;
+    return seconds
+}

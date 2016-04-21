@@ -86,5 +86,29 @@ $(function() {
         }
     });
 
+    $("#start-time").timepicker({
+        change: function(time) {
+            var element =  $(this), text;
+            var timepicker = element.timepicker();
+            text = timepicker.format(time);
+            var seconds = getSeconds(text);
+            facetObj.timeofday_range[0] = seconds;
+            logFacetObj(facetObj);
+            initMap();
+        }
+    });
+
+    $("#end-time").timepicker({
+        change: function(time) {
+            var element =  $(this), text;
+            var timepicker = element.timepicker();
+            text = timepicker.format(time);
+            var seconds = getSeconds(text);
+            facetObj.timeofday_range[1] = seconds;
+            logFacetObj(facetObj);
+            initMap();
+        }
+    });
+
     initMap();
 });
