@@ -20,6 +20,7 @@ TODO, make the heatmap flexible to show the events as markers as well.
     	<title>TAAA</title>
     	<!-- Bootstrap Core CSS -->
     	<link href="static/css/bootstrap.min.css" rel="stylesheet">
+		<link rel='stylesheet' type='text/css' href='http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css'/>
     	<!-- Custom CSS -->
     	<link href="static/css/home.css" rel="stylesheet">
     	<!--css for tabs-->
@@ -36,6 +37,7 @@ TODO, make the heatmap flexible to show the events as markers as well.
 		</style>
     <script src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=drawing"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
 		<script src="static/js/common_util.js"></script>
 		<script src="static/js/render_markers.js"></script>
 	</head>
@@ -52,36 +54,33 @@ TODO, make the heatmap flexible to show the events as markers as well.
 				  <div class="col-md-3" id="facets">
 					  <div class="location-type">
 					  		<h4>Location Type</h4>
-              				<input type="radio" name="loc-type" value="0"> Intersection <br>
-                			<input type="radio" name="loc-type" value="1"> Segment <br>
-						    <input type="radio" name="loc-type" value=""> Both
+              				<input type="radio" name="loc-type" value="intersection"> Intersection <br>
+                			<input type="radio" name="loc-type" value="segment"> Segment <br>
+						    <input type="radio" name="loc-type" value="both"> Both
 					  </div>
               		  <div class="collision-type">
 						  <h4>Collision Type</h4>
-					      <input type="checkbox" name="Col-type" value="0"> rear-end <br>
-					      <input type="checkbox" name="Col-type" value="1"> head-on <br>
-                    	  <input type="checkbox" name="Col-type" value="2"> pedestrian <br>
-					      <input type="checkbox" name="Col-type" value="3"> bicycle <br>
+					      <input type="checkbox" name="Col-type" value="21"> rear-end <br>
+					      <input type="checkbox" name="Col-type" value="27"> head-on <br>
+                    	  <input type="checkbox" name="Col-type" value="14"> pedestrian <br>
+					      <input type="checkbox" name="Col-type" value="15"> bicycle <br>
 					  </div>
 					  <div class="time-period">
 						  <h4>Time Period</h4>
-						  <input type="radio" name="time-period" value="0"> last month <br>
-						  <input type="radio" name="time-period" value="1"> last week <br>
-						  <input type="radio" name="time-period" value="2"> self Define <br>
+						  Start Date : <input type="text" id="start-date"> <br>
+						  End Date : <input type="text" id="end-date">
 					  </div>
 					  <div class="time-of-day">
 						  <h4>Time of day</h4>
-						  <input type="radio" name="time-of-day" value="0"> morning peak(7am - 9am) <br>
-						  <input type="radio" name="time-of-day" value="1"> evening peak(5pm - 7pm) <br>
-                	      <input type="radio" name="time-of-day" value="2"> self define <br>
-
+						  Start time : <input type="text" id="start-time"> <br>
+						  End time : <input type="text" id="end-time">
 					  </div>
 					  <div class="severity">
 						  <h4>Severity</h4>
-						  <input type="checkbox" name="severity" value="0"> K
-						  <input type="checkbox" name="severity" value="1"> A
-						  <input type="checkbox" name="severity" value="2"> B
-               			  <input type="checkbox" name="severity" value="3"> C
+						  <input type="checkbox" name="severity" value="k"> K
+						  <input type="checkbox" name="severity" value="a"> A
+						  <input type="checkbox" name="severity" value="b"> B
+               			  <input type="checkbox" name="severity" value="c"> C
 					  </div>
 					  <div class="no-of-lanes">
 						  <h4>No. Of Lanes</h4>
