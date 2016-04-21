@@ -4,16 +4,48 @@
 
 var map, heatmap;
 var facetObj;
-
+var searchBox;
+var maptToPlot = "heatmap";
 function initMap() {
-  map = new google.maps.Map(
+
+    map = new google.maps.Map(
       document.getElementById('map'), {
         zoom: 13,
         center: {lat: 35, lng: -78},
         mapTypeId: google.maps.MapTypeId.SATELLITE
       }
-      );
-  getEvents();
+    );
+
+    // Create the search box and link it to the UI element.
+    var input = document.getElementById('pac-input');
+    searchBox = new google.maps.places.SearchBox(input);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+    // Bias the SearchBox results towards current map's viewport.
+    map.addListener('bounds_changed', function() {
+          searchBox.setBounds(map.getBounds());
+    });
+
+    searchBox.addListener('places_changed', function() {
+        var places = searchBox.getPlaces();
+
+        if (places.length == 0) {
+            return;
+        }
+
+        var bounds = new google.maps.LatLngBounds();
+        places.forEach(function(place) {
+            if (place.geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+        });
+        map.fitBounds(bounds);
+        getEvents();
+    });
+    getEvents();
 }
 
 function getEvents(){
@@ -53,7 +85,16 @@ function geteventcb(data){
   }
   console.log("get events");
   acc_list = data.data;
-  render_markers(map, acc_list);
+  if(maptToPlot == "heatmap") {
+      render_heatmap(map,acc_list);
+      console.log("rendering the heat map");
+  } else if(maptToPlot == "roadsegments") {
+      render_roadsegments(map, acc_list);
+      console.log("rendering the road segments");
+  } else {
+      render_markers(map, acc_list);
+      console.log("rendering the accident marker");
+  }
 }
 
 $(function() {
@@ -61,20 +102,20 @@ $(function() {
     $('#facets :checkbox').click(function(){
         getFacetsCheckboxes(facetObj);
         logFacetObj(facetObj);
-        initMap();
+        getEvents();
     });
 
     $('#facets :radio').click(function(){
         getFacetsRadiobuttons(facetObj);
         logFacetObj(facetObj);
-        initMap();
+        getEvents();
     });
 
     $("#start-date").datepicker({
         onSelect: function(dateText) {
             facetObj.date_range[0] = dateText;
             logFacetObj(facetObj);
-            initMap();
+            getEvents();
         }
     });
 
@@ -82,8 +123,47 @@ $(function() {
         onSelect: function(dateText) {
             facetObj.date_range[1] = dateText;
             logFacetObj(facetObj);
-            initMap();
+            getEvents();
         }
+    });
+
+    $("#start-time").timepicker({
+        change: function(time) {
+            var element =  $(this), text;
+            var timepicker = element.timepicker();
+            text = timepicker.format(time);
+            var seconds = getSeconds(text);
+            facetObj.timeofday_range[0] = seconds;
+            logFacetObj(facetObj);
+            getEvents();
+        }
+    });
+
+    $("#end-time").timepicker({
+        change: function(time) {
+            var element =  $(this), text;
+            var timepicker = element.timepicker();
+            text = timepicker.format(time);
+            var seconds = getSeconds(text);
+            facetObj.timeofday_range[1] = seconds;
+            logFacetObj(facetObj);
+            getEvents();
+        }
+    });
+
+    $('#accidents').click(function () {
+        maptToPlot = "accidents";
+        getEvents();
+    });
+
+    $('#roadsegments').click(function () {
+        maptToPlot = "roadsegments";
+        getEvents();
+    });
+
+     $('#heatpmap').click(function () {
+        maptToPlot = "heatmap";
+        getEvents();
     });
 
     initMap();
