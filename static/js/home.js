@@ -4,15 +4,47 @@
 
 var map, heatmap;
 var facetObj;
+var searchBox;
 var maptToPlot = "heatmap";
 function initMap() {
+
     map = new google.maps.Map(
       document.getElementById('map'), {
         zoom: 13,
         center: {lat: 35, lng: -78},
         mapTypeId: google.maps.MapTypeId.SATELLITE
       }
-      );
+    );
+
+    // Create the search box and link it to the UI element.
+    var input = document.getElementById('pac-input');
+    searchBox = new google.maps.places.SearchBox(input);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+    // Bias the SearchBox results towards current map's viewport.
+    map.addListener('bounds_changed', function() {
+          searchBox.setBounds(map.getBounds());
+    });
+
+    searchBox.addListener('places_changed', function() {
+        var places = searchBox.getPlaces();
+
+        if (places.length == 0) {
+            return;
+        }
+
+        var bounds = new google.maps.LatLngBounds();
+        places.forEach(function(place) {
+            if (place.geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+        });
+        map.fitBounds(bounds);
+        getEvents();
+    });
     getEvents();
 }
 
@@ -70,20 +102,20 @@ $(function() {
     $('#facets :checkbox').click(function(){
         getFacetsCheckboxes(facetObj);
         logFacetObj(facetObj);
-        initMap();
+        getEvents();
     });
 
     $('#facets :radio').click(function(){
         getFacetsRadiobuttons(facetObj);
         logFacetObj(facetObj);
-        initMap();
+        getEvents();
     });
 
     $("#start-date").datepicker({
         onSelect: function(dateText) {
             facetObj.date_range[0] = dateText;
             logFacetObj(facetObj);
-            initMap();
+            getEvents();
         }
     });
 
@@ -91,7 +123,7 @@ $(function() {
         onSelect: function(dateText) {
             facetObj.date_range[1] = dateText;
             logFacetObj(facetObj);
-            initMap();
+            getEvents();
         }
     });
 
@@ -103,7 +135,7 @@ $(function() {
             var seconds = getSeconds(text);
             facetObj.timeofday_range[0] = seconds;
             logFacetObj(facetObj);
-            initMap();
+            getEvents();
         }
     });
 
@@ -115,23 +147,23 @@ $(function() {
             var seconds = getSeconds(text);
             facetObj.timeofday_range[1] = seconds;
             logFacetObj(facetObj);
-            initMap();
+            getEvents();
         }
     });
 
     $('#accidents').click(function () {
         maptToPlot = "accidents";
-        initMap();
+        getEvents();
     });
 
     $('#roadsegments').click(function () {
         maptToPlot = "roadsegments";
-        initMap();
+        getEvents();
     });
 
      $('#heatpmap').click(function () {
         maptToPlot = "heatmap";
-        initMap();
+        getEvents();
     });
 
     initMap();
