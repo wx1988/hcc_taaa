@@ -69,5 +69,22 @@ $(function() {
         logFacetObj(facetObj);
         initMap();
     });
+
+    $("#start-date").datepicker({
+        onSelect: function(dateText) {
+            facetObj.date_range[0] = dateText;
+            logFacetObj(facetObj);
+            initMap();
+        }
+    });
+
+    $("#end-date").datepicker({
+        onSelect: function(dateText) {
+            facetObj.date_range[1] = dateText;
+            logFacetObj(facetObj);
+            initMap();
+        }
+    });
+
     initMap();
 });
