@@ -4,16 +4,16 @@
 
 var map, heatmap;
 var facetObj;
-
+var maptToPlot = "heatmap";
 function initMap() {
-  map = new google.maps.Map(
+    map = new google.maps.Map(
       document.getElementById('map'), {
         zoom: 13,
         center: {lat: 35, lng: -78},
         mapTypeId: google.maps.MapTypeId.SATELLITE
       }
       );
-  getEvents();
+    getEvents();
 }
 
 function getEvents(){
@@ -53,7 +53,16 @@ function geteventcb(data){
   }
   console.log("get events");
   acc_list = data.data;
-  render_markers(map, acc_list);
+  if(maptToPlot == "heatmap") {
+      render_heatmap(map,acc_list);
+      console.log("rendering the heat map");
+  } else if(maptToPlot == "roadsegments") {
+      render_roadsegments(map, acc_list);
+      console.log("rendering the road segments");
+  } else {
+      render_markers(map, acc_list);
+      console.log("rendering the accident marker");
+  }
 }
 
 $(function() {
@@ -108,6 +117,21 @@ $(function() {
             logFacetObj(facetObj);
             initMap();
         }
+    });
+
+    $('#accidents').click(function () {
+        maptToPlot = "accidents";
+        initMap();
+    });
+
+    $('#roadsegments').click(function () {
+        maptToPlot = "roadsegments";
+        initMap();
+    });
+
+     $('#heatpmap').click(function () {
+        maptToPlot = "heatmap";
+        initMap();
     });
 
     initMap();

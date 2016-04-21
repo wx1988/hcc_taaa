@@ -26,7 +26,7 @@ TODO, make the heatmap flexible to show the events as markers as well.
 		<!-- Custom CSS -->
     	<link href="static/css/home.css" rel="stylesheet">
     	<!--css for tabs-->
-    	<link href="static/css/tabs.css" rel="stylesheet">
+    	<link href="static/css/buttons.css" rel="stylesheet">
 		<style>
 	 	 html, body {
        		 height: 100%;
@@ -44,6 +44,8 @@ TODO, make the heatmap flexible to show the events as markers as well.
 		<script type="text/javascript" src="static/js/jquery.timepicker.js"></script>
 		<script src="static/js/common_util.js"></script>
 		<script src="static/js/render_markers.js"></script>
+		<script src="/static/js/render_heatmap.js"></script>
+		<script src="/static/js/render_roadsegments.js"></script>
 	</head>
 	<body>
 		<div class="container">
@@ -97,29 +99,18 @@ TODO, make the heatmap flexible to show the events as markers as well.
              		  <a class="btn btn-success">Export Data</a>
 				  </div>
 				  <div class="col-md-9">
-					<input type="text" placeholder="Search..." required>
-					<input type="button" value="Search">
-              		<div class="tabs">
-                		<ul class="tab-links">
-               	   			<li class="active"><a href="#tab1">Heat Maps</a></li>
-							<li><a href="#tab2">Road Segments</a></li>
-                  			<li><a href="#tab3">Accidents</a></li>
-                		</ul>
-                		<div class="tab-content">
-                  			<div id="tab1" class="tab active">
-				  				<div id="map"></div>
-				  			</div>
-                  			<div id="tab2" class="tab">
-                    			<p>Tab #2 content goes here!</p>
-                    			<p>Donec pulvinar neque sed semper lacinia. Curabitur lacinia ullamcorper nibh; quis imperdiet velit eleifend ac. Donec blandit mauris eget aliquet lacinia! Donec pulvinar massa interdum risus ornare mollis. In hac habitasse platea dictumst. Ut euismod tempus hendrerit. Morbi ut adipiscing nisi. Etiam rutrum sodales gravida! Aliquam tellus orci, iaculis vel.</p>
-                  			</div>
-                  			<div id="tab3" class="tab">
-                    			<p>Tab #3 content goes here!</p>
-                   				 <p>Donec pulvinar neque sed semper lacinia. Curabitur lacinia ullamcorper nibh; quis imperdiet velit eleifend ac. Donec blandit mauris eget aliquet lacinia! Donec pulvinar massa interdum ri.</p>
-                  			</div>
-						</div>
-              		</div>
+					  <div class="row">
+						  <input type="text" placeholder="Search..." required>
+					 	  <input type="button" value="Search">
+					  	  <button class="btn btn-info btn-pressure pull-right" id="accidents" >Accidents</button>
+                          <button class="btn btn-success btn-pressure pull-right" id="roadsegments">RoadSegments</button>
+					      <button class="btn btn-danger btn-pressure pull-right" id="heatpmap">HeatMap</button>
+					  </div>
+					  <div class="row">
+						  <div id="map"></div>
+					  </div>
 				  </div>
+
 			  </div>
         </div>
 		<script src="static/js/home.js"></script>
