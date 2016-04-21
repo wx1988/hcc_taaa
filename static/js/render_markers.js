@@ -1,7 +1,6 @@
-function render_markers(map, accidents)
-{
-  pt_list = [];
-  marker_list = [];
+function getAndRenderInitMarkers(map, accidents) {
+  var pt_list = [];
+  var marker_list = [];
   var infowindow = new google.maps.InfoWindow();
   for(var i = 0; i < accidents.length; ++i)
   {
@@ -13,11 +12,23 @@ function render_markers(map, accidents)
       map: map,
       icon: '/static/imgs/red_cross_12.png'
     });
-    make_acc_infowindow_event(map, infowindow, get_acc_details(accidents[i]), marker_list[i]);
+    makeAccInfowindowEvent(map, infowindow, get_acc_details(accidents[i]), marker_list[i]);
+  }
+  return marker_list;
+}
+
+function set_markers(markers, map){
+  for(var i = 0; i < markers.length; ++i) {
+    markers[i].setMap(map);
   }
 }
 
-function make_acc_infowindow_event(map, infowindow, contentString, marker)
+function renderNewMarkers(map, oldMarkers, newMarkers){
+  set_markers(oldMarkers, null);
+  set_markers(newMarkers, map);
+}
+
+function makeAccInfowindowEvent(map, infowindow, contentString, marker)
 {
   google.maps.event.addListener(marker, 'click', function() {
     infowindow.setContent(contentString);
