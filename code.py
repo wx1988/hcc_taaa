@@ -12,7 +12,6 @@ from db_api import get_acc_info_by_caseno, get_acc_raw_by_caseno
 from db_api import check_link_exists, create_new_link, get_link_id
 from db_api import get_accidents_api, get_segs_by_bound
 from user import get_cur_user_id
-from key_encode_decode import encode_acc_info
 
 from user import get_user_info
 
@@ -32,9 +31,6 @@ urls = (
     # other, demo and debug
     '/heatmapdemo', 'heatmapdemo',
     '/roaddemo', 'roaddemo',
-    '/view_accident', 'view_accident',
-    '/view_accident_raw', 'view_accident_raw',
-    '/get_faceted_info', 'get_faceted_info',
     )
 
 
@@ -129,67 +125,6 @@ class annotate_page:
     def GET(self):
         render = web.template.render('templates/')
         return render.annotation()
-
-class view_accident:
-    """ view detail of accident
-    """
-    def GET(self):
-        d = web.input()
-        caseno = int(d['caseno'])
-        data = get_acc_raw_by_caseno(caseno)
-
-        res = {
-            'status':0,
-            'data':data}
-        #return json.dumps(data, indent=2)
-        return simplejson.dumps(res, ignore_nan=True, indent=4 * ' ')
-
-class view_accident_raw:
-    """ view detail of raw accident
-    """
-    def GET(self):
-        d = web.input()
-        caseno = int(d['caseno'])
-        data = get_acc_info_by_caseno(caseno)
-        if data == None:
-            return "Not found"
-        data = encode_acc_info(data)
-
-        res = {
-            'status':0,
-            'data':data}
-        #return json.dumps(data, indent=2)
-        return simplejson.dumps(res, ignore_nan=True, indent=4 * ' ')
-        # This ignore_nan function is not enabled in the default json package
-
-    def POST(self):
-        return self.GET()
-
-
-class get_faceted_info:
-    def GET(self):
-        from hsis_codebook import event as event_dict
-        from hsis_codebook import rdsurf as rdsurf_dict
-        from hsis_codebook import loc_type as loc_type_dict
-
-        d = web.input()
-        res = {}
-        if d['type'] == "collision":
-            # collision type
-            res = event_dict
-
-        if d['type'] == "roadsurf":
-            res = rdsurf_dict
-
-        if d['type'] == "loc_type":
-            res = loc_type_dict
-
-        return simplejson.dumps({
-            'status':0,
-            'data': res })
-
-    def POST(self):
-        return self.GET()
 
 if __name__ == "__main__":
     app = web.application(urls, globals())
