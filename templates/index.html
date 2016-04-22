@@ -80,9 +80,20 @@ TODO, make the heatmap flexible to show the events as markers as well.
       	}
       	#target {
         	width: 345px;
-      	}
+        }
+
+      #info-box {
+        background-color: white;
+        border: 1px solid black;
+        top: 45px;
+        position: absolute;
+        padding-left: 8px;
+        padding-right: 8px;
+        right: 30px;
+      }
+
 		</style>
-    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCUZzippHXKw9q2Il2OGD57Zz04CfxIrpY&libraries=drawing"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCUZzippHXKw9q2Il2OGD57Zz04CfxIrpY&libraries=drawing,places,visualization"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
 		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="static/js/jquery.timepicker.min.js"></script>
@@ -157,6 +168,7 @@ TODO, make the heatmap flexible to show the events as markers as well.
 
 			  </div>
         </div>
+		<div id="info-box">Initializing</div>
 		<script src="static/js/home.js"></script>
     <!-- /.container -->
 	</body>
