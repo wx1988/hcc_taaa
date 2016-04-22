@@ -13,7 +13,6 @@ function getAndRenderInitMarkers(map, accidents) {
       accidentID: accidents[i].caseno,
       icon: '/static/imgs/red_cross_12.png'
     });
-
     makeAccInfowindowEvent(map, infowindow, get_acc_details(accidents[i]), marker_list[i]);
   }
   return marker_list;
