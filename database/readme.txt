@@ -15,5 +15,8 @@ As for the LRS, it is imported into the postgresql with postGIS support. The dat
 
 # Data Normalization and consolidation
 We conduct several pre-processing to the dataset.
-* matching the accident road segment to the LRS to get the actual latitude and longitude location.
+* matching the accident road segment to the LRS (match_road_lrs.py), and then get the actual latitude and longitude location (get_acc_latlng.py).
+* date_tod_normalization converts string date/time into integer second for fast query.
+* driver_normalization puts the information of the corresponding driver in the accident collection.
+* get_place_location_area.py is intend to collect locations in North Carolina for the search function. This is not used given the Google is providing such function. 
 *
