@@ -11,9 +11,7 @@ from hsis_codebook import *
 from db_api import get_acc_info_by_caseno, get_acc_raw_by_caseno
 from db_api import check_link_exists, create_new_link, get_link_id
 from db_api import get_accidents_api, get_segs_by_bound
-from user import get_cur_user_id
-
-from user import get_user_info
+from user import get_next_uid
 
 urls = (
     # GUI
@@ -23,27 +21,55 @@ urls = (
     '/get_accidents', 'get_accidents',
     '/get_segs', 'get_segs',
     '/add_log', 'add_log',
+    '/get_user_info', 'get_user_info',
 
     # others, causal annotation
     '/annotate', 'annotate_page',
-    '/get_user_info', 'get_user_info'
 
     # other, demo and debug
     '/heatmapdemo', 'heatmapdemo',
     '/roaddemo', 'roaddemo',
     )
 
+web.config.debug = False
+app = web.application(urls, globals())
+session = web.session.Session(app, web.session.DiskStore('sessions'))
+
+# user part
+def get_current_user_id():
+    session_uid = session.get('user_id')
+    if session_uid:
+        return session_uid
+    else:
+        # find the maximal user id and plus one
+        next_id = get_next_uid()
+        session.user_id = next_id
+        return next_id
+
+class get_user_info:
+    def GET(self):
+        cur_id = get_current_user_id()
+        return json.dumps({
+            'status':0,
+            'data':{'user_id':cur_id}
+            })
+
+    def POST(self):
+        return self.GET()
 
 class index:
     """This page is the main user interface
     """
     def GET(self):
+        cur_id = get_current_user_id()
+        print "current user id", cur_id
         render = web.template.render('templates/')
         return render.index()
 
 ###
 # API, build the annotation between factors within one accident
 ###
+
 class get_accidents:
     def GET(self):
         d = web.input()
@@ -70,12 +96,12 @@ class add_log:
         from db_api import create_log
         d = web.input()
         log_info = {
-            "user_id" : get_cur_user_id(self),
+            "user_id" : get_current_user_id(),
             "action" : d['action'],
             "timestamp" : d['timestamp']
         }
         create_log(log_info)
-        return 0
+        return json.dumps({'status':0})
 
     def POST(self):
         return self.GET()
@@ -127,5 +153,5 @@ class annotate_page:
         return render.annotation()
 
 if __name__ == "__main__":
-    app = web.application(urls, globals())
     app.run()
+

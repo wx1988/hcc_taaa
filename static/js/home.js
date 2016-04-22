@@ -171,6 +171,7 @@ function getEvents(){
     if(bound == undefined){
         // call this function later until the map is loaded
         setTimeout(getEvents, 100);
+	return;
     }
 
     ne = bound.getNorthEast();
@@ -223,6 +224,7 @@ function getEventCB(data){
 }
 
 $(function() {
+  add_record('homepage'); 
   facetObj = constructEmptyFacetObj(facetObj);
   $('#facets :checkbox').click(function(){
     getFacetsCheckboxes(facetObj);
@@ -292,4 +294,21 @@ $(function() {
   });
 
   initMap();
+
+  // get user information
+  jQuery.post(
+    "/get_user_info",
+    {},
+    function(data){
+	if(data.status != 0){
+		alert('user information error'+data.data);
+		return;
+	}
+	user_info = data.data;
+	tmp_str = "You are user "+user_info.user_id;
+    	$('#userinfo').html(tmp_str);
+    },
+    'json');
+
 });
+
