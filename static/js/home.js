@@ -188,13 +188,13 @@ function getEvents(){
         jQuery.post(
             "/get_segs",
             bounddic,
-            geteventcb,
+            getEventCB,
             'json');
     }else{
         jQuery.post(
             "/get_accidents",
             bounddic,
-            geteventcb,
+            getEventCB,
             'json');
     }
 }

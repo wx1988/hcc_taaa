@@ -20,3 +20,9 @@ We conduct several pre-processing to the dataset.
 * driver_normalization puts the information of the corresponding driver in the accident collection.
 * get_place_location_area.py is intend to collect locations in North Carolina for the search function. This is not used given the Google is providing such function. 
 *
+
+# Indexing database for fast retrieval
+https://docs.mongodb.org/manual/tutorial/manage-indexes/
+db.collection.getIndexes()
+db.accident.createIndex({"lat":1, "lng":1})
+db.route2.createIndex({'bound.down':1, 'bound.top':1, 'bound.right':1, 'bound.left':1})
