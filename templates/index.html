@@ -27,6 +27,7 @@ TODO, make the heatmap flexible to show the events as markers as well.
     	<link href="static/css/home.css" rel="stylesheet">
     	<!--css for tabs-->
     	<link href="static/css/buttons.css" rel="stylesheet">
+			<!--<link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet" />-->
 		<style>
 	 	 html, body {
        		 height: 100%;
@@ -92,6 +93,16 @@ TODO, make the heatmap flexible to show the events as markers as well.
         right: 30px;
       }
 
+			.panel-heading a:after {
+				    font-family:'Glyphicons Halflings';
+						content:"v";
+						float: right;
+						color: grey;
+			}
+			.panel-heading a.collapsed:after {
+				content:">";
+			}
+
 		</style>
     	<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCUZzippHXKw9q2Il2OGD57Zz04CfxIrpY&libraries=drawing,places,visualization"></script>
 		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -135,7 +146,9 @@ TODO, make the heatmap flexible to show the events as markers as well.
 									</div> <!-- end of panel body -->
 								</div> <!-- end of location filter -->
 							</div> <!-- panel 1-->
-							<div class="panel" id="panel2">
+
+							<!-- How -->
+							<div class="panel panel-default" id="panel2">
 								<div class="panel-heading">
 									<h4 class="panel-title">
 										<a data-toggle="collapse" data-target="#how"> How </a>
@@ -143,54 +156,81 @@ TODO, make the heatmap flexible to show the events as markers as well.
 								</div> <!-- panel heading -->
 								<div id="how" class="panel-collapse">
 									<div class="panel-body">
-										How part
+										<!-- accident general attributes -->
+										<div class="severity">
+											<h5>Severity</h5>
+											<input type="checkbox" name="severity" value="k"> K
+											<input type="checkbox" name="severity" value="a"> A
+											<input type="checkbox" name="severity" value="b"> B
+											<input type="checkbox" name="severity" value="c"> C
+										</div>
+										<div class="collision-type">
+											<h5>Collision Type</h5>
+											<input type="checkbox" name="Col-type" value="21"> rear-end <br>
+											<input type="checkbox" name="Col-type" value="27"> head-on <br>
+											<input type="checkbox" name="Col-type" value="14"> pedestrian <br>
+											<input type="checkbox" name="Col-type" value="15"> bicycle <br>
+										</div> <!-- end of collision type -->
 									</div>
 								</div>
 							</div> <!-- panel-group -->
 						</div>
 					  
-						<!-- accident general attributes -->
-					  <div class="severity">
-						  <h5>Severity</h5>
-						  <input type="checkbox" name="severity" value="k"> K
-						  <input type="checkbox" name="severity" value="a"> A
-						  <input type="checkbox" name="severity" value="b"> B
-               			  <input type="checkbox" name="severity" value="c"> C
-					  </div>
-            <div class="collision-type">
-						  <h5>Collision Type</h5>
-					      <input type="checkbox" name="Col-type" value="21"> rear-end <br>
-					      <input type="checkbox" name="Col-type" value="27"> head-on <br>
-                    	  <input type="checkbox" name="Col-type" value="14"> pedestrian <br>
-					      <input type="checkbox" name="Col-type" value="15"> bicycle <br>
-					  </div>
-						<hr/>
+						<div class="panel panel-default" id="panel3">
+							<div class="panel-heading">
+								<h4 class="panel-title">
+									<a data-toggle="collapse" data-target="#when"> When </a>
+								</h4>
+							</div> <!-- panel heading -->
+							<div id="when" class="panel-collapse">
+								<div class="panel-body">
+									<!-- date time -->
+									<div class="time-period">
+										<h5>Time Period</h5>
+										Start Date : <input type="text" id="start-date"> <br>
+										End Date : <input type="text" id="end-date">
+									</div>
+									<div class="time-of-day">
+										<h5>Time of day</h5>
+										Start time : <input type="text" id="start-time"> <br>
+										End time : <input type="text" id="end-time">
+									</div>
+								</div>
+							</div>
+						</div>
 
-						<!-- date time -->
-					  <div class="time-period">
-						  <h5>Time Period</h5>
-						  Start Date : <input type="text" id="start-date"> <br>
-						  End Date : <input type="text" id="end-date">
-					  </div>
-					  <div class="time-of-day">
-						  <h5>Time of day</h5>
-						  Start time : <input type="text" id="start-time"> <br>
-						  End time : <input type="text" id="end-time">
-					  </div>
-						<hr/>
+						<div class="panel panel-default" id="panel4">
+							<div class="panel-heading">
+								<h4 class="panel-title">
+									<a data-toggle="collapse" data-target="#road" class="collapsed"> Road </a>
+								</h4>
+							</div> <!-- panel heading -->
+							<div id="road" class="panel-collapse collapse">
+								<div class="panel-body">
 
-						<!-- Road detail -->
-					  <div class="no-of-lanes">
-						  <h5>No. Of Lanes</h5>
-						  <input type="checkbox" name="Col-type" value="2"> 2
-						  <input type="checkbox" name="Col-type" value="4"> 4
-						  <input type="checkbox" name="Col-type" value="6"> 6
-					  </div>
-						<hr/>
+									<!-- Road detail -->
+									<div class="no-of-lanes">
+										<h5>No. Of Lanes</h5>
+										<input type="checkbox" name="Col-type" value="2"> 2
+										<input type="checkbox" name="Col-type" value="4"> 4
+										<input type="checkbox" name="Col-type" value="6"> 6
+									</div>
+								</div>
+							</div>
+						</div>
 
 						<!-- Driver Detail -->
-						<div>
-							TODO, Drivers information
+						<div class="panel panel-default" id="panel5">
+							<div class="panel-heading">
+								<h4 class="panel-title">
+									<a data-toggle="collapse" data-target="#who" class="collapsed"> Who </a>
+								</h4>
+							</div> <!-- panel heading -->
+							<div id="who" class="panel-collapse collapse">
+								<div class="panel-body">
+									TODO, driver filter
+								</div>
+							</div>
 						</div>
 
 					  <br/>
