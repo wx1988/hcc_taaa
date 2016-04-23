@@ -2,11 +2,15 @@
  * Created by sumeetsingharora on 4/16/16.
  */
 
+//TODO Do not know what is this, can not refactored
+var globalDataList = undefined;
+
 var homeJS = {
   onscreenMarker: [],
   selectedMarker: [],
   lastShape: undefined,
   roadsegments: undefined,
+  heatmap: undefined,
   currentVisualMode: undefined
 }
 
@@ -93,18 +97,21 @@ function clearVisual(){
   } else if(homeJS.currentVisualMode === 'segments') {
     setSegments(homeJS.roadsegments, null);
   } else {
-    homeJS.currentVisualMode.setMap(null); 
+    homeJS.heatmap.setMap(null); 
   }
 }
 
 function getEventCB(data){
-  if(homeJS.lastShape != undefined){
+  if(homeJS.lastShape != undefined ){
     homeJS.lastShape.setMap(null);
   }
   if(data.status != 0){
     alert(data.data);
     return;
   }
+
+  //TODO do not know what is this
+  globalDataList = data.data;
 
   if(homeJSLocal.visualModeToApply == "heatmap") {
     getAccidentHeatmapCB(homeJSLocal.map, data.data);
@@ -115,7 +122,29 @@ function getEventCB(data){
   }
 }
 
+// TO DO plot the actual data instead of the dummy data.
+function drawTableEvent() {
+      google.charts.setOnLoadCallback(drawTable);
+      function drawTable() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Name');
+        data.addColumn('number', 'Salary');
+        data.addColumn('boolean', 'Full Time Employee');
+        data.addRows([
+          ['Mike',  {v: 10000, f: '$10,000'}, true],
+          ['Jim',   {v:8000,   f: '$8,000'},  false],
+          ['Alice', {v: 12500, f: '$12,500'}, true],
+          ['Bob',   {v: 7000,  f: '$7,000'},  true]
+        ]);
+
+        var table = new google.visualization.Table(document.getElementById('table_div'));
+
+        table.draw(data, {showRowNumber: true, width: '100%', height: '20%'});
+      }
+}
+
 $(function() {
+  google.charts.load('current', {'packages':['table']});
   add_record('homepage'); 
   homeJSLocal.facetObj = constructEmptyFacetObj(homeJSLocal.facetObj);
   $('#facets :checkbox').click(function(){
@@ -183,6 +212,22 @@ $(function() {
   $('#heatpmap').click(function () {
     homeJSLocal.visualModeToApply = "heatmap";
     getEvents();
+  });
+
+ $('#details').click(function () {
+      if(state == "off") {
+          state = "on";
+          $('#details').text('Hide details');
+          $("#map").css("height", "50%");
+          drawTableEvent();
+
+      } else {
+        state = "off";
+         $('#details').text('View details');
+         $("#map").css("height", "100%");
+         $('#table_div').remove();
+         $('#table_row').append('<div id="table_div"></div>');
+      }
   });
 
   initMap();

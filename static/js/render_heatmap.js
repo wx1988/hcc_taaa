@@ -15,6 +15,7 @@ function getAndRenderHeatmap(map, accidents) {
 
 function getAccidentHeatmapCB(map, accidents) {
   clearVisual();
-  homeJS.currentVisualMode = getAndRenderHeatmap(map, accidents);
-  document.getElementById('info-box').textContent = homeJS.currentVisualMode.data.length + " accident(s) showing in screen";
+  homeJS.currentVisualMode = 'heatmap';
+  homeJS.heatmap = getAndRenderHeatmap(map, accidents);
+  document.getElementById('info-box').textContent = homeJS.heatmap.data.length + " accident(s) showing in screen";
 }

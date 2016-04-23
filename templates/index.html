@@ -93,7 +93,8 @@ TODO, make the heatmap flexible to show the events as markers as well.
       }
 
 		</style>
-    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCUZzippHXKw9q2Il2OGD57Zz04CfxIrpY&libraries=drawing,places,visualization"></script>
+    	<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCUZzippHXKw9q2Il2OGD57Zz04CfxIrpY&libraries=drawing,places,visualization"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
 		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="static/js/jquery.timepicker.min.js"></script>
@@ -174,7 +175,7 @@ TODO, make the heatmap flexible to show the events as markers as well.
 						</div>
 
 					  <br/>
-					  <a class="btn btn-success">View Details</a><br><br>
+					  <button class="btn btn-success" id="details">View Details</button><br><br>
              		  <a class="btn btn-success">Export Data</a>
 				  </div>
 				  <div class="col-md-9">
@@ -186,6 +187,9 @@ TODO, make the heatmap flexible to show the events as markers as well.
 					  <div class="row">
 						  <input id="pac-input" class="controls" type="text" placeholder="Search Box">
 						  <div id="map"></div>
+					  </div>
+					  <div class="row" id ="table_row">
+					 	 <div id="table_div"></div>
 					  </div>
 				  </div>
 
