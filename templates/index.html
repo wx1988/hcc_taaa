@@ -115,9 +115,6 @@ TODO, make the heatmap flexible to show the events as markers as well.
 			  </div>
        		  <div class="row">
 				  <div class="col-md-3" id="facets">
-						<div id="userinfo">
-						</div>
-						<hr/>
 						<!-- Location related-->
 					  <div class="location-type">
 					  		<h5>Location Type</h5>
@@ -176,11 +173,18 @@ TODO, make the heatmap flexible to show the events as markers as well.
              		  <a class="btn btn-success">Export Data</a>
 				  </div>
 				  <div class="col-md-9">
+
 					  <div class="row">
+							<div class="col-md-6">	
+								<div id="userinfo"></div>
+							</div>
+							<div class="col-md-6">
 					  	  <button class="btn btn-info btn-pressure pull-right" id="accidents" >Accidents</button>
-                          <button class="btn btn-success btn-pressure pull-right" id="roadsegments">RoadSegments</button>
+                <button class="btn btn-success btn-pressure pull-right" id="roadsegments">RoadSegments</button>
 					      <button class="btn btn-danger btn-pressure pull-right" id="heatpmap">HeatMap</button>
+							</div>
 					  </div>
+
 					  <div class="row">
 						  <input id="pac-input" class="controls" type="text" placeholder="Search Box">
 						  <div id="map"></div>
