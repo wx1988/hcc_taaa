@@ -6,13 +6,13 @@ var homeJS = {
   onscreenMarker: [],
   selectedMarker: [],
   lastShape: undefined,
-  maptToPlot: "heatmap"
+  roadsegments: undefined,
+  currentVisualMode: undefined
 }
 
 var homeJSLocal = {
-  roadsegments: undefined,
+  visualModeToApply: "heatmap",
   map: undefined,
-  visual_mode: undefined,
   facetObj: undefined,
   searchBox: undefined
 }
@@ -71,7 +71,7 @@ function getEvents(){
     'facetObj':JSON.stringify(homeJSLocal.facetObj)
   };
 
-  if(homeJS.maptToPlot == "roadsegments") {
+  if(homeJSLocal.visualModeToApply == "segments") {
     jQuery.post(
         "/get_segs",
         bounddic,
@@ -87,13 +87,13 @@ function getEvents(){
 }
 
 function clearVisual(){
-  if(homeJSLocal.visual_mode == undefined)  return;
-  if(homeJSLocal.visual_mode === 'markers') {
+  if(homeJS.currentVisualMode == undefined)  return;
+  if(homeJS.currentVisualMode === 'markers') {
     set_markers(homeJS.onscreenMarker, null); 
-  } else if(homeJSLocal.visual_mode === 'segments') {
-    setSegments(homeJSLocal.roadsegments, null);
+  } else if(homeJS.currentVisualMode === 'segments') {
+    setSegments(homeJS.roadsegments, null);
   } else {
-    homeJSLocal.visual_mode.setMap(null); 
+    homeJS.currentVisualMode.setMap(null); 
   }
 }
 
@@ -105,24 +105,13 @@ function getEventCB(data){
     alert(data.data);
     return;
   }
-  console.log(homeJS.maptToPlot);
-  acc_list = data.data;
-  if(homeJS.maptToPlot == "heatmap") {
-    clearVisual();
-    homeJSLocal.visual_mode = getAndRenderHeatmap(homeJSLocal.map, acc_list);
-    console.log("rendering the heat map");
-  } else if(homeJS.maptToPlot == "roadsegments") {
-    clearVisual();
-    homeJSLocal.roadsegments = getAndRenderRoadsegments(homeJSLocal.map, acc_list);
-    console.log("rendering the road segments");
-    homeJSLocal.visual_mode = 'segments';
+
+  if(homeJSLocal.visualModeToApply == "heatmap") {
+    getAccidentHeatmapCB(homeJSLocal.map, data.data);
+  } else if(homeJSLocal.visualModeToApply == "segments") {
+    getRoadSegmentsCB(homeJSLocal.map, data.data);
   } else {
-    clearVisual();
-    set_markers(homeJS.onscreenMarker, null);
-    homeJS.onscreenMarker = getAndRenderMarkers(homeJSLocal.map, data.data);
-    document.getElementById('info-box').textContent = homeJS.onscreenMarker.length + " accident(s) showing in screen";
-    homeJSLocal.visual_mode = 'markers';
-    console.log("rendering the accident marker");
+    getAccidentMarkerCB(homeJSLocal.map, data.data);
   }
 }
 
@@ -182,17 +171,17 @@ $(function() {
   });
 
   $('#accidents').click(function () {
-    homeJS.maptToPlot = "accidents";
+    homeJSLocal.visualModeToApply = "markers";
     getEvents();
   });
 
   $('#roadsegments').click(function () {
-    homeJS.maptToPlot = "roadsegments";
+    homeJSLocal.visualModeToApply = "segments";
     getEvents();
   });
 
   $('#heatpmap').click(function () {
-    homeJS.maptToPlot = "heatmap";
+    homeJSLocal.visualModeToApply = "heatmap";
     getEvents();
   });
 

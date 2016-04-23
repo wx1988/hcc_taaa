@@ -1,9 +1,6 @@
-function getAndRenderHeatmap(map, accidents)
-{
-
+function getAndRenderHeatmap(map, accidents) {
   var pt_list = [];
-  for(var i = 0; i < accidents.length; ++i)
-  {
+  for(var i = 0; i < accidents.length; ++i) {
     pt_list[i] = new google.maps.LatLng(
         accidents[i].lat, accidents[i].lng);
   }
@@ -14,4 +11,10 @@ function getAndRenderHeatmap(map, accidents)
   });
 
   return heatmap;
+}
+
+function getAccidentHeatmapCB(map, accidents) {
+  clearVisual();
+  homeJS.currentVisualMode = getAndRenderHeatmap(map, accidents);
+  document.getElementById('info-box').textContent = homeJS.currentVisualMode.data.length + " accident(s) showing in screen";
 }

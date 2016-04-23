@@ -77,7 +77,13 @@ function SetDrawingEvent(drawingManager, map) {
 
     homeJS.lastShape = e.overlay;
     homeJS.lastShape.type = e.type;
-    if(homeJS.maptToPlot != "accidents") return;
+
+    console.log("AAAAAAAAAAAAAAAAAAA");
+    console.log(homeJS.currentVisualMode); 
+    console.log("AAAAAAAAAAAAAAAAAAA");
+
+
+    if(homeJS.currentVisualMode != "markers") return;
 
     if (homeJS.lastShape.type == google.maps.drawing.OverlayType.RECTANGLE) {
       var lastBounds = homeJS.lastShape.getBounds();

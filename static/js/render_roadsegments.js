@@ -21,6 +21,7 @@ function getAndRenderRoadsegments(map, roadsegments)
     var localColor = HSVtoRGB( sigmoid(acc_num), 1, 1);
     segment[i] = new google.maps.Polyline({
       path: localCoords
+        ,accNum: acc_num
         ,geodesic: true
         ,strokeColor: localColor
         ,strokeOpacity: 1.0
@@ -39,6 +40,18 @@ function setSegments(segments, map)
   }
 }
 
+function getNumAccidentsFromSegments(segments)
+{
+  if(segments == undefined) return 0;
+  else {
+    var numAcc = 0;
+    for(var i = 0; i < segments.length; ++i){
+      numAcc += segments[i].accNum;
+    }
+    return numAcc;
+  }
+}
+
 function make_seg_infowindow_event(map, infowindow, contentString, line)
 {
   google.maps.event.addListener(line, 'click', function(event) {
@@ -46,6 +59,19 @@ function make_seg_infowindow_event(map, infowindow, contentString, line)
     infowindow.setPosition(event.latLng);
     infowindow.open(map);
   });
+}
+
+function getRoadSegmentsCB(map, segments) {
+    clearVisual();
+    homeJS.roadsegments = getAndRenderRoadsegments(map, segments);
+
+    var numSegments = 0;
+    if(homeJS.roadsegments != undefined){
+      numSegments = homeJS.roadsegments.length;
+    }
+    document.getElementById('info-box').textContent = numSegments +  " segments showing in screen, including " + getNumAccidentsFromSegments(homeJS.roadsegments) + ' accident(s)';
+    console.log("rendering the road segments");
+    homeJS.currentVisualMode = 'segments';
 }
 
 function get_seg_details(seg)

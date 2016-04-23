@@ -37,8 +37,7 @@ function makeAccInfowindowEvent(map, infowindow, contentString, marker)
   });
 }
 
-function get_acc_details(accident)
-{
+function get_acc_details(accident) {
   acc_info = 'Lat: ' + accident.lat + '<br />' + 'Lng: ' + accident.lng;
   if(accident.acc_date != 'NAN') { acc_info += '<br />' + 'Data: ' + accident.acc_date; }
   if(accident.time != 'NAN') { acc_info += '<br />' + 'Time: ' + accident.time; }
@@ -47,6 +46,15 @@ function get_acc_details(accident)
   if(accident.caseno != 'NAN') { acc_info += '<br />' + 'Case Number: ' + accident.caseno; }
   if(accident.rte_nbr != 'NAN') { acc_info += '<br />' + 'Route Number: ' + accident.rte_nbr; }
   return acc_info;
+}
+
+function getAccidentMarkerCB(map, accidents) {
+    clearVisual();
+    set_markers(homeJS.onscreenMarker, null);
+    homeJS.onscreenMarker = getAndRenderMarkers(map, accidents);
+    document.getElementById('info-box').textContent = homeJS.onscreenMarker.length + " accident(s) showing in screen";
+    homeJS.currentVisualMode = 'markers';
+    console.log("rendering the accident marker");
 }
 
 //TODO Find somewhere else to put the following codes

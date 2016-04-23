@@ -1,5 +1,5 @@
 *.py[co]
 .*.sw?
 .idea
-static/js/.DS_Store
-
+.DS_Store
+sessions/
