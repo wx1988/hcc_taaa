@@ -1,6 +1,7 @@
-function render_roadsegments(map, roadsegments)
+function getAndRenderRoadsegments(map, roadsegments)
 {
   var infowindow = new google.maps.InfoWindow();
+  var segment = [];
   for(var i = 0; i < roadsegments.length; ++i)
   {
     var plist = roadsegments[i].plist;
@@ -18,15 +19,36 @@ function render_roadsegments(map, roadsegments)
     }
 
     var localColor = HSVtoRGB( sigmoid(acc_num), 1, 1);
-    var segment = new google.maps.Polyline({
+    segment[i] = new google.maps.Polyline({
       path: localCoords
+        ,accNum: acc_num
         ,geodesic: true
         ,strokeColor: localColor
         ,strokeOpacity: 1.0
         ,strokeWeight: 1 + sigmoid(acc_num) * 5
     });
-    segment.setMap(map);
+    segment[i].setMap(map);
     make_seg_infowindow_event(map, infowindow, get_seg_details(roadsegments[i]), segment)
+  }
+  return segment;
+}
+
+function setSegments(segments, map)
+{
+  for(var i = 0; i < segments.length; ++i) {
+    segments[i].setMap(map);
+  }
+}
+
+function getNumAccidentsFromSegments(segments)
+{
+  if(segments == undefined) return 0;
+  else {
+    var numAcc = 0;
+    for(var i = 0; i < segments.length; ++i){
+      numAcc += segments[i].accNum;
+    }
+    return numAcc;
   }
 }
 
@@ -37,6 +59,19 @@ function make_seg_infowindow_event(map, infowindow, contentString, line)
     infowindow.setPosition(event.latLng);
     infowindow.open(map);
   });
+}
+
+function getRoadSegmentsCB(map, segments) {
+    clearVisual();
+    homeJS.roadsegments = getAndRenderRoadsegments(map, segments);
+
+    var numSegments = 0;
+    if(homeJS.roadsegments != undefined){
+      numSegments = homeJS.roadsegments.length;
+    }
+    document.getElementById('info-box').textContent = numSegments +  " segments showing in screen, including " + getNumAccidentsFromSegments(homeJS.roadsegments) + ' accident(s)';
+    console.log("rendering the road segments");
+    homeJS.currentVisualMode = 'segments';
 }
 
 function get_seg_details(seg)
