@@ -11,10 +11,7 @@ from hsis_codebook import *
 from db_api import get_acc_info_by_caseno, get_acc_raw_by_caseno
 from db_api import check_link_exists, create_new_link, get_link_id
 from db_api import get_accidents_api, get_segs_by_bound
-from user import get_cur_user_id
-from key_encode_decode import encode_acc_info
-
-from user import get_user_info
+from user import get_next_uid
 
 urls = (
     # GUI
@@ -24,30 +21,55 @@ urls = (
     '/get_accidents', 'get_accidents',
     '/get_segs', 'get_segs',
     '/add_log', 'add_log',
+    '/get_user_info', 'get_user_info',
 
     # others, causal annotation
     '/annotate', 'annotate_page',
-    '/get_user_info', 'get_user_info'
 
     # other, demo and debug
     '/heatmapdemo', 'heatmapdemo',
     '/roaddemo', 'roaddemo',
-    '/view_accident', 'view_accident',
-    '/view_accident_raw', 'view_accident_raw',
-    '/get_faceted_info', 'get_faceted_info',
     )
 
+web.config.debug = False
+app = web.application(urls, globals())
+session = web.session.Session(app, web.session.DiskStore('sessions'))
+
+# user part
+def get_current_user_id():
+    session_uid = session.get('user_id')
+    if session_uid:
+        return session_uid
+    else:
+        # find the maximal user id and plus one
+        next_id = get_next_uid()
+        session.user_id = next_id
+        return next_id
+
+class get_user_info:
+    def GET(self):
+        cur_id = get_current_user_id()
+        return json.dumps({
+            'status':0,
+            'data':{'user_id':cur_id}
+            })
+
+    def POST(self):
+        return self.GET()
 
 class index:
     """This page is the main user interface
     """
     def GET(self):
+        cur_id = get_current_user_id()
+        print "current user id", cur_id
         render = web.template.render('templates/')
         return render.index()
 
 ###
 # API, build the annotation between factors within one accident
 ###
+
 class get_accidents:
     def GET(self):
         d = web.input()
@@ -74,12 +96,12 @@ class add_log:
         from db_api import create_log
         d = web.input()
         log_info = {
-            "user_id" : get_cur_user_id(self),
+            "user_id" : get_current_user_id(),
             "action" : d['action'],
             "timestamp" : d['timestamp']
         }
         create_log(log_info)
-        return 0
+        return json.dumps({'status':0})
 
     def POST(self):
         return self.GET()
@@ -87,23 +109,21 @@ class add_log:
 class get_segs:
     def GET(self):
         d = web.input()
-        if d['filtertype'] == 'bound':
-            bound = {
-                    'left':float(d['left']),
-                    'right':float(d['right']),
-                    'top':float(d['top']),
-                    'down':float(d['down'])}
-            data = get_segs_by_bound(bound)
-            print "number of segs", len(data)
-            return simplejson.dumps({
-                'status':0,
-                'data':data},
-                ignore_nan=True)
-        else:
-            return simplejson.dumps({
-                'status':1,
-                'data':'Unknown filter type'},
-                ignore_nan=True)
+
+        bound = {
+                'left':float(d['left']),
+                'right':float(d['right']),
+                'top':float(d['top']),
+                'down':float(d['down'])}
+
+        # TODO, filter the related accident based on
+        # the actual retrieved events.
+        data = get_segs_by_bound(bound)
+        print "number of segs", len(data)
+        return simplejson.dumps({
+            'status':0,
+            'data':data},
+            ignore_nan=True)
 
     def POST(self):
         return self.GET()
@@ -132,67 +152,6 @@ class annotate_page:
         render = web.template.render('templates/')
         return render.annotation()
 
-class view_accident:
-    """ view detail of accident
-    """
-    def GET(self):
-        d = web.input()
-        caseno = int(d['caseno'])
-        data = get_acc_raw_by_caseno(caseno)
-
-        res = {
-            'status':0,
-            'data':data}
-        #return json.dumps(data, indent=2)
-        return simplejson.dumps(res, ignore_nan=True, indent=4 * ' ')
-
-class view_accident_raw:
-    """ view detail of raw accident
-    """
-    def GET(self):
-        d = web.input()
-        caseno = int(d['caseno'])
-        data = get_acc_info_by_caseno(caseno)
-        if data == None:
-            return "Not found"
-        data = encode_acc_info(data)
-
-        res = {
-            'status':0,
-            'data':data}
-        #return json.dumps(data, indent=2)
-        return simplejson.dumps(res, ignore_nan=True, indent=4 * ' ')
-        # This ignore_nan function is not enabled in the default json package
-
-    def POST(self):
-        return self.GET()
-
-
-class get_faceted_info:
-    def GET(self):
-        from hsis_codebook import event as event_dict
-        from hsis_codebook import rdsurf as rdsurf_dict
-        from hsis_codebook import loc_type as loc_type_dict
-
-        d = web.input()
-        res = {}
-        if d['type'] == "collision":
-            # collision type
-            res = event_dict
-
-        if d['type'] == "roadsurf":
-            res = rdsurf_dict
-
-        if d['type'] == "loc_type":
-            res = loc_type_dict
-
-        return simplejson.dumps({
-            'status':0,
-            'data': res })
-
-    def POST(self):
-        return self.GET()
-
 if __name__ == "__main__":
-    app = web.application(urls, globals())
     app.run()
+
