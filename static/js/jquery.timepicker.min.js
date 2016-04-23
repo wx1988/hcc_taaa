@@ -1,6 +1,6 @@
 /**
  * jQuery Timepicker - v1.3.2 - 2014-09-13
- * http://timepicker.co
+ * code from http://timepicker.co
  *
  * Enhances standard form input fields helping users to select (or type) times.
  *
