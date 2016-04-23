@@ -1,6 +1,15 @@
+"""
+Remove white part of the image to make it transparent
+Create four color, black, red, orange, green to indicate accident of different severity. 
+"""
 from PIL import Image
 
-def do_it(img_path, out_path, fill_color=None):
+def create_transparent_4grade(img_path, out_path, fill_color=None):
+    """Change white as transparent, and black as fill_color
+    :param img_path: original image
+    :param out_path: output path
+    :param fill_color: the color to replace the black
+    """
     img = Image.open(img_path)
     img = img.convert("RGBA")
     datas = img.getdata()
@@ -29,5 +38,9 @@ if __name__ == '__main__':
     img_name_list = ['head_on', 'rear_end', 'bicycle', 'pedestrain']
     for img_name in img_name_list:
         for i in range(4):
-            do_it(img_name+".png", img_name+"_"+name_list[i]+".png", fill_color_list[i])
+            create_transparent_4grade(
+                    img_name+".png", 
+                    img_name+"_"+name_list[i]+".png", 
+                    fill_color_list[i])
+
 
