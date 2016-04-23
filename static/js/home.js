@@ -2,123 +2,25 @@
  * Created by sumeetsingharora on 4/16/16.
  */
 
-var onscreenMarker = [];
-var selectedMarker = [];
-var roadsegments;
-var map = undefined;
-var visual_mode;
-var lastShape;
-var facetObj;
-var searchBox;
-var maptToPlot = "heatmap";
-
-function ClearSelectControl(controlDiv) {
-  // Set CSS for the control border.
-  var controlUI = document.createElement('div');
-  controlUI.style.backgroundColor = '#fff';
-  controlUI.style.border = '2px solid #fff';
-  controlUI.style.borderRadius = '3px';
-  controlUI.style.cursor = 'pointer';
-  controlUI.style.marginBottom = '22px';
-  controlUI.style.textAlign = 'center';
-  controlUI.title = 'Click to clear the selected';
-  controlDiv.appendChild(controlUI);
-
-  // Set CSS for the control interior.
-  var controlText = document.createElement('div');
-  controlText.style.color = 'rgb(25,25,25)';
-  controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
-  controlText.style.fontSize = '10px';
-  controlText.style.lineHeight = '20px';
-  controlText.style.paddingLeft = '5px';
-  controlText.style.paddingRight = '5px';
-  controlText.innerHTML = 'Clear Selected';
-  controlUI.appendChild(controlText);
-
-  controlUI.addEventListener('click', function() {
-    if (lastShape != undefined) {
-      lastShape.setMap(null);
-      lastShape = undefined;
-    }
-    getEvents();
-  });
+var homeJS = {
+  onscreenMarker: [],
+  selectedMarker: [],
+  lastShape: undefined,
+  maptToPlot: "heatmap"
 }
 
-function SetClearSelectControl(map) {
-  var centerControlDiv = document.createElement('div');
-  var centerControl = new ClearSelectControl(centerControlDiv, map);
-  centerControlDiv.index = 1;
-  centerControlDiv.style['padding-top'] = '5px';
-  map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
-}
-
-function SetDrawingEvent(drawingManager, map) {
-  google.maps.event.addListener(drawingManager, 'overlaycomplete', function(e) {
-    if (lastShape != undefined) {
-      lastShape.setMap(null);
-    }
-
-    drawingManager.setDrawingMode(null);
-
-    lastShape = e.overlay;
-    lastShape.type = e.type;
-    console.log("aaa: " + maptToPlot);
-    if(maptToPlot != "accidents") return;
-
-    if (lastShape.type == google.maps.drawing.OverlayType.RECTANGLE) {
-      lastBounds = lastShape.getBounds();
-      selectedMarker = [];
-      for(var i = 0; i < onscreenMarker.length; ++i) {
-        if(lastBounds.contains(onscreenMarker[i].getPosition())) {
-          selectedMarker.push(onscreenMarker[i]);
-        }
-      }
-    } else if (lastShape.type == google.maps.drawing.OverlayType.POLYGON) {
-      selectedMarker = [];
-      for(var i = 0; i < onscreenMarker.length; ++i) {
-        if (google.maps.geometry.poly.containsLocation(onscreenMarker[i].getPosition(), lastShape)) {
-          selectedMarker.push(onscreenMarker[i]);
-        }
-      }
-    }
-    document.getElementById('info-box').textContent = selectedMarker.length + " accident(s) has been selected";
-    renderNewMarkers(map, onscreenMarker, selectedMarker);
-  });
-}
-
-function SetDrawingControl(map) {
-  //Drawing control
-  var shapeOptions = {
-    strokeWeight: 1,
-    strokeOpacity: 1,
-    fillOpacity: 0.2,
-    editable: false,
-    clickable: false,
-    strokeColor: '#3399FF',
-    fillColor: '#3399FF'
-  };
-
-  var drawingManager = new google.maps.drawing.DrawingManager({
-    drawingMode: null,
-    drawingControlOptions: {
-      position: google.maps.ControlPosition.TOP_CENTER,
-      drawingModes: [
-        google.maps.drawing.OverlayType.POLYGON,
-        google.maps.drawing.OverlayType.RECTANGLE
-      ]},
-    rectangleOptions: shapeOptions,
-    position: google.maps.ControlPosition.TOP_RIGHT,
-    polygonOptions: shapeOptions,
-    map: map
-  });
-
-  SetDrawingEvent(drawingManager, map); 
+var homeJSLocal = {
+  roadsegments: undefined,
+  map: undefined,
+  visual_mode: undefined,
+  facetObj: undefined,
+  searchBox: undefined
 }
 
 function initMap() {
   google.maps.visualRefresh = true;
 
-  map = new google.maps.Map(
+  homeJSLocal.map = new google.maps.Map(
       document.getElementById('map'), {
         zoom: 13,
         center: {lat: 35, lng: -78},
@@ -135,61 +37,41 @@ function initMap() {
           ]}
       });
 
-  SetClearSelectControl(map);
-  SetDrawingControl(map);
-
-  map.addListener('idle', function() {
-    getEvents();
-    searchBox.setBounds(map.getBounds());
-  });
+  addClearSelection(homeJSLocal.map);
+  addDrawing(homeJSLocal.map);
 
   // Create the search box and link it to the UI element.
   var input = document.getElementById('pac-input');
-  searchBox = new google.maps.places.SearchBox(input);
-  map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+  homeJSLocal.searchBox = createSearchBox(homeJSLocal.map, input);
 
-  searchBox.addListener('places_changed', function() {
-    var places = searchBox.getPlaces();
-
-    if (places.length == 0) {
-      return;
-    }
-
-    var bounds = new google.maps.LatLngBounds();
-    places.forEach(function(place) {
-      if (place.geometry.viewport) {
-        // Only geocodes have viewport.
-        bounds.union(place.geometry.viewport);
-      } else {
-        bounds.extend(place.geometry.location);
-      }
-    });
-    map.fitBounds(bounds);
+  homeJSLocal.map.addListener('idle', function() {
     getEvents();
+    homeJSLocal.searchBox.setBounds(homeJSLocal.map.getBounds());
   });
+
   getEvents();
 }
 
 function getEvents(){
-    bound = map.getBounds();
-    if(bound == undefined){
-        // call this function later until the map is loaded
-        setTimeout(getEvents, 100);
-	return;
-    }
+  bound = homeJSLocal.map.getBounds();
+  if(bound == undefined){
+    // call this function later until the map is loaded
+    setTimeout(getEvents, 100);
+    return;
+  }
 
-    ne = bound.getNorthEast();
-    sw = bound.getSouthWest();
-    // access the map bound
-    bounddic = {
-        'left':sw.lng,
-        'right':ne.lng,
-        'top':ne.lat,
-        'down':sw.lat,
-        'facetObj':JSON.stringify(facetObj)
-    };
+  ne = bound.getNorthEast();
+  sw = bound.getSouthWest();
+  // access the map bound
+  bounddic = {
+    'left':sw.lng,
+    'right':ne.lng,
+    'top':ne.lat,
+    'down':sw.lat,
+    'facetObj':JSON.stringify(homeJSLocal.facetObj)
+  };
 
-  if(maptToPlot == "roadsegments") {
+  if(homeJS.maptToPlot == "roadsegments") {
     jQuery.post(
         "/get_segs",
         bounddic,
@@ -205,72 +87,72 @@ function getEvents(){
 }
 
 function clearVisual(){
-  if(visual_mode == undefined)  return;
-  if(visual_mode === 'markers') {
-    set_markers(onscreenMarker, null); 
-  } else if(visual_mode === 'segments') {
-    setSegments(roadsegments, null);
+  if(homeJSLocal.visual_mode == undefined)  return;
+  if(homeJSLocal.visual_mode === 'markers') {
+    set_markers(homeJS.onscreenMarker, null); 
+  } else if(homeJSLocal.visual_mode === 'segments') {
+    setSegments(homeJSLocal.roadsegments, null);
   } else {
-    visual_mode.setMap(null); 
+    homeJSLocal.visual_mode.setMap(null); 
   }
 }
 
 function getEventCB(data){
-  if(lastShape != undefined){
-    lastShape.setMap(null);
+  if(homeJS.lastShape != undefined){
+    homeJS.lastShape.setMap(null);
   }
   if(data.status != 0){
     alert(data.data);
     return;
   }
-  console.log(maptToPlot);
+  console.log(homeJS.maptToPlot);
   acc_list = data.data;
-  if(maptToPlot == "heatmap") {
+  if(homeJS.maptToPlot == "heatmap") {
     clearVisual();
-    visual_mode = getAndRenderHeatmap(map, acc_list);
+    homeJSLocal.visual_mode = getAndRenderHeatmap(homeJSLocal.map, acc_list);
     console.log("rendering the heat map");
-  } else if(maptToPlot == "roadsegments") {
+  } else if(homeJS.maptToPlot == "roadsegments") {
     clearVisual();
-    roadsegments = getAndRenderRoadsegments(map, acc_list);
+    homeJSLocal.roadsegments = getAndRenderRoadsegments(homeJSLocal.map, acc_list);
     console.log("rendering the road segments");
-    visual_mode = 'segments';
+    homeJSLocal.visual_mode = 'segments';
   } else {
     clearVisual();
-    set_markers(onscreenMarker, null);
-    onscreenMarker = getAndRenderMarkers(map, data.data);
-    document.getElementById('info-box').textContent = onscreenMarker.length + " accident(s) showing in screen";
-      visual_mode = 'markers';
+    set_markers(homeJS.onscreenMarker, null);
+    homeJS.onscreenMarker = getAndRenderMarkers(homeJSLocal.map, data.data);
+    document.getElementById('info-box').textContent = homeJS.onscreenMarker.length + " accident(s) showing in screen";
+    homeJSLocal.visual_mode = 'markers';
     console.log("rendering the accident marker");
   }
 }
 
 $(function() {
   add_record('homepage'); 
-  facetObj = constructEmptyFacetObj(facetObj);
+  homeJSLocal.facetObj = constructEmptyFacetObj(homeJSLocal.facetObj);
   $('#facets :checkbox').click(function(){
-    getFacetsCheckboxes(facetObj);
-    logFacetObj(facetObj);
+    getFacetsCheckboxes(homeJSLocal.facetObj);
+    logFacetObj(homeJSLocal.facetObj);
     getEvents();
   });
 
   $('#facets :radio').click(function(){
-    getFacetsRadiobuttons(facetObj);
-    logFacetObj(facetObj);
+    getFacetsRadiobuttons(homeJSLocal.facetObj);
+    logFacetObj(homeJSLocal.facetObj);
     getEvents();
   });
 
   $("#start-date").datepicker({
     onSelect: function(dateText) {
-      facetObj.date_range[0] = dateText;
-      logFacetObj(facetObj);
+      homeJSLocal.facetObj.date_range[0] = dateText;
+      logFacetObj(homeJSLocal.facetObj);
       getEvents();
     }
   });
 
   $("#end-date").datepicker({
     onSelect: function(dateText) {
-      facetObj.date_range[1] = dateText;
-      logFacetObj(facetObj);
+      homeJSLocal.facetObj.date_range[1] = dateText;
+      logFacetObj(homeJSLocal.facetObj);
       getEvents();
     }
   });
@@ -281,8 +163,8 @@ $(function() {
       var timepicker = element.timepicker();
       text = timepicker.format(time);
       var seconds = getSeconds(text);
-      facetObj.timeofday_range[0] = seconds;
-      logFacetObj(facetObj);
+      homeJSLocal.facetObj.timeofday_range[0] = seconds;
+      logFacetObj(homeJSLocal.facetObj);
       getEvents();
     }
   });
@@ -293,24 +175,24 @@ $(function() {
       var timepicker = element.timepicker();
       text = timepicker.format(time);
       var seconds = getSeconds(text);
-      facetObj.timeofday_range[1] = seconds;
-      logFacetObj(facetObj);
+      homeJSLocal.facetObj.timeofday_range[1] = seconds;
+      logFacetObj(homeJSLocal.facetObj);
       getEvents();
     }
   });
 
   $('#accidents').click(function () {
-    maptToPlot = "accidents";
+    homeJS.maptToPlot = "accidents";
     getEvents();
   });
 
   $('#roadsegments').click(function () {
-    maptToPlot = "roadsegments";
+    homeJS.maptToPlot = "roadsegments";
     getEvents();
   });
 
   $('#heatpmap').click(function () {
-    maptToPlot = "heatmap";
+    homeJS.maptToPlot = "heatmap";
     getEvents();
   });
 
@@ -318,18 +200,16 @@ $(function() {
 
   // get user information
   jQuery.post(
-    "/get_user_info",
-    {},
-    function(data){
-	if(data.status != 0){
-		alert('user information error'+data.data);
-		return;
-	}
-	user_info = data.data;
-	tmp_str = "You are user "+user_info.user_id;
-    	$('#userinfo').html(tmp_str);
-    },
-    'json');
-
+      "/get_user_info",
+      {},
+      function(data){
+        if(data.status != 0){
+          alert('user information error'+data.data);
+          return;
+        }
+        user_info = data.data;
+        tmp_str = "You are user "+user_info.user_id;
+        $('#userinfo').html(tmp_str);
+      },
+      'json');
 });
-

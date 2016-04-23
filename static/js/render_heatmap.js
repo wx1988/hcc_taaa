@@ -1,14 +1,14 @@
 function getAndRenderHeatmap(map, accidents)
 {
 
-  pt_list = [];
+  var pt_list = [];
   for(var i = 0; i < accidents.length; ++i)
   {
     pt_list[i] = new google.maps.LatLng(
         accidents[i].lat, accidents[i].lng);
   }
 
-  heatmap = new google.maps.visualization.HeatmapLayer({
+  var heatmap = new google.maps.visualization.HeatmapLayer({
     data: pt_list
       ,map: map
   });
