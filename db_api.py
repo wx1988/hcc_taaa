@@ -19,62 +19,11 @@ log_col = db.log
 
 from prepare_filter import accident_filter
 
-######
-# accidents part
-######
-def get_acc_raw_by_caseno(caseno):
-    """This function will return the detail information about an accident given the caseno.
 
-    :param caseno: The case number of the accident
-    :returns: A dictionary containing the accident basic information, involved vehicles, and road information.
-    """
-    data = {}
-    acc = acc_col.find_one( {'caseno':caseno} )
-    if not acc:
-        return "Not found"
-    del acc['_id']
-    data['acc'] = acc#replace_acc_coding(acc)
 
-    veh_cur = veh_col.find({'caseno':caseno})
-    veh_list = []
-    for veh in veh_cur:
-        del veh['_id']
-        #veh = replace_veh_coding(veh)
-        veh_list.append(veh)
-    data['veh_list'] = veh_list
-
-    r = route_col.find_one({'cntyrte':acc['cnty_rte']})
-    del r['_id']
-    for k in r.keys():
-        r[k] = str(r[k])
-    data['route'] = r
-
-    return data
-
-def get_acc_info_by_caseno(caseno):
-    """
-    get the accident infor by case number
-    """
-    data = {}
-    acc = acc_col.find_one( {'caseno':caseno} )
-    if not acc:
-        return "Not found"
-    del acc['_id']
-    data['acc'] = replace_acc_coding(acc)
-
-    veh_cur = veh_col.find({'caseno':caseno})
-    veh_list = []
-    for veh in veh_cur:
-        del veh['_id']
-        veh = replace_veh_coding(veh)
-        veh_list.append(veh)
-    data['veh_list'] = veh_list
-    return data
-
-####
-# log part
-####
 def create_log(log_entry):
+    """ Store the log entry into database
+    """
     log_col.insert(log_entry)
 
 
@@ -158,15 +107,6 @@ def get_segs_by_bound(bound):
         del rtn['_id']
         rtn_list.append(rtn)
     return rtn_list
-    """
-    lrs_iter = lrs_col.find(filter_dict)
-    road_list = []
-    for lrs in lrs_iter:
-        # TODO, get segments of this roads here
-        seg_list = get_segs_by_rid(lrs['rid'])
-        road_list.append(seg_list)
-    return road_list
-    """
 
 ####
 # causal links part
@@ -205,8 +145,63 @@ def update_graph(caseno, user_id):
     outpath = "static/imgs/tmp/"+str(caseno)+'-'+str(user_id)+'.png'
     gen_svg_graph_neat_warper(caseno, user_id, outpath)
 
+######
+# accidents part
+######
+def get_acc_raw_by_caseno(caseno):
+    """This function will return the detail information about an accident given the caseno.
+
+    :param caseno: The case number of the accident
+    :returns: A dictionary containing the accident basic information, involved vehicles, and road information.
+    """
+    data = {}
+    acc = acc_col.find_one( {'caseno':caseno} )
+    if not acc:
+        return "Not found"
+    del acc['_id']
+    data['acc'] = acc#replace_acc_coding(acc)
+
+    veh_cur = veh_col.find({'caseno':caseno})
+    veh_list = []
+    for veh in veh_cur:
+        del veh['_id']
+        #veh = replace_veh_coding(veh)
+        veh_list.append(veh)
+    data['veh_list'] = veh_list
+
+    r = route_col.find_one({'cntyrte':acc['cnty_rte']})
+    del r['_id']
+    for k in r.keys():
+        r[k] = str(r[k])
+    data['route'] = r
+
+    return data
+
+def get_acc_info_by_caseno(caseno):
+    """
+    get the accident infor by case number
+    """
+    data = {}
+    acc = acc_col.find_one( {'caseno':caseno} )
+    if not acc:
+        return "Not found"
+    del acc['_id']
+    data['acc'] = replace_acc_coding(acc)
+
+    veh_cur = veh_col.find({'caseno':caseno})
+    veh_list = []
+    for veh in veh_cur:
+        del veh['_id']
+        veh = replace_veh_coding(veh)
+        veh_list.append(veh)
+    data['veh_list'] = veh_list
+    return data
+
 
 def example_export_csv():
+    """TODO, write this in a separate file
+    This file will also include many parameters
+    """
     from hsis_codebook import event as event_dict
     from hsis_codebook import loc_type as loc_type_dict
     bound = {'left':-78.1, 'right':-78, 'top':35.1, 'down':35}

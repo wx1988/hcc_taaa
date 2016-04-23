@@ -154,7 +154,7 @@ def af_severity(webinput):
         severity_list = []
         for s in webinput['severity']:
             severity_list.append(
-                { 'num_'+webinput['severity'][0]: {'$gt':0} })
+                { 'num_'+s: {'$gt':0} })
         return {'$or':severity_list}
 
 def af_loc_type(webinput):
@@ -193,13 +193,17 @@ def af_lane_number(webinput):
         return {}
     if len(webinput['no_of_lanes']) == 0:
         return {}
-    raise Exception("TODO")
+    
+    return {'nbr_lane':{
+        '$in':[int(l) for l in webinput['no_of_lanes']]
+        }}
 
 def accident_filter(webinput):
     final_dict = {}
     filter_list = [af_bound, af_collision_type,
             af_date_range, af_tod_range,af_driver_age,
-            af_driver_sex, af_severity, af_loc_type]
+            af_driver_sex, af_severity, af_loc_type, 
+            af_lane_number]
     for af in filter_list:
         tmpdic = af(webinput)
         final_dict.update( tmpdic )

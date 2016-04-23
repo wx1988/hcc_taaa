@@ -98,8 +98,9 @@ TODO, make the heatmap flexible to show the events as markers as well.
 		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="static/js/jquery.timepicker.min.js"></script>
 		<script type="text/javascript" src="static/js/jquery.timepicker.js"></script>
-		<script src="static/js/common_util.js"></script>
-		<script src="static/js/render_markers.js"></script>
+		<script src="/static/js/common_util.js"></script>
+		<script src="/static/js/record.js"></script>
+		<script src="/static/js/render_markers.js"></script>
 		<script src="/static/js/render_heatmap.js"></script>
 		<script src="/static/js/render_roadsegments.js"></script>
 	</head>
@@ -114,42 +115,62 @@ TODO, make the heatmap flexible to show the events as markers as well.
 			  </div>
        		  <div class="row">
 				  <div class="col-md-3" id="facets">
+						<div id="userinfo">
+						</div>
+						<hr/>
+						<!-- Location related-->
 					  <div class="location-type">
-					  		<h4>Location Type</h4>
+					  		<h5>Location Type</h5>
               				<input type="radio" name="loc-type" value="intersection"> Intersection <br>
                 			<input type="radio" name="loc-type" value="segment"> Segment <br>
 						    <input type="radio" name="loc-type" value="both"> Both
-					  </div>
-              		  <div class="collision-type">
-						  <h4>Collision Type</h4>
-					      <input type="checkbox" name="Col-type" value="21"> rear-end <br>
-					      <input type="checkbox" name="Col-type" value="27"> head-on <br>
-                    	  <input type="checkbox" name="Col-type" value="14"> pedestrian <br>
-					      <input type="checkbox" name="Col-type" value="15"> bicycle <br>
-					  </div>
-					  <div class="time-period">
-						  <h4>Time Period</h4>
-						  Start Date : <input type="text" id="start-date"> <br>
-						  End Date : <input type="text" id="end-date">
-					  </div>
-					  <div class="time-of-day">
-						  <h4>Time of day</h4>
-						  Start time : <input type="text" id="start-time"> <br>
-						  End time : <input type="text" id="end-time">
-					  </div>
+					  </div>						
+						<hr/>
+
+						<!-- accident general attributes -->
 					  <div class="severity">
-						  <h4>Severity</h4>
+						  <h5>Severity</h5>
 						  <input type="checkbox" name="severity" value="k"> K
 						  <input type="checkbox" name="severity" value="a"> A
 						  <input type="checkbox" name="severity" value="b"> B
                			  <input type="checkbox" name="severity" value="c"> C
 					  </div>
+            <div class="collision-type">
+						  <h5>Collision Type</h5>
+					      <input type="checkbox" name="Col-type" value="21"> rear-end <br>
+					      <input type="checkbox" name="Col-type" value="27"> head-on <br>
+                    	  <input type="checkbox" name="Col-type" value="14"> pedestrian <br>
+					      <input type="checkbox" name="Col-type" value="15"> bicycle <br>
+					  </div>
+						<hr/>
+
+						<!-- date time -->
+					  <div class="time-period">
+						  <h5>Time Period</h5>
+						  Start Date : <input type="text" id="start-date"> <br>
+						  End Date : <input type="text" id="end-date">
+					  </div>
+					  <div class="time-of-day">
+						  <h5>Time of day</h5>
+						  Start time : <input type="text" id="start-time"> <br>
+						  End time : <input type="text" id="end-time">
+					  </div>
+						<hr/>
+
+						<!-- Road detail -->
 					  <div class="no-of-lanes">
-						  <h4>No. Of Lanes</h4>
+						  <h5>No. Of Lanes</h5>
 						  <input type="checkbox" name="Col-type" value="2"> 2
 						  <input type="checkbox" name="Col-type" value="4"> 4
 						  <input type="checkbox" name="Col-type" value="6"> 6
 					  </div>
+						<hr/>
+
+						<!-- Driver Detail -->
+						<div>
+							TODO, Drivers information
+						</div>
+
 					  <br/>
 					  <a class="btn btn-success">View Details</a><br><br>
              		  <a class="btn btn-success">Export Data</a>

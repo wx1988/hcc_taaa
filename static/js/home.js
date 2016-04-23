@@ -4,7 +4,8 @@
 
 onscreenMarker = [];
 selectedMarker = [];
-var map, heatmap;
+var map = undefined;
+var heatmap;
 var shift_draw, lastShape;
 var facetObj;
 var searchBox;
@@ -166,42 +167,37 @@ function initMap() {
 }
 
 function getEvents(){
-  bound = map.getBounds();
-  if(bound == undefined){
-    bounddic = {
-      'filtertype':'bound',
-      'left':-78.1,
-      'right':-78,
-      'top':35.1,
-      'down':35
-    };
-  } else {
+    bound = map.getBounds();
+    if(bound == undefined){
+        // call this function later until the map is loaded
+        setTimeout(getEvents, 100);
+	return;
+    }
+
     ne = bound.getNorthEast();
     sw = bound.getSouthWest();
     // access the map bound
     bounddic = {
-      'filtertype':'bound',
-      'left':sw.lng,
-      'right':ne.lng,
-      'top':ne.lat,
-      'down':sw.lat,
-      'facetObj':JSON.stringify(facetObj)
+        'left':sw.lng,
+        'right':ne.lng,
+        'top':ne.lat,
+        'down':sw.lat,
+        'facetObj':JSON.stringify(facetObj)
     };
-  }
 
-  if(maptToPlot == "roadsegments") {
-    jQuery.post(
-        "/get_segs",
-        bounddic,
-        geteventcb,
-        'json');
-  }else{
-    jQuery.post(
-        "/get_accidents",
-        bounddic,
-        getEventCB,
-        'json');
-  }
+    if(maptToPlot == "roadsegments") {
+        jQuery.post(
+            "/get_segs",
+            bounddic,
+            getEventCB,
+            'json');
+    }else{
+        jQuery.post(
+            "/get_accidents",
+            bounddic,
+            getEventCB,
+            'json');
+    }
 }
 
 function getEventCB(data){
@@ -228,6 +224,7 @@ function getEventCB(data){
 }
 
 $(function() {
+  add_record('homepage'); 
   facetObj = constructEmptyFacetObj(facetObj);
   $('#facets :checkbox').click(function(){
     getFacetsCheckboxes(facetObj);
@@ -297,4 +294,21 @@ $(function() {
   });
 
   initMap();
+
+  // get user information
+  jQuery.post(
+    "/get_user_info",
+    {},
+    function(data){
+	if(data.status != 0){
+		alert('user information error'+data.data);
+		return;
+	}
+	user_info = data.data;
+	tmp_str = "You are user "+user_info.user_id;
+    	$('#userinfo').html(tmp_str);
+    },
+    'json');
+
 });
+
