@@ -1,4 +1,4 @@
-function getAndRenderInitMarkers(map, accidents) {
+function getAndRenderMarkers(map, accidents) {
   var pt_list = [];
   var marker_list = [];
   var infowindow = new google.maps.InfoWindow();

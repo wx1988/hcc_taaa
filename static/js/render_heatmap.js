@@ -1,4 +1,4 @@
-function render_heatmap(map, accidents)
+function getAndRenderHeatmap(map, accidents)
 {
 
   pt_list = [];
@@ -12,4 +12,6 @@ function render_heatmap(map, accidents)
     data: pt_list
       ,map: map
   });
+
+  return heatmap;
 }

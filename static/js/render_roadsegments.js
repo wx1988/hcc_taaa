@@ -1,6 +1,7 @@
-function render_roadsegments(map, roadsegments)
+function getAndRenderRoadsegments(map, roadsegments)
 {
   var infowindow = new google.maps.InfoWindow();
+  var segment = [];
   for(var i = 0; i < roadsegments.length; ++i)
   {
     var plist = roadsegments[i].plist;
@@ -18,15 +19,23 @@ function render_roadsegments(map, roadsegments)
     }
 
     var localColor = HSVtoRGB( sigmoid(acc_num), 1, 1);
-    var segment = new google.maps.Polyline({
+    segment[i] = new google.maps.Polyline({
       path: localCoords
         ,geodesic: true
         ,strokeColor: localColor
         ,strokeOpacity: 1.0
         ,strokeWeight: 1 + sigmoid(acc_num) * 5
     });
-    segment.setMap(map);
+    segment[i].setMap(map);
     make_seg_infowindow_event(map, infowindow, get_seg_details(roadsegments[i]), segment)
+  }
+  return segment;
+}
+
+function setSegments(segments, map)
+{
+  for(var i = 0; i < segments.length; ++i) {
+    segments[i].setMap(map);
   }
 }
 

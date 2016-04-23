@@ -2,10 +2,11 @@
  * Created by sumeetsingharora on 4/16/16.
  */
 
-onscreenMarker = [];
-selectedMarker = [];
-var map, heatmap;
-var shift_draw, lastShape;
+var onscreenMarker = [];
+var selectedMarker = [];
+var roadsegments;
+var map, visual_mode;
+var lastShape;
 var facetObj;
 var searchBox;
 var maptToPlot = "heatmap";
@@ -40,7 +41,6 @@ function ClearSelectControl(controlDiv) {
     }
     getEvents();
   });
-
 }
 
 function SetClearSelectControl(map) {
@@ -57,8 +57,13 @@ function SetDrawingEvent(drawingManager, map) {
       lastShape.setMap(null);
     }
 
+    drawingManager.setDrawingMode(null);
+
     lastShape = e.overlay;
     lastShape.type = e.type;
+    console.log("aaa: " + maptToPlot);
+    if(maptToPlot != "accidents") return;
+
     if (lastShape.type == google.maps.drawing.OverlayType.RECTANGLE) {
       lastBounds = lastShape.getBounds();
       selectedMarker = [];
@@ -77,7 +82,6 @@ function SetDrawingEvent(drawingManager, map) {
     }
     document.getElementById('info-box').textContent = selectedMarker.length + " accident(s) has been selected";
     renderNewMarkers(map, onscreenMarker, selectedMarker);
-    drawingManager.setDrawingMode(null);
   });
 }
 
@@ -193,7 +197,7 @@ function getEvents(){
     jQuery.post(
         "/get_segs",
         bounddic,
-        geteventcb,
+        getEventCB,
         'json');
   }else{
     jQuery.post(
@@ -204,25 +208,42 @@ function getEvents(){
   }
 }
 
+function clearVisual(){
+  if(visual_mode == undefined)  return;
+  if(visual_mode === 'markers') {
+    set_markers(onscreenMarker, null); 
+  } else if(visual_mode === 'segments') {
+    setSegments(roadsegments, null);
+  } else {
+    visual_mode.setMap(null); 
+  }
+}
+
 function getEventCB(data){
+  if(lastShape != undefined){
+    lastShape.setMap(null);
+  }
   if(data.status != 0){
     alert(data.data);
     return;
   }
-  if(lastShape == undefined) {
-    set_markers(onscreenMarker, null);
-    onscreenMarker = getAndRenderInitMarkers(map, data.data);
-    document.getElementById('info-box').textContent = onscreenMarker.length + " accident(s) showing in screen"
-  }
+  console.log(maptToPlot);
   acc_list = data.data;
   if(maptToPlot == "heatmap") {
-    render_heatmap(map,acc_list);
+    clearVisual();
+    visual_mode = getAndRenderHeatmap(map, acc_list);
     console.log("rendering the heat map");
   } else if(maptToPlot == "roadsegments") {
-    render_roadsegments(map, acc_list);
+    clearVisual();
+    roadsegments = getAndRenderRoadsegments(map, acc_list);
     console.log("rendering the road segments");
+    visual_mode = 'segments';
   } else {
-    render_markers(map, acc_list);
+    clearVisual();
+    set_markers(onscreenMarker, null);
+    onscreenMarker = getAndRenderMarkers(map, data.data);
+    document.getElementById('info-box').textContent = onscreenMarker.length + " accident(s) showing in screen";
+      visual_mode = 'markers';
     console.log("rendering the accident marker");
   }
 }
