@@ -2,4 +2,5 @@
 .*.sw?
 .idea
 static/js/.DS_Store
+sessions/
 
