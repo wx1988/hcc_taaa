@@ -63,8 +63,10 @@ function drawTableEvent() {
 		function rowSelectCB() {
 			var row = table.getSelection()[0].row;
 			console.log('You selected ' + data.getValue(row, 0));
+			// TODO
 			// if any marker/polygon is currently selected
 			// destroy the effect first
+			
 			if( maptToPlot == 'heatmap'){
 				// TODO, need to merge Yue's code
 				var caseno = data.getValue(row, 0);
@@ -79,7 +81,8 @@ function drawTableEvent() {
 						onscreenMarker[i].setMap(null);
 						onscreenMarker[i] = new google.maps.Marker({
 							position: new google.maps.LatLng(acc_list[i].lat, acc_list[i].lng), 
-							animation: google.maps.Animation.DROP,
+							//animation: google.maps.Animation.DROP,
+							animation: google.maps.Animation.BOUNCE,
 							map: map,
 							icon: '/static/imgs/red_cross_12.png'
 
