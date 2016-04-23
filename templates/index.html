@@ -113,6 +113,7 @@ TODO, make the heatmap flexible to show the events as markers as well.
 		<script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 		<script src="/static/js/common_util.js"></script>
 		<script src="/static/js/record.js"></script>
+		<script src="/static/js/showDetailTable.js"></script>
 		<script src="/static/js/render_markers.js"></script>
 		<script src="/static/js/render_heatmap.js"></script>
 		<script src="/static/js/render_roadsegments.js"></script>
@@ -134,10 +135,10 @@ TODO, make the heatmap flexible to show the events as markers as well.
 							<div class="panel panel-default">
 								<div class="panel-heading">
 									<h4 class="panel-title">
-										<a data-toggle="collapse" data-target="#locationfilter"> Where </a>
+										<a data-toggle="collapse" data-target="#locationfilter" class="collapsed"> Where </a>
 									</h4>
 								</div> <!-- end of panel-heading -->
-								<div id="locationfilter" class="panel-collapse">
+								<div id="locationfilter" class="panel-collapse collapse">
 									<div class="panel-body location-type">
 										<h5>Location Type</h5>
 										<input type="radio" name="loc-type" value="intersection"> Intersection <br>
@@ -171,64 +172,64 @@ TODO, make the heatmap flexible to show the events as markers as well.
 											<input type="checkbox" name="Col-type" value="14"> pedestrian <br>
 											<input type="checkbox" name="Col-type" value="15"> bicycle <br>
 										</div> <!-- end of collision type -->
-									</div>
-								</div>
-							</div> <!-- panel-group -->
-						</div>
-					  
-						<div class="panel panel-default" id="panel3">
-							<div class="panel-heading">
-								<h4 class="panel-title">
-									<a data-toggle="collapse" data-target="#when"> When </a>
-								</h4>
-							</div> <!-- panel heading -->
-							<div id="when" class="panel-collapse">
-								<div class="panel-body">
-									<!-- date time -->
-									<div class="time-period">
-										<h5>Time Period</h5>
-										Start Date : <input type="text" id="start-date"> <br>
-										End Date : <input type="text" id="end-date">
-									</div>
-									<div class="time-of-day">
-										<h5>Time of day</h5>
-										Start time : <input type="text" id="start-time"> <br>
-										End time : <input type="text" id="end-time">
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<div class="panel panel-default" id="panel4">
-							<div class="panel-heading">
-								<h4 class="panel-title">
-									<a data-toggle="collapse" data-target="#road" class="collapsed"> Road </a>
-								</h4>
-							</div> <!-- panel heading -->
-							<div id="road" class="panel-collapse collapse">
-								<div class="panel-body">
-
-									<!-- Road detail -->
-									<div class="no-of-lanes">
-										<h5>No. Of Lanes</h5>
-										<input type="checkbox" name="Col-type" value="2"> 2
-										<input type="checkbox" name="Col-type" value="4"> 4
-										<input type="checkbox" name="Col-type" value="6"> 6
+									</div> <!-- panel body-->
+								</div><!-- end of how -->
+							</div> <!-- end of panel 2 -->
+							
+							<div class="panel panel-default" id="panel3">
+								<div class="panel-heading">
+									<h4 class="panel-title">
+										<a data-toggle="collapse" data-target="#when"> When </a>
+									</h4>
+								</div> <!-- panel heading -->
+								<div id="when" class="panel-collapse collapse">
+									<div class="panel-body">
+										<!-- date time -->
+										<div class="time-period">
+											<h5>Time Period</h5>
+											Start Date : <input type="text" id="start-date"> <br>
+											End Date : <input type="text" id="end-date">
+										</div>
+										<div class="time-of-day">
+											<h5>Time of day</h5>
+											Start time : <input type="text" id="start-time"> <br>
+											End time : <input type="text" id="end-time">
+										</div>
 									</div>
 								</div>
 							</div>
-						</div>
 
-						<!-- Driver Detail -->
-						<div class="panel panel-default" id="panel5">
-							<div class="panel-heading">
-								<h4 class="panel-title">
-									<a data-toggle="collapse" data-target="#who" class="collapsed"> Who </a>
-								</h4>
-							</div> <!-- panel heading -->
-							<div id="who" class="panel-collapse collapse">
-								<div class="panel-body">
-									TODO, driver filter
+							<div class="panel panel-default" id="panel4">
+								<div class="panel-heading">
+									<h4 class="panel-title">
+										<a data-toggle="collapse" data-target="#road" class="collapsed"> Road </a>
+									</h4>
+								</div> <!-- panel heading -->
+								<div id="road" class="panel-collapse collapse">
+									<div class="panel-body">
+
+										<!-- Road detail -->
+										<div class="no-of-lanes">
+											<h5>No. Of Lanes</h5>
+											<input type="checkbox" name="Col-type" value="2"> 2
+											<input type="checkbox" name="Col-type" value="4"> 4
+											<input type="checkbox" name="Col-type" value="6"> 6
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- Driver Detail -->
+							<div class="panel panel-default" id="panel5">
+								<div class="panel-heading">
+									<h4 class="panel-title">
+										<a data-toggle="collapse" data-target="#who" class="collapsed"> Who </a>
+									</h4>
+								</div> <!-- panel heading -->
+								<div id="who" class="panel-collapse collapse">
+									<div class="panel-body">
+										TODO, driver filter
+									</div>
 								</div>
 							</div>
 						</div>

@@ -4,7 +4,7 @@
 
 onscreenMarker = [];
 selectedMarker = [];
-var map = undefined;
+map = undefined;
 var heatmap;
 var shift_draw, lastShape;
 var facetObj;
@@ -178,14 +178,22 @@ function getEvents(){
 
     ne = bound.getNorthEast();
     sw = bound.getSouthWest();
+    
+    // NOTE: when the height is set to 50%, the get bound is still get the old boundary 
+    //
     // access the map bound
+    var down = sw.lat();
+    if(state == 'on'){
+    	down = (ne.lat() + sw.lat())/2;
+    }
     bounddic = {
-        'left':sw.lng,
-        'right':ne.lng,
-        'top':ne.lat,
-        'down':sw.lat,
+        'left':sw.lng(),
+        'right':ne.lng(),
+        'top':ne.lat(),
+        'down':down,
         'facetObj':JSON.stringify(facetObj)
     };
+    console.log(bounddic);
 
     if(maptToPlot == "roadsegments") {
         jQuery.post(
@@ -225,27 +233,12 @@ function getEventCB(data){
     render_markers(map, acc_list);
     console.log("rendering the accident marker");
   }
-}
 
-// TO DO plot the actual data instead of the dummy data.
-function drawTableEvent() {
-      google.charts.setOnLoadCallback(drawTable);
-      function drawTable() {
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Name');
-        data.addColumn('number', 'Salary');
-        data.addColumn('boolean', 'Full Time Employee');
-        data.addRows([
-          ['Mike',  {v: 10000, f: '$10,000'}, true],
-          ['Jim',   {v:8000,   f: '$8,000'},  false],
-          ['Alice', {v: 12500, f: '$12,500'}, true],
-          ['Bob',   {v: 7000,  f: '$7,000'},  true]
-        ]);
-
-        var table = new google.visualization.Table(document.getElementById('table_div'));
-
-        table.draw(data, {showRowNumber: true, width: '100%', height: '20%'});
-      }
+  // udpate the table
+  if( state == 'on'){
+  	drawTableEvent();
+	// TODO, this draw information window event will cause another event loader
+  }
 }
 
 $(function() {
@@ -320,11 +313,18 @@ $(function() {
   });
 
  $('#details').click(function () {
+	 // TODO, state , change to a better name
       if(state == "off") {
           state = "on";
           $('#details').text('Hide details');
           $("#map").css("height", "50%");
-          drawTableEvent();
+
+	  // TODO, re-get the events
+	  // Then draw the following thing
+	  // other wise, the map is not updated. 
+	  acc_list = undefined; 
+	  getEvents();	  
+          //drawTableEvent();
 
       } else {
         state = "off";
@@ -332,6 +332,9 @@ $(function() {
          $("#map").css("height", "100%");
          $('#table_div').remove();
          $('#table_row').append('<div id="table_div"></div>');
+	 
+	 // re-get the events
+	 getEvents();
       }
   });
 
