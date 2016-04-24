@@ -2,6 +2,7 @@
  * Created by sumeetsingharora on 4/16/16.
  */
 
+/*
 onscreenMarker = [];
 selectedMarker = [];
 map = undefined;
@@ -10,113 +11,32 @@ var shift_draw, lastShape;
 var facetObj;
 var searchBox;
 var maptToPlot = "heatmap";
+*/
+
+//TODO Do not know what is this, can not refactored
 var globalDataList = undefined;
-var state = "off";
 
-function ClearSelectControl(controlDiv) {
-  // Set CSS for the control border.
-  var controlUI = document.createElement('div');
-  controlUI.style.backgroundColor = '#fff';
-  controlUI.style.border = '2px solid #fff';
-  controlUI.style.borderRadius = '3px';
-  controlUI.style.cursor = 'pointer';
-  controlUI.style.marginBottom = '22px';
-  controlUI.style.textAlign = 'center';
-  controlUI.title = 'Click to clear the selected';
-  controlDiv.appendChild(controlUI);
-
-  // Set CSS for the control interior.
-  var controlText = document.createElement('div');
-  controlText.style.color = 'rgb(25,25,25)';
-  controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
-  controlText.style.fontSize = '10px';
-  controlText.style.lineHeight = '20px';
-  controlText.style.paddingLeft = '5px';
-  controlText.style.paddingRight = '5px';
-  controlText.innerHTML = 'Clear Selected';
-  controlUI.appendChild(controlText);
-
-  controlUI.addEventListener('click', function() {
-    if (lastShape != undefined) {
-      lastShape.setMap(null);
-      lastShape = undefined;
-    }
-    getEvents();
-  });
-
+var homeJS = {
+  onscreenMarker: [],
+  selectedMarker: [],
+  lastShape: undefined,
+  roadsegments: undefined,
+  heatmap: undefined,
+  currentVisualMode: undefined
 }
 
-function SetClearSelectControl(map) {
-  var centerControlDiv = document.createElement('div');
-  var centerControl = new ClearSelectControl(centerControlDiv, map);
-  centerControlDiv.index = 1;
-  centerControlDiv.style['padding-top'] = '5px';
-  map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
-}
-
-function SetDrawingEvent(drawingManager, map) {
-  google.maps.event.addListener(drawingManager, 'overlaycomplete', function(e) {
-    if (lastShape != undefined) {
-      lastShape.setMap(null);
-    }
-
-    lastShape = e.overlay;
-    lastShape.type = e.type;
-    if (lastShape.type == google.maps.drawing.OverlayType.RECTANGLE) {
-      lastBounds = lastShape.getBounds();
-      selectedMarker = [];
-      for(var i = 0; i < onscreenMarker.length; ++i) {
-        if(lastBounds.contains(onscreenMarker[i].getPosition())) {
-          selectedMarker.push(onscreenMarker[i]);
-        }
-      }
-    } else if (lastShape.type == google.maps.drawing.OverlayType.POLYGON) {
-      selectedMarker = [];
-      for(var i = 0; i < onscreenMarker.length; ++i) {
-        if (google.maps.geometry.poly.containsLocation(onscreenMarker[i].getPosition(), lastShape)) {
-          selectedMarker.push(onscreenMarker[i]);
-        }
-      }
-    }
-    document.getElementById('info-box').textContent = selectedMarker.length + " accident(s) has been selected";
-    renderNewMarkers(map, onscreenMarker, selectedMarker);
-    drawingManager.setDrawingMode(null);
-  });
-}
-
-function SetDrawingControl(map) {
-  //Drawing control
-  var shapeOptions = {
-    strokeWeight: 1,
-    strokeOpacity: 1,
-    fillOpacity: 0.2,
-    editable: false,
-    clickable: false,
-    strokeColor: '#3399FF',
-    fillColor: '#3399FF'
-  };
-
-  var drawingManager = new google.maps.drawing.DrawingManager({
-    drawingMode: null,
-    drawingControlOptions: {
-      position: google.maps.ControlPosition.TOP_CENTER,
-      drawingModes: [
-        google.maps.drawing.OverlayType.POLYGON,
-        google.maps.drawing.OverlayType.RECTANGLE
-      ]},
-    rectangleOptions: shapeOptions,
-    position: google.maps.ControlPosition.TOP_RIGHT,
-    polygonOptions: shapeOptions,
-    map: map
-  });
-
-  SetDrawingEvent(drawingManager, map); 
+var homeJSLocal = {
+  visualModeToApply: "heatmap",
+  map: undefined,
+  facetObj: undefined,
+  searchBox: undefined,
+	detailViewState: "off"
 }
 
 function initMap() {
   google.maps.visualRefresh = true;
 
-  map = new google.maps.Map(
+  homeJSLocal.map = new google.maps.Map(
       document.getElementById('map'), {
         zoom: 13,
         center: {lat: 35, lng: -78},
@@ -133,142 +53,129 @@ function initMap() {
           ]}
       });
 
-  SetClearSelectControl(map);
-  SetDrawingControl(map);
-
-  map.addListener('idle', function() {
-    getEvents();
-    searchBox.setBounds(map.getBounds());
-  });
+  addClearSelection(homeJSLocal.map);
+  addDrawing(homeJSLocal.map);
 
   // Create the search box and link it to the UI element.
   var input = document.getElementById('pac-input');
-  searchBox = new google.maps.places.SearchBox(input);
-  map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+  homeJSLocal.searchBox = createSearchBox(homeJSLocal.map, input);
 
-  searchBox.addListener('places_changed', function() {
-    var places = searchBox.getPlaces();
-
-    if (places.length == 0) {
-      return;
-    }
-
-    var bounds = new google.maps.LatLngBounds();
-    places.forEach(function(place) {
-      if (place.geometry.viewport) {
-        // Only geocodes have viewport.
-        bounds.union(place.geometry.viewport);
-      } else {
-        bounds.extend(place.geometry.location);
-      }
-    });
-    map.fitBounds(bounds);
+  homeJSLocal.map.addListener('idle', function() {
     getEvents();
+    homeJSLocal.searchBox.setBounds(homeJSLocal.map.getBounds());
   });
+
   getEvents();
 }
 
 function getEvents(){
-    bound = map.getBounds();
-    if(bound == undefined){
-        // call this function later until the map is loaded
-        setTimeout(getEvents, 100);
-	return;
-    }
+	// clear the old data
+	globalDataList = undefined;
 
-    ne = bound.getNorthEast();
-    sw = bound.getSouthWest();
-    
-    // NOTE: when the height is set to 50%, the get bound is still get the old boundary 
-    //
-    // access the map bound
-    var down = sw.lat();
-    if(state == 'on'){
-    	down = (ne.lat() + sw.lat())/2;
-    }
-    bounddic = {
-        'left':sw.lng(),
-        'right':ne.lng(),
-        'top':ne.lat(),
-        'down':down,
-        'facetObj':JSON.stringify(facetObj)
-    };
-    console.log(bounddic);
+  bound = homeJSLocal.map.getBounds();
+  if(bound == undefined){
+    // call this function later until the map is loaded
+    setTimeout(getEvents, 100);
+    return;
+  }
 
-    if(maptToPlot == "roadsegments") {
-        jQuery.post(
-            "/get_segs",
-            bounddic,
-            getEventCB,
-            'json');
-    }else{
-        jQuery.post(
-            "/get_accidents",
-            bounddic,
-            getEventCB,
-            'json');
-    }
+	ne = bound.getNorthEast();
+	sw = bound.getSouthWest();
+
+	// NOTE: when the height is set to 50%, the get bound is still get the old boundary 
+	// access the map bound
+	var down = sw.lat();
+	if(homeJSLocal.detailViewState == 'on'){
+		down = (ne.lat() + sw.lat())/2;
+	}
+	bounddic = {
+			'left':sw.lng(),
+			'right':ne.lng(),
+			'top':ne.lat(),
+			'down':down,
+			'facetObj':JSON.stringify(homeJSLocal.facetObj)
+	};
+	console.log(bounddic);
+	if( homeJSLocal.visualModeToApply == "segments"){
+			jQuery.post(
+					"/get_segs",
+					bounddic,
+					getEventCB,
+					'json');
+	}else{
+			jQuery.post(
+					"/get_accidents",
+					bounddic,
+					getEventCB,
+					'json');
+	}
+}
+
+function clearVisual(){
+  if(homeJS.currentVisualMode == undefined)  return;
+  if(homeJS.currentVisualMode === 'markers') {
+    set_markers(homeJS.onscreenMarker, null); 
+  } else if(homeJS.currentVisualMode === 'segments') {
+    setSegments(homeJS.roadsegments, null);
+  } else {
+    homeJS.heatmap.setMap(null); 
+  }
 }
 
 function getEventCB(data){
+  if(homeJS.lastShape != undefined ){
+    homeJS.lastShape.setMap(null);
+  }
   if(data.status != 0){
     alert(data.data);
     return;
   }
-  if(lastShape == undefined) {
-    set_markers(onscreenMarker, null);
-    onscreenMarker = getAndRenderInitMarkers(map, data.data);
-    document.getElementById('info-box').textContent = onscreenMarker.length + " accident(s) showing in screen"
-  }
-  acc_list = data.data;
-  // needed for the details page
+
+  //TODO do not know what is this
   globalDataList = data.data;
-  if(maptToPlot == "heatmap") {
-    render_heatmap(map,acc_list);
-    console.log("rendering the heat map");
-  } else if(maptToPlot == "roadsegments") {
-    render_roadsegments(map, acc_list);
-    console.log("rendering the road segments");
+
+  if(homeJSLocal.visualModeToApply == "heatmap") {
+    getAccidentHeatmapCB(homeJSLocal.map, data.data);
+  } else if(homeJSLocal.visualModeToApply == "segments") {
+    getRoadSegmentsCB(homeJSLocal.map, data.data);
   } else {
-    render_markers(map, acc_list);
-    console.log("rendering the accident marker");
+    getAccidentMarkerCB(homeJSLocal.map, data.data);
   }
 
   // udpate the table
-  if( state == 'on'){
+  if( homeJSLocal.detailViewState == 'on'){
   	drawTableEvent();
-	// TODO, this draw information window event will cause another event loader
   }
 }
 
 $(function() {
   google.charts.load('current', {'packages':['table']});
   add_record('homepage'); 
-  facetObj = constructEmptyFacetObj(facetObj);
+  homeJSLocal.facetObj = constructEmptyFacetObj(homeJSLocal.facetObj);
   $('#facets :checkbox').click(function(){
-    getFacetsCheckboxes(facetObj);
-    logFacetObj(facetObj);
+    getFacetsCheckboxes(homeJSLocal.facetObj);
+    logFacetObj(homeJSLocal.facetObj);
     getEvents();
   });
 
   $('#facets :radio').click(function(){
-    getFacetsRadiobuttons(facetObj);
-    logFacetObj(facetObj);
+    getFacetsRadiobuttons(homeJSLocal.facetObj);
+    logFacetObj(homeJSLocal.facetObj);
     getEvents();
   });
 
   $("#start-date").datepicker({
     onSelect: function(dateText) {
-      facetObj.date_range[0] = dateText;
-      logFacetObj(facetObj);
+      homeJSLocal.facetObj.date_range[0] = dateText;
+      logFacetObj(homeJSLocal.facetObj);
       getEvents();
     }
   });
 
   $("#end-date").datepicker({
     onSelect: function(dateText) {
-      facetObj.date_range[1] = dateText;
-      logFacetObj(facetObj);
+      homeJSLocal.facetObj.date_range[1] = dateText;
+      logFacetObj(homeJSLocal.facetObj);
       getEvents();
     }
   });
@@ -279,8 +186,8 @@ $(function() {
       var timepicker = element.timepicker();
       text = timepicker.format(time);
       var seconds = getSeconds(text);
-      facetObj.timeofday_range[0] = seconds;
-      logFacetObj(facetObj);
+      homeJSLocal.facetObj.timeofday_range[0] = seconds;
+      logFacetObj(homeJSLocal.facetObj);
       getEvents();
     }
   });
@@ -291,69 +198,63 @@ $(function() {
       var timepicker = element.timepicker();
       text = timepicker.format(time);
       var seconds = getSeconds(text);
-      facetObj.timeofday_range[1] = seconds;
-      logFacetObj(facetObj);
+      homeJSLocal.facetObj.timeofday_range[1] = seconds;
+      logFacetObj(homeJSLocal.facetObj);
       getEvents();
     }
   });
 
   $('#accidents').click(function () {
-    maptToPlot = "accidents";
+    homeJSLocal.visualModeToApply = "markers";
     getEvents();
   });
 
   $('#roadsegments').click(function () {
-    maptToPlot = "roadsegments";
+    homeJSLocal.visualModeToApply = "segments";
     getEvents();
   });
 
   $('#heatpmap').click(function () {
-    maptToPlot = "heatmap";
+    homeJSLocal.visualModeToApply = "heatmap";
     getEvents();
   });
 
- $('#details').click(function () {
-	 // TODO, state , change to a better name
-      if(state == "off") {
-          state = "on";
-          $('#details').text('Hide details');
-          $("#map").css("height", "50%");
+	$('#details').click(function () {
+		// TODO, state , change to a better name
+		if(homeJSLocal.detailViewState == "off") {
+			homeJSLocal.detailViewState = "on";
+			$('#details').text('Hide details');
+			$("#map").css("height", "50%");
 
-	  // TODO, re-get the events
-	  // Then draw the following thing
-	  // other wise, the map is not updated. 
-	  acc_list = undefined; 
-	  getEvents();	  
-          //drawTableEvent();
+			// re-get the events, and the draw table will be called after data is loaded.
+			getEvents();	  
 
-      } else {
-        state = "off";
-         $('#details').text('View details');
-         $("#map").css("height", "100%");
-         $('#table_div').remove();
-         $('#table_row').append('<div id="table_div"></div>');
-	 
-	 // re-get the events
-	 getEvents();
-      }
-  });
+		} else {
+			homeJSLocal.detailViewState = "off";
+			$('#details').text('View details');
+			$("#map").css("height", "100%");
+			$('#table_div').remove();
+			$('#table_row').append('<div id="table_div"></div>');
 
-  initMap();
+			// re-get the events
+			getEvents();
+		}
+	});
 
-  // get user information
-  jQuery.post(
-    "/get_user_info",
-    {},
-    function(data){
-	if(data.status != 0){
-		alert('user information error'+data.data);
-		return;
-	}
-	user_info = data.data;
-	tmp_str = "You are user "+user_info.user_id;
-    	$('#userinfo').html(tmp_str);
-    },
-    'json');
+	initMap();
 
+	// get user information
+	jQuery.post(
+			"/get_user_info",
+			{},
+			function(data){
+				if(data.status != 0){
+					alert('user information error'+data.data);
+					return;
+				}
+				user_info = data.data;
+				tmp_str = "You are user "+user_info.user_id;
+				$('#userinfo').html(tmp_str);
+			},
+			'json');
 });
-

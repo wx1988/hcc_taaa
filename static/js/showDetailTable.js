@@ -1,12 +1,16 @@
 // TODO, rename
+var lastSelectCaseno = undefined;
+
 function drawTableEvent() {
+	var acc_list = globalDataList;
+
 	// create by Sumeet, 
 	// update by Xing, 4/22,  plot the actual data instead of the dummy data.
 	// TODO 1, need to rewrite after merging Yue's code
 	// TODO 2, the datatable should be updated when the map is moved. 
 	// TODO 3, also need to update the table when the region is selected as polygon
 	
-	if(maptToPlot == "roadsegment"){
+	if(homeJSLocal.visualModeToApply == "segment"){
 		// show the road segment information
 		//acc_list is currently holding all the segment information
 	}else{
@@ -21,7 +25,7 @@ function drawTableEvent() {
 		// initialize header
 		var name_list = undefined;
 		var type_list = undefined;
-		if(maptToPlot == "roadsegments"){
+		if(homeJSLocal.visualModeToApply == "roadsegments"){
 			name_list = ['Route Number', 'Begin Milepost', 'End Milepost', 'Accident Num'];
 			type_list = ['string', 'number', 'number', 'number'];
 		}else{
@@ -31,7 +35,7 @@ function drawTableEvent() {
 		for( var i = 0;i < name_list.length;i++){
 			data.addColumn(type_list[i], name_list[i]);
 		}
-		if(maptToPlot == "roadsegments"){
+		if(homeJSLocal.visualModeToApply == "roadsegments"){
 			for(var i=0;i < acc_list.length;i++){
 				var casenum = 0;
 				if (acc_list[i].casenolist != undefined)
@@ -64,37 +68,56 @@ function drawTableEvent() {
 			var row = table.getSelection()[0].row;
 			console.log('You selected ' + data.getValue(row, 0));
 			// TODO
-			// if any marker/polygon is currently selected
+			// if any marker/polyline is currently selected
 			// destroy the effect first
-			
-			if( maptToPlot == 'heatmap'){
+		
+			if( homeJSLocal.visualModeToApply == 'markers'){
 				// TODO, need to merge Yue's code
 				var caseno = data.getValue(row, 0);
-				for( var i = 0;i < onscreenMarker.length;i++){
-					if( onscreenMarker[i].accidentID ==  caseno){
-						//onscreenMarker[i].setmap(null);
-						/*
-						var tmpInfoWindow = new google.maps.InfoWindow();
-						tmpInfoWindow.setContent("TODO");
-						tmpInfoWindow.open(map, onscreenMarker[i]);
-						*/
-						onscreenMarker[i].setMap(null);
-						onscreenMarker[i] = new google.maps.Marker({
-							position: new google.maps.LatLng(acc_list[i].lat, acc_list[i].lng), 
-							//animation: google.maps.Animation.DROP,
-							animation: google.maps.Animation.BOUNCE,
-							map: map,
-							icon: '/static/imgs/red_cross_12.png'
+				if( lastSelectCaseno == caseno){
+					return;
+				}
+				
+				for( var i = 0;i < homeJS.onscreenMarker.length;i++){
 
+					if( homeJS.onscreenMarker[i].accidentID == lastSelectCaseno){
+						console.log("remove effet on old one");
+						homeJS.onscreenMarker[i].setMap(null);
+						homeJS.onscreenMarker[i] = new google.maps.Marker({
+							position: new google.maps.LatLng(acc_list[i].lat, acc_list[i].lng), 
+							map: homeJSLocal.map,
+							icon: '/static/imgs/red_cross_12.png',
+							accidentID: lastSelectCaseno
 						});
 						var infoWindow = new google.maps.InfoWindow();
-    						makeAccInfowindowEvent(
+						makeAccInfowindowEvent(
 								map, 
 								infoWindow, 
 								get_acc_details(acc_list[i]),
-								onscreenMarker[i]);
+								homeJS.onscreenMarker[i]);
+					}
+
+					if( homeJS.onscreenMarker[i].accidentID ==  caseno){
+						console.log("add animation to new one");
+						homeJS.onscreenMarker[i].setMap(null);
+						homeJS.onscreenMarker[i] = new google.maps.Marker({
+							position: new google.maps.LatLng(acc_list[i].lat, acc_list[i].lng), 
+							//animation: google.maps.Animation.DROP,
+							animation: google.maps.Animation.BOUNCE,
+							map: homeJSLocal.map,
+							icon: '/static/imgs/red_cross_12.png',
+							accidentID: caseno
+						});
+						var infoWindow = new google.maps.InfoWindow();
+						makeAccInfowindowEvent(
+								map, 
+								infoWindow, 
+								get_acc_details(acc_list[i]),
+								homeJS.onscreenMarker[i]);
 					}
 				}
+				// update the last select
+				lastSelectCaseno = caseno;
 			}else{
 				console.log("TODO");
 			}
