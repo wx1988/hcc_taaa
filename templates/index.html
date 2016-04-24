@@ -11,261 +11,268 @@ TODO, make the heatmap flexible to show the events as markers as well.
 
 -->
 <html>
-	<head>
-		<meta charset="utf-8">
-   	 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-    	<meta name="viewport" content="width=device-width, initial-scale=1">
-    	<meta name="description" content="">
-    	<meta name="author" content="">
-    	<title>TAAA</title>
-    	<!-- Bootstrap Core CSS -->
-    	<link href="static/css/bootstrap.min.css" rel="stylesheet">
-		<link rel='stylesheet' type='text/css' href='http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css'/>
-		<link rel="stylesheet" href="static/css/jquery.timepicker.min.css">
-		<link rel="stylesheet" href="static/css/jquery.timepicker.css">
-		<!-- Custom CSS -->
-    	<link href="static/css/home.css" rel="stylesheet">
-    	<!--css for tabs-->
-    	<link href="static/css/buttons.css" rel="stylesheet">
-			<!--<link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet" />-->
-		<style>
-	 	 html, body {
-       		 height: 100%;
-        	 margin: 0;
-        	 padding: 0;
-      	}
-      	#map {
-        	height: 100%;
-      	}
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="">
+<title>TAAA</title>
+<!-- Bootstrap Core CSS -->
+<link href="static/css/bootstrap.min.css" rel="stylesheet">
+<link rel='stylesheet' type='text/css' href='http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css'/>
+<link rel="stylesheet" href="static/css/jquery.timepicker.min.css">
+<link rel="stylesheet" href="static/css/jquery.timepicker.css">
+<!-- Custom CSS -->
+<link href="static/css/home.css" rel="stylesheet">
+<!--css for tabs-->
+<link href="static/css/buttons.css" rel="stylesheet">
+<!--<link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet" />-->
+<style>
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+#map {
+    height: 100%;
+}
 
-		.controls {
-        	margin-top: 10px;
-        	border: 1px solid transparent;
-        	border-radius: 2px 0 0 2px;
-        	box-sizing: border-box;
-        	-moz-box-sizing: border-box;
-        	height: 32px;
-        	outline: none;
-        	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-        }
+.controls {
+    margin-top: 10px;
+    border: 1px solid transparent;
+    border-radius: 2px 0 0 2px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    height: 32px;
+    outline: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
 
-     	 #pac-input {
-        	background-color: #fff;
-        	font-family: Roboto;
-        	font-size: 15px;
-        	font-weight: 300;
-        	margin-left: 12px;
-        	padding: 0 11px 0 13px;
-        	text-overflow: ellipsis;
-        	width: 300px;
-		 }
+#pac-input {
+    background-color: #fff;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 300;
+    margin-left: 12px;
+    padding: 0 11px 0 13px;
+    text-overflow: ellipsis;
+    width: 300px;
+}
 
-      	#pac-input:focus {
-        	border-color: #4d90fe;
-	  	}
+#pac-input:focus {
+    border-color: #4d90fe;
+}
 
-      	.pac-container {
-        	font-family: Roboto;
-      	}
+.pac-container {
+    font-family: Roboto;
+}
 
-      	#type-selector {
-       		 color: #fff;
-       	 	background-color: #4d90fe;
-        	padding: 5px 11px 0px 11px;
-      	}
+#type-selector {
+    color: #fff;
+    background-color: #4d90fe;
+    padding: 5px 11px 0px 11px;
+}
 
-      	#type-selector label {
-        	font-family: Roboto;
-        	font-size: 13px;
-        	font-weight: 300;
-      	}
-      	#target {
-        	width: 345px;
-        }
+#type-selector label {
+    font-family: Roboto;
+    font-size: 13px;
+    font-weight: 300;
+}
+#target {
+    width: 345px;
+}
 
-      #info-box {
-        background-color: white;
-        border: 1px solid black;
-        top: 45px;
-        position: absolute;
-        padding-left: 8px;
-        padding-right: 8px;
-        right: 30px;
-      }
+#info-box {
+    background-color: white;
+    border: 1px solid black;
+    top: 45px;
+    position: absolute;
+    padding-left: 8px;
+    padding-right: 8px;
+    right: 30px;
+}
 
-			.panel-heading a:after {
-				    font-family:'Glyphicons Halflings';
-						content:"v";
-						float: right;
-						color: grey;
-			}
-			.panel-heading a.collapsed:after {
-				content:">";
-			}
+.panel-heading a:after {
+    font-family:'Glyphicons Halflings';
+    content:"v";
+    float: right;
+    color: grey;
+}
+.panel-heading a.collapsed:after {
+    content:">";
+}
 
-		</style>
-    	<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCUZzippHXKw9q2Il2OGD57Zz04CfxIrpY&libraries=drawing,places,visualization"></script>
-		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
-		<script type="text/javascript" src="static/js/jquery.timepicker.min.js"></script>
-		<script type="text/javascript" src="static/js/jquery.timepicker.js"></script>
-		<script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-		<script src="/static/js/common_util.js"></script>
-		<script src="/static/js/drawingControl.js"></script>
-		<script src="/static/js/searchBox.js"></script>
-		<script src="/static/js/record.js"></script>
-		<script src="/static/js/showDetailTable.js"></script>
-		<script src="/static/js/render_markers.js"></script>
-		<script src="/static/js/render_heatmap.js"></script>
-		<script src="/static/js/render_roadsegments.js"></script>
-	</head>
-	<body>
-		<div class="container">
-			 <div class="row">
-        		<div class="col-md-3">
-        		</div>
-        		<div class="col-md-9">
+</style>
+<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCUZzippHXKw9q2Il2OGD57Zz04CfxIrpY&libraries=drawing,places,visualization"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+<script type="text/javascript" src="static/js/jquery.timepicker.min.js"></script>
+<script type="text/javascript" src="static/js/jquery.timepicker.js"></script>
+<script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src="/static/js/common_util.js"></script>
+<script src="/static/js/drawingControl.js"></script>
+<script src="/static/js/searchBox.js"></script>
+<script src="/static/js/record.js"></script>
+<script src="/static/js/render_markers.js"></script>
+<script src="/static/js/render_heatmap.js"></script>
+<script src="/static/js/render_roadsegments.js"></script>
 
-        		</div>
-			  </div>
-       		  <div class="row">
-				  <div class="col-md-3" id="facets">
-						<div class="panel-group">
+<!-- by Xing -->
+<script src="/static/js/showDetailTable.js"></script>
+<script src="/static/js/exportData.js"></script>
 
-							<!-- Location related-->
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h4 class="panel-title">
-										<a data-toggle="collapse" data-target="#locationfilter" class="collapsed"> Where </a>
-									</h4>
-								</div> <!-- end of panel-heading -->
-								<div id="locationfilter" class="panel-collapse collapse">
-									<div class="panel-body location-type">
-										<h5>Location Type</h5>
-										<input type="radio" name="loc-type" value="intersection"> Intersection <br>
-										<input type="radio" name="loc-type" value="segment"> Segment <br>
-										<input type="radio" name="loc-type" value="both"> Both
-									</div> <!-- end of panel body -->
-								</div> <!-- end of location filter -->
-							</div> <!-- panel 1-->
-
-							<!-- How -->
-							<div class="panel panel-default" id="panel2">
-								<div class="panel-heading">
-									<h4 class="panel-title">
-										<a data-toggle="collapse" data-target="#how"> How </a>
-									</h4>
-								</div> <!-- panel heading -->
-								<div id="how" class="panel-collapse">
-									<div class="panel-body">
-										<!-- accident general attributes -->
-										<div class="severity">
-											<h5>Severity</h5>
-											<input type="checkbox" name="severity" value="k"> K
-											<input type="checkbox" name="severity" value="a"> A
-											<input type="checkbox" name="severity" value="b"> B
-											<input type="checkbox" name="severity" value="c"> C
-										</div>
-										<div class="collision-type">
-											<h5>Collision Type</h5>
-											<input type="checkbox" name="Col-type" value="21"> rear-end <br>
-											<input type="checkbox" name="Col-type" value="27"> head-on <br>
-											<input type="checkbox" name="Col-type" value="14"> pedestrian <br>
-											<input type="checkbox" name="Col-type" value="15"> bicycle <br>
-										</div> <!-- end of collision type -->
-									</div> <!-- panel body-->
-								</div><!-- end of how -->
-							</div> <!-- end of panel 2 -->
-							
-							<div class="panel panel-default" id="panel3">
-								<div class="panel-heading">
-									<h4 class="panel-title">
-										<a data-toggle="collapse" data-target="#when" class="collapsed"> When </a>
-									</h4>
-								</div> <!-- panel heading -->
-								<div id="when" class="panel-collapse collapse">
-									<div class="panel-body">
-										<!-- date time -->
-										<div class="time-period">
-											<h5>Time Period</h5>
-											Start Date : <input type="text" id="start-date"> <br>
-											End Date : <input type="text" id="end-date">
-										</div>
-										<div class="time-of-day">
-											<h5>Time of day</h5>
-											Start time : <input type="text" id="start-time"> <br>
-											End time : <input type="text" id="end-time">
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div class="panel panel-default" id="panel4">
-								<div class="panel-heading">
-									<h4 class="panel-title">
-										<a data-toggle="collapse" data-target="#road" class="collapsed"> Road </a>
-									</h4>
-								</div> <!-- panel heading -->
-								<div id="road" class="panel-collapse collapse">
-									<div class="panel-body">
-
-										<!-- Road detail -->
-										<div class="no-of-lanes">
-											<h5>No. Of Lanes</h5>
-											<input type="checkbox" name="Col-type" value="2"> 2
-											<input type="checkbox" name="Col-type" value="4"> 4
-											<input type="checkbox" name="Col-type" value="6"> 6
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<!-- Driver Detail -->
-							<div class="panel panel-default" id="panel5">
-								<div class="panel-heading">
-									<h4 class="panel-title">
-										<a data-toggle="collapse" data-target="#who" class="collapsed"> Who </a>
-									</h4>
-								</div> <!-- panel heading -->
-								<div id="who" class="panel-collapse collapse">
-									<div class="panel-body">
-										TODO, driver filter
-									</div>
-								</div>
-							</div>
-						</div>
-
-					  <br/>
-					  <button class="btn btn-success" id="details">View Details</button><br><br>
-             		  <a class="btn btn-success">Export Data</a>
-				  </div>
-				  <div class="col-md-9">
-
-					  <div class="row">
-							<div class="col-md-6">	
-								<div id="userinfo"></div>
-							</div>
-							<div class="col-md-6">
-					  	  <button class="btn btn-info btn-pressure pull-right" id="accidents" >Accidents</button>
-                <button class="btn btn-success btn-pressure pull-right" id="roadsegments">RoadSegments</button>
-					      <button class="btn btn-danger btn-pressure pull-right" id="heatpmap">HeatMap</button>
-							</div>
-					  </div>
-
-					  <div class="row">
-						  <input id="pac-input" class="controls" type="text" placeholder="Search Box">
-						  <div id="map"></div>
-					  </div>
-					  <div class="row" id ="table_row">
-					 	 <div id="table_div"></div>
-					  </div>
-				  </div>
-
-			  </div>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
         </div>
-		<div id="info-box">Initializing</div>
-		<script src="static/js/home.js"></script>
-    <!-- /.container -->
-	</body>
+        <div class="col-md-9">
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3" id="facets">
+            <div class="panel-group">
+
+                <!-- Location related-->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-target="#locationfilter" class="collapsed"> Where </a>
+                        </h4>
+                    </div> <!-- end of panel-heading -->
+                    <div id="locationfilter" class="panel-collapse collapse">
+                        <div class="panel-body location-type">
+                            <h5>Location Type</h5>
+                            <input type="radio" name="loc-type" value="intersection"> Intersection <br>
+                            <input type="radio" name="loc-type" value="segment"> Segment <br>
+                            <input type="radio" name="loc-type" value="both"> Both
+                        </div> <!-- end of panel body -->
+                    </div> <!-- end of location filter -->
+                </div> <!-- panel 1-->
+
+                <!-- How -->
+                <div class="panel panel-default" id="panel2">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-target="#how"> How </a>
+                        </h4>
+                    </div> <!-- panel heading -->
+                    <div id="how" class="panel-collapse">
+                        <div class="panel-body">
+                            <!-- accident general attributes -->
+                            <div class="severity">
+                                <h5>Severity</h5>
+                                <input type="checkbox" name="severity" value="k"> K
+                                <input type="checkbox" name="severity" value="a"> A
+                                <input type="checkbox" name="severity" value="b"> B
+                                <input type="checkbox" name="severity" value="c"> C
+                            </div>
+                            <div class="collision-type">
+                                <h5>Collision Type</h5>
+                                <input type="checkbox" name="Col-type" value="21"> rear-end <br>
+                                <input type="checkbox" name="Col-type" value="27"> head-on <br>
+                                <input type="checkbox" name="Col-type" value="14"> pedestrian <br>
+                                <input type="checkbox" name="Col-type" value="15"> bicycle <br>
+                            </div> <!-- end of collision type -->
+                        </div> <!-- panel body-->
+                    </div><!-- end of how -->
+                </div> <!-- end of panel 2 -->
+
+                <div class="panel panel-default" id="panel3">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-target="#when" class="collapsed"> When </a>
+                        </h4>
+                    </div> <!-- panel heading -->
+                    <div id="when" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!-- date time -->
+                            <div class="time-period">
+                                <h5>Time Period</h5>
+                                Start Date : <input type="text" id="start-date"> <br>
+                                End Date : <input type="text" id="end-date">
+                            </div>
+                            <div class="time-of-day">
+                                <h5>Time of day</h5>
+                                Start time : <input type="text" id="start-time"> <br>
+                                End time : <input type="text" id="end-time">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default" id="panel4">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-target="#road" class="collapsed"> Road </a>
+                        </h4>
+                    </div> <!-- panel heading -->
+                    <div id="road" class="panel-collapse collapse">
+                        <div class="panel-body">
+
+                            <!-- Road detail -->
+                            <div class="no-of-lanes">
+                                <h5>No. Of Lanes</h5>
+                                <input type="checkbox" name="Col-type" value="2"> 2
+                                <input type="checkbox" name="Col-type" value="4"> 4
+                                <input type="checkbox" name="Col-type" value="6"> 6
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Driver Detail -->
+                <div class="panel panel-default" id="panel5">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-target="#who" class="collapsed"> Who </a>
+                        </h4>
+                    </div> <!-- panel heading -->
+                    <div id="who" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            TODO, driver filter
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <br/>
+            <button class="btn btn-success" id="details">
+                View Details</button> 
+            <button class="btn btn-success" id="export">Export Data</button>
+            <br/>(Only supported in Accident Mode)
+            
+        </div>
+        <div class="col-md-9">
+
+            <div class="row">
+                <div class="col-md-6">	
+                    <div id="userinfo"></div>
+                </div>
+                <div class="col-md-6">
+                    <button class="btn btn-success btn-pressure pull-right" id="roadsegments">RoadSegments</button>
+                    <button class="btn btn-info btn-pressure pull-right" id="heatpmap">HeatMap</button>
+                    <button class="btn btn-danger btn-pressure pull-right" id="accidents" >Accidents</button>
+                </div>
+            </div>
+
+            <div class="row">
+                <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+                <div id="map"></div>
+            </div>
+            <div class="row" id ="table_row">
+                <div id="table_div"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="info-box">Initializing</div>
+<script src="static/js/home.js"></script>
+<!-- /.container -->
+</body>
 </html>

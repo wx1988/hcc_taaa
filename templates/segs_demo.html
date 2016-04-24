@@ -60,14 +60,14 @@ function initMap() {
 
 
 function drawColorMap(){
-	var tmp_res = "";
-	for(var acc_num =0; acc_num < 30;acc_num+=4){
-		var tmpColor = HSVtoRGB( sigmoid(acc_num), 1,1 );
-		tmp_res += "<span style='background-color:"+tmpColor+";'>";
-		tmp_res += acc_num+"|";
-		tmp_res += "</span>";
-	}
-	jQuery("#colormap").html(tmp_res);
+    var tmp_res = "";
+    for(var acc_num =0; acc_num < 30;acc_num+=4){
+        var tmpColor = HSVtoRGB( sigmoid(acc_num), 1,1 );
+        tmp_res += "<span style='background-color:"+tmpColor+";'>";
+        tmp_res += acc_num+"|";
+        tmp_res += "</span>";
+    }
+    jQuery("#colormap").html(tmp_res);
 }
 
 function getEvents(){

@@ -206,7 +206,16 @@ $(function() {
     getEvents();
   });
 
+  $("#export").click(function(){
+    exportData();
+  });
+
   $('#details').click(function () {
+    if( homeJSLocal.visualModeToApply != "markers"){
+      alert("Only Accident View support ViewDetail");
+      return;
+    }
+    
     // TODO, state , change to a better name
     if(homeJSLocal.detailViewState == false) {
       homeJSLocal.detailViewState = true;
