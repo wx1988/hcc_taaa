@@ -2,35 +2,22 @@
  * Created by sumeetsingharora on 4/16/16.
  */
 
-/*
-onscreenMarker = [];
-selectedMarker = [];
-map = undefined;
-var heatmap;
-var shift_draw, lastShape;
-var facetObj;
-var searchBox;
-var maptToPlot = "heatmap";
-*/
-
-//TODO Do not know what is this, can not refactored
-var globalDataList = undefined;
-
 var homeJS = {
   onscreenMarker: [],
   selectedMarker: [],
   lastShape: undefined,
   roadsegments: undefined,
   heatmap: undefined,
-  currentVisualMode: undefined
+  currentVisualMode: undefined,
+  globalDataList: undefined    
 }
 
-var homeJSLocal = {
+var homeJSLocal = {        
   visualModeToApply: "heatmap",
   map: undefined,
   facetObj: undefined,
   searchBox: undefined,
-	detailViewState: "off"
+  detailViewState: false
 }
 
 function initMap() {
@@ -54,7 +41,7 @@ function initMap() {
       });
 
   addClearSelection(homeJSLocal.map);
-  addDrawing(homeJSLocal.map);
+  addDrawing(homeJSLocal.map);  
 
   // Create the search box and link it to the UI element.
   var input = document.getElementById('pac-input');
@@ -69,46 +56,46 @@ function initMap() {
 }
 
 function getEvents(){
-	// clear the old data
-	globalDataList = undefined;
+  // clear the old data
+  homeJS.globalDataList = undefined;
 
-  bound = homeJSLocal.map.getBounds();
+  var bound = homeJSLocal.map.getBounds();
   if(bound == undefined){
     // call this function later until the map is loaded
     setTimeout(getEvents, 100);
     return;
   }
 
-	ne = bound.getNorthEast();
-	sw = bound.getSouthWest();
+  var ne = bound.getNorthEast();
+  var sw = bound.getSouthWest();
 
-	// NOTE: when the height is set to 50%, the get bound is still get the old boundary 
-	// access the map bound
-	var down = sw.lat();
-	if(homeJSLocal.detailViewState == 'on'){
-		down = (ne.lat() + sw.lat())/2;
-	}
-	bounddic = {
-			'left':sw.lng(),
-			'right':ne.lng(),
-			'top':ne.lat(),
-			'down':down,
-			'facetObj':JSON.stringify(homeJSLocal.facetObj)
-	};
-	console.log(bounddic);
-	if( homeJSLocal.visualModeToApply == "segments"){
-			jQuery.post(
-					"/get_segs",
-					bounddic,
-					getEventCB,
-					'json');
-	}else{
-			jQuery.post(
-					"/get_accidents",
-					bounddic,
-					getEventCB,
-					'json');
-	}
+  // NOTE: when the height is set to 50%, the get bound is still get the old boundary 
+  // access the map bound
+  var down = sw.lat();
+  if(homeJSLocal.detailViewState){
+    down = (ne.lat() + sw.lat())/2;
+  }
+  var filterDic = {
+      'left':sw.lng(),
+      'right':ne.lng(),
+      'top':ne.lat(),
+      'down':down,
+      'facetObj':JSON.stringify(homeJSLocal.facetObj)
+  };
+  console.log(filterDic);
+  if( homeJSLocal.visualModeToApply == "segments"){
+      jQuery.post(
+          "/get_segs",
+          filterDic,
+          getEventCB,
+          'json');
+  }else{
+      jQuery.post(
+          "/get_accidents",
+          filterDic,
+          getEventCB,
+          'json');
+  }
 }
 
 function clearVisual(){
@@ -131,8 +118,8 @@ function getEventCB(data){
     return;
   }
 
-  //TODO do not know what is this
-  globalDataList = data.data;
+  // store the data globally
+  homeJS.globalDataList = data.data;
 
   if(homeJSLocal.visualModeToApply == "heatmap") {
     getAccidentHeatmapCB(homeJSLocal.map, data.data);
@@ -143,8 +130,8 @@ function getEventCB(data){
   }
 
   // udpate the table
-  if( homeJSLocal.detailViewState == 'on'){
-  	drawTableEvent();
+  if( homeJSLocal.detailViewState){
+    drawTableEvent();
   }
 }
 
@@ -219,42 +206,42 @@ $(function() {
     getEvents();
   });
 
-	$('#details').click(function () {
-		// TODO, state , change to a better name
-		if(homeJSLocal.detailViewState == "off") {
-			homeJSLocal.detailViewState = "on";
-			$('#details').text('Hide details');
-			$("#map").css("height", "50%");
+  $('#details').click(function () {
+    // TODO, state , change to a better name
+    if(homeJSLocal.detailViewState == false) {
+      homeJSLocal.detailViewState = true;
+      $('#details').text('Hide details');
+      $("#map").css("height", "50%");
 
-			// re-get the events, and the draw table will be called after data is loaded.
-			getEvents();	  
+      // re-get the events, and the draw table will be called after data is loaded.
+      getEvents();    
 
-		} else {
-			homeJSLocal.detailViewState = "off";
-			$('#details').text('View details');
-			$("#map").css("height", "100%");
-			$('#table_div').remove();
-			$('#table_row').append('<div id="table_div"></div>');
+    } else {
+      homeJSLocal.detailViewState = false;
+      $('#details').text('View details');
+      $("#map").css("height", "100%");
+      $('#table_div').remove();
+      $('#table_row').append('<div id="table_div"></div>');
 
-			// re-get the events
-			getEvents();
-		}
-	});
+      // re-get the events
+      getEvents();
+    }
+  });
 
-	initMap();
+  initMap();
 
-	// get user information
-	jQuery.post(
-			"/get_user_info",
-			{},
-			function(data){
-				if(data.status != 0){
-					alert('user information error'+data.data);
-					return;
-				}
-				user_info = data.data;
-				tmp_str = "You are user "+user_info.user_id;
-				$('#userinfo').html(tmp_str);
-			},
-			'json');
+  // get user information
+  jQuery.post(
+      "/get_user_info",
+      {},
+      function(data){
+        if(data.status != 0){
+          alert('user information error'+data.data);
+          return;
+        }
+        user_info = data.data;
+        tmp_str = "You are user "+user_info.user_id;
+        $('#userinfo').html(tmp_str);
+      },
+      'json');
 });

@@ -1,7 +1,6 @@
 *.py[co]
 .*.sw?
 .idea
-static/js/.DS_Store
 sessions
 .DS_Store
 sessions/
