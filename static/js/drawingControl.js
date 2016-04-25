@@ -1,4 +1,4 @@
-function addDrawing(map) {
+function createAndRenderDrawing(map) {
   //Drawing control
   var shapeOptions = {
     strokeWeight: 1,
@@ -26,6 +26,7 @@ function addDrawing(map) {
   });
 
   SetDrawingEvent(drawingManager, map); 
+  return drawingManager;
 }
 
 function clearDrawingButton(controlDiv) {
@@ -60,12 +61,13 @@ function clearDrawingButton(controlDiv) {
   });
 }
 
-function addClearSelection(map) {
+function createAndRenderClearSelection(map) {
   var centerControlDiv = document.createElement('div');
   var centerControl = new clearDrawingButton(centerControlDiv, map);
   centerControlDiv.index = 1;
   centerControlDiv.style['padding-top'] = '5px';
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
+  return centerControlDiv;
 }
 
 function SetDrawingEvent(drawingManager, map) {
@@ -77,12 +79,6 @@ function SetDrawingEvent(drawingManager, map) {
 
     homeJS.lastShape = e.overlay;
     homeJS.lastShape.type = e.type;
-
-    console.log("AAAAAAAAAAAAAAAAAAA");
-    console.log(homeJS.currentVisualMode); 
-    console.log("AAAAAAAAAAAAAAAAAAA");
-
-
     if(homeJS.currentVisualMode != "markers") return;
 
     if (homeJS.lastShape.type == google.maps.drawing.OverlayType.RECTANGLE) {
