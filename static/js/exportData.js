@@ -13,8 +13,6 @@ function download(filename, text) {
 }
 
 function exportData(){
-  var acc_list = homeJS.globalDataList;
-
   // TODO, make this part a common function
   var data = undefined;
 
