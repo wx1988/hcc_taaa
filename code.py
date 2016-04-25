@@ -8,8 +8,6 @@ import web,json
 import simplejson
 
 from hsis_codebook import *
-from db_api import get_acc_info_by_caseno, get_acc_raw_by_caseno
-from db_api import check_link_exists, create_new_link, get_link_id
 from db_api import get_accidents_api, get_segs_by_bound
 from user import get_next_uid
 

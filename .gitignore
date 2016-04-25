@@ -1,5 +1,6 @@
 *.py[co]
 .*.sw?
 .idea
+sessions
 .DS_Store
 sessions/

@@ -1,7 +1,7 @@
 function getAndRenderRoadsegments(map, roadsegments)
 {
   var infowindow = new google.maps.InfoWindow();
-  var segment = [];
+  var segment = [];  
   for(var i = 0; i < roadsegments.length; ++i)
   {
     var plist = roadsegments[i].plist;
@@ -62,16 +62,32 @@ function make_seg_infowindow_event(map, infowindow, contentString, line)
 }
 
 function getRoadSegmentsCB(map, segments) {
-    clearVisual();
-    homeJS.roadsegments = getAndRenderRoadsegments(map, segments);
+  clearVisual();
+  homeJS.roadsegments = getAndRenderRoadsegments(map, segments);
 
-    var numSegments = 0;
-    if(homeJS.roadsegments != undefined){
-      numSegments = homeJS.roadsegments.length;
-    }
-    document.getElementById('info-box').textContent = numSegments +  " segments showing in screen, including " + getNumAccidentsFromSegments(homeJS.roadsegments) + ' accident(s)';
-    console.log("rendering the road segments");
-    homeJS.currentVisualMode = 'segments';
+  var numSegments = 0;
+  if(homeJS.roadsegments != undefined){
+    numSegments = homeJS.roadsegments.length;
+  }
+  
+  // TODO, rename tmp_res
+  var tmp_res = "<div>";
+  for(var acc_num =0; acc_num < 30;acc_num+=4){
+    var tmpColor = HSVtoRGB( sigmoid(acc_num), 1,1 );
+    tmp_res += "<span style='background-color:"+tmpColor+";'>";
+    tmp_res += acc_num+"|";
+    tmp_res += "</span>";
+  }
+  tmp_res += "</div>";
+
+  $('#info-box').html( 
+    tmp_res + 
+    numSegments +  
+    " segments showing in screen <br/> including " + 
+    getNumAccidentsFromSegments(homeJS.roadsegments) + ' accident(s)');
+
+  console.log("rendering the road segments");
+  homeJS.currentVisualMode = 'segments';
 }
 
 function get_seg_details(seg)
