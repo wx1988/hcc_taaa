@@ -8,15 +8,17 @@ var homeJS = {
   lastShape: undefined,
   roadsegments: undefined,
   heatmap: undefined,
-  currentVisualMode: undefined,
+  currentVisualMode: 'markers',
   globalDataList: undefined    
 }
 
 var homeJSLocal = {        
-  visualModeToApply: "heatmap",
+  visualModeToApply: "markers",
   map: undefined,
   facetObj: undefined,
   searchBox: undefined,
+  drawingManager: undefined,
+  clearSelectAreaButton: undefined,
   detailViewState: false
 }
 
@@ -40,14 +42,18 @@ function initMap() {
           ]}
       });
 
-  addClearSelection(homeJSLocal.map);
-  addDrawing(homeJSLocal.map);  
+  homeJSLocal.clearSelectAreaButton = createAndRenderClearSelection(homeJSLocal.map);
+  homeJSLocal.drawingManager = createAndRenderDrawing(homeJSLocal.map);  
 
   // Create the search box and link it to the UI element.
   var input = document.getElementById('pac-input');
   homeJSLocal.searchBox = createSearchBox(homeJSLocal.map, input);
 
   homeJSLocal.map.addListener('idle', function() {
+    if(homeJS.lastShape != undefined) {
+      if(homeJS.currentVisualMode === 'markers'
+          &&  homeJSLocal.visualModeToApply === 'markers') return;
+    }
     getEvents();
     homeJSLocal.searchBox.setBounds(homeJSLocal.map.getBounds());
   });
@@ -56,6 +62,7 @@ function initMap() {
 }
 
 function getEvents(){
+
   // clear the old data
   homeJS.globalDataList = undefined;
 
@@ -76,25 +83,39 @@ function getEvents(){
     down = (ne.lat() + sw.lat())/2;
   }
   var filterDic = {
-      'left':sw.lng(),
-      'right':ne.lng(),
-      'top':ne.lat(),
-      'down':down,
-      'facetObj':JSON.stringify(homeJSLocal.facetObj)
+    'left':sw.lng(),
+    'right':ne.lng(),
+    'top':ne.lat(),
+    'down':down,
+    'facetObj':JSON.stringify(homeJSLocal.facetObj)
   };
   console.log(filterDic);
   if( homeJSLocal.visualModeToApply == "segments"){
-      jQuery.post(
-          "/get_segs",
-          filterDic,
-          getEventCB,
-          'json');
+    jQuery.post(
+        "/get_segs",
+        filterDic,
+        getEventCB,
+        'json');
   }else{
-      jQuery.post(
-          "/get_accidents",
-          filterDic,
-          getEventCB,
-          'json');
+    jQuery.post(
+        "/get_accidents",
+        filterDic,
+        getEventCB,
+        'json');
+  }
+}
+
+function enableDrawing() {
+  if(homeJS.currentVisualMode != 'markers') {
+    homeJSLocal.drawingManager.setMap(homeJSLocal.map);
+    homeJSLocal.map.controls[google.maps.ControlPosition.TOP_CENTER].push(homeJSLocal.clearSelectAreaButton);
+  }
+}
+
+function disableDrawing() {
+  if(homeJS.currentVisualMode === 'markers') {
+    homeJSLocal.drawingManager.setMap(null);
+    homeJSLocal.map.controls[google.maps.ControlPosition.TOP_CENTER].clear();
   }
 }
 
@@ -122,15 +143,18 @@ function getEventCB(data){
   homeJS.globalDataList = data.data;
 
   if(homeJSLocal.visualModeToApply == "heatmap") {
+    disableDrawing();
     getAccidentHeatmapCB(homeJSLocal.map, data.data);
   } else if(homeJSLocal.visualModeToApply == "segments") {
+    disableDrawing();
     getRoadSegmentsCB(homeJSLocal.map, data.data);
   } else {
+    enableDrawing();
     getAccidentMarkerCB(homeJSLocal.map, data.data);
   }
 
   // udpate the table
-  if( homeJSLocal.detailViewState){
+  if(homeJSLocal.detailViewState){
     drawTableEvent();
   }
 }
@@ -193,15 +217,21 @@ $(function() {
 
   $('#accidents').click(function () {
     homeJSLocal.visualModeToApply = "markers";
+    document.getElementById("details").disabled = false;
+    document.getElementById("export").disabled = false;
     getEvents();
   });
 
   $('#roadsegments').click(function () {
+    document.getElementById("details").disabled = true;
+    document.getElementById("export").disabled = true;
     homeJSLocal.visualModeToApply = "segments";
     getEvents();
   });
 
   $('#heatpmap').click(function () {
+    document.getElementById("details").disabled = true;
+    document.getElementById("export").disabled = true;
     homeJSLocal.visualModeToApply = "heatmap";
     getEvents();
   });
@@ -215,7 +245,7 @@ $(function() {
       alert("Only Accident View support ViewDetail");
       return;
     }
-    
+
     // TODO, state , change to a better name
     if(homeJSLocal.detailViewState == false) {
       homeJSLocal.detailViewState = true;

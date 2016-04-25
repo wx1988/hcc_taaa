@@ -124,7 +124,7 @@ function drawTableEvent() {
   // TODO 1, need to rewrite after merging Yue's code
   // TODO 2, the datatable should be updated when the map is moved. 
   // TODO 3, also need to update the table when the region is selected as polygon
-  
+
   if(homeJSLocal.visualModeToApply == "segment"){
     // show the road segment information
     //acc_list is currently holding all the segment information
