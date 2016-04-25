@@ -54,11 +54,11 @@ function initMap() {
       if(homeJS.currentVisualMode === 'markers'
           &&  homeJSLocal.visualModeToApply === 'markers') return;
     }
-  getEvents();
-  homeJSLocal.searchBox.setBounds(homeJSLocal.map.getBounds());
+    getEvents();
+    homeJSLocal.searchBox.setBounds(homeJSLocal.map.getBounds());
   });
 
-getEvents();
+  getEvents();
 }
 
 function getEvents(){
@@ -150,7 +150,7 @@ function getEventCB(data){
     getRoadSegmentsCB(homeJSLocal.map, data.data);
   } else {
     enableDrawing();
-    getAccidentMarkerCB(homeJSLocal.map, data.data);
+    eetAccidentMarkerCB(homeJSLocal.map, data.data);
   }
 
   // udpate the table
