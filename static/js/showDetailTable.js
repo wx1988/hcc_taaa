@@ -12,8 +12,8 @@ detailViewData = {
 
 function createAccData(acc_list){
   var data = new google.visualization.DataTable();
-  name_list = ['Caseno', 'date', 'time', 'road surface','Alcohol Flag', 'Light', 'Driver Gender', 'Location Type','Driver age', 'NumK', 'NumA', 'NumB', 'NumC'];
-  type_list = ['number', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'number', 'number', 'number', 'number'];
+  var name_list = ['Caseno', 'date', 'time', 'road surface','Alcohol Flag', 'Light', 'Driver Gender', 'Location Type','Driver age', 'NumK', 'NumA', 'NumB', 'NumC'];
+  var type_list = ['number', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'number', 'number', 'number', 'number'];
 
   for( var i = 0;i < name_list.length;i++){
     data.addColumn(type_list[i], name_list[i]);
@@ -42,9 +42,8 @@ function createAccData(acc_list){
 function createSegData(seg_list){
   var acc_list = seg_list;
   var data = new google.visualization.DataTable();
-
-  name_list = ['Route Number', 'Begin Milepost', 'End Milepost', 'Accident Num'];
-  type_list = ['string', 'number', 'number', 'number'];
+  var name_list = ['Route Number', 'Begin Milepost', 'End Milepost', 'Accident Num'];
+  var type_list = ['string', 'number', 'number', 'number'];
 
   for( var i = 0;i < name_list.length;i++){
     data.addColumn(type_list[i], name_list[i]);
@@ -122,7 +121,7 @@ function rowSelectCB() {
     // update the last select
     detailViewData.lastSelectCaseno = caseno;
   }else{
-    console.log("TODO");
+    console.log("TODO polyline view mode not supported yet");
     // for polygon, change the line width
   }
 }
