@@ -12,8 +12,8 @@ detailViewData = {
 
 function createAccData(acc_list){
   var data = new google.visualization.DataTable();
-  name_list = ['Caseno', 'date', 'time', 'NumK', 'NumA', 'NumB','NumC'];
-  type_list = ['number', 'string', 'string', 'number', 'number', 'number', 'number'];
+  name_list = ['Caseno', 'date', 'time', 'road surface','Alcohol Flag', 'Light', 'Driver Gender', 'Location Type','Driver age', 'NumK', 'NumA', 'NumB', 'NumC'];
+  type_list = ['number', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'number', 'number', 'number', 'number'];
 
   for( var i = 0;i < name_list.length;i++){
     data.addColumn(type_list[i], name_list[i]);
@@ -24,6 +24,12 @@ function createAccData(acc_list){
         acc_list[i].caseno,
         acc_list[i].acc_date,
         acc_list[i].time,
+        accCode.rdsurf[acc_list[i].rdsurf],
+        acc_list[i].alcflag,
+        accCode.light[acc_list[i].light],
+        accCode.drv_sex[acc_list[i].drv_sex],
+        accCode.loc_type[acc_list[i].loc_type],
+        acc_list[i].drv_age,
         acc_list[i].num_k,
         acc_list[i].num_a,
         acc_list[i].num_b,
