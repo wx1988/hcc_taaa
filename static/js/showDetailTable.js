@@ -12,7 +12,7 @@ function drawTableEvent() {
   // TODO 1, need to rewrite after merging Yue's code
   // TODO 2, the datatable should be updated when the map is moved. 
   // TODO 3, also need to update the table when the region is selected as polygon
-  
+
   if(homeJSLocal.visualModeToApply == "segment"){
     // show the road segment information
     //acc_list is currently holding all the segment information
@@ -32,14 +32,14 @@ function drawTableEvent() {
       name_list = ['Route Number', 'Begin Milepost', 'End Milepost', 'Accident Num'];
       type_list = ['string', 'number', 'number', 'number'];
     }else{
-      name_list = ['Caseno', 'date', 'time', 'NumK', 'NumA', 'NumB','NumC'];
-      type_list = ['number', 'string', 'string', 'number', 'number', 'number', 'number'];
+      name_list = ['Caseno', 'date', 'time', 'road surface','Alcohol Flag', 'Light', 'Driver Gender', 'Location Type','Driver age', 'NumK', 'NumA', 'NumB', 'NumC'];
+      type_list = ['number', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'number', 'number', 'number', 'number'];
     }
-    for( var i = 0;i < name_list.length;i++){
+    for( var i = 0; i < name_list.length; ++i){
       data.addColumn(type_list[i], name_list[i]);
     }
     if(homeJSLocal.visualModeToApply == "roadsegments"){
-      for(var i=0;i < acc_list.length;i++){
+      for(var i = 0; i < acc_list.length; ++i){
         var casenum = 0;
         if (acc_list[i].casenolist != undefined)
           casenum = acc_list[i].casenolist.length;
@@ -48,7 +48,7 @@ function drawTableEvent() {
             acc_list[i].begmp,
             acc_list[i].endmp, 
             casenum
-            ]);
+        ]);
       }
     }else{
       for(var i = 0;i < acc_list.length;i++){
@@ -56,11 +56,17 @@ function drawTableEvent() {
             acc_list[i].caseno,
             acc_list[i].acc_date,
             acc_list[i].time,
+            accCode.rdsurf[acc_list[i].rdsurf],
+            acc_list[i].alcflag,
+            accCode.light[acc_list[i].light],
+            accCode.drv_sex[acc_list[i].drv_sex],
+            accCode.loc_type[acc_list[i].loc_type],
+            acc_list[i].drv_age,
             acc_list[i].num_k,
             acc_list[i].num_a,
             acc_list[i].num_b,
             acc_list[i].num_c
-            ]);
+        ]);
       }
     }
 
@@ -73,14 +79,14 @@ function drawTableEvent() {
       // TODO
       // if any marker/polyline is currently selected
       // destroy the effect first
-    
+
       if( homeJSLocal.visualModeToApply == 'markers'){
         // TODO, need to merge Yue's code
         var caseno = data.getValue(row, 0);
         if( lastSelectCaseno == caseno){
           return;
         }
-        
+
         for( var i = 0;i < homeJS.onscreenMarker.length;i++){
 
           if( homeJS.onscreenMarker[i].accidentID == lastSelectCaseno){

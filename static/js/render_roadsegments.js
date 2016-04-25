@@ -28,7 +28,7 @@ function getAndRenderRoadsegments(map, roadsegments)
         ,strokeWeight: 1 + sigmoid(acc_num) * 5
     });
     segment[i].setMap(map);
-    make_seg_infowindow_event(map, infowindow, get_seg_details(roadsegments[i]), segment)
+    make_seg_infowindow_event(map, infowindow, get_seg_details(roadsegments[i]), segment[i])
   }
   return segment;
 }
