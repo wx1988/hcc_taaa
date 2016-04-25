@@ -45,20 +45,73 @@ function get_acc_details(accident) {
   if(accident.rdsurf != 'NAN') { acc_info += '<br />' + 'Road Surface: ' + rdsurf[accident.rdsurf]; }
   if(accident.caseno != 'NAN') { acc_info += '<br />' + 'Case Number: ' + accident.caseno; }
   if(accident.rte_nbr != 'NAN') { acc_info += '<br />' + 'Route Number: ' + accident.rte_nbr; }
+  if(accident.alcflag!= 'NAN') { acc_info += '<br />' + 'Alcohol Flag: ' + accident.alcflag; }
+  if(accident.light!= 'NAN') { acc_info += '<br />' + 'Light Condition: ' + light[accident.light]; }
+  if(accident.drv_sex!= 'NAN') { acc_info += '<br />' + 'Driver Gender: ' + drv_sex[accident.drv_sex]; }
+  if(accident.drv_age!= 'NAN') { acc_info += '<br />' + 'Driver Age: ' + accident.drv_age; }
+  if(accident.loc_type!= 'NAN') { acc_info += '<br />' + 'Location type: ' + loc_type[accident.loc_type]; }
+  if(accident.num_k!= 'NAN') { acc_info += '<br />' + 'Number of K: ' + accident.num_k; }
+  if(accident.num_a!= 'NAN') { acc_info += '<br />' + 'Number of A: ' + accident.num_a; }
+  if(accident.num_b!= 'NAN') { acc_info += '<br />' + 'Number of B: ' + accident.num_b; }
+  if(accident.num_c!= 'NAN') { acc_info += '<br />' + 'Number of C: ' + accident.num_c; }
   return acc_info;
 }
 
 function getAccidentMarkerCB(map, accidents) {
-    clearVisual();
-    set_markers(homeJS.onscreenMarker, null);
-    homeJS.onscreenMarker = getAndRenderMarkers(map, accidents);
-    document.getElementById('info-box').textContent = homeJS.onscreenMarker.length + " accident(s) showing in screen";
-    homeJS.currentVisualMode = 'markers';
-    console.log("rendering the accident marker");
+  clearVisual();
+  set_markers(homeJS.onscreenMarker, null);
+  homeJS.onscreenMarker = getAndRenderMarkers(map, accidents);
+  document.getElementById('info-box').textContent = homeJS.onscreenMarker.length + " accident(s) showing in screen";
+  homeJS.currentVisualMode = 'markers';
+  console.log("rendering the accident marker");
 }
 
 //TODO Find somewhere else to put the following codes
 //PAGE 64
+//
+
+
+drv_sex = {
+  0: 'Not Stated',
+  1: 'Male',
+  2: 'Female',
+  3: 'Not Occupied',
+  4: 'Unknown'
+}
+
+loc_type = {
+  0: 'No Feature',
+  1: 'Bridge',
+  2: 'Bridge Approach',
+  3: 'Underpass',
+  4: 'Driveway, Public',
+  5: 'Driveway, Private',
+  6: 'Alleyway Intersection',
+  7: 'Four-Way Intersection',
+  8: 'T-Intersection',
+  9: 'Y-Intersection',
+  10: 'Traffic Circle/Roundabout',
+  11: 'Five Point or More',
+  12: 'Related to Intersection',
+  13: 'Non-Intersection Median Crossing',
+  14: 'End or Beginning Divided Highway',
+  15: 'Off Ramp Entry',
+  16: 'Off Ramp Proper',
+  17: 'Off Ramp Terminal on Crossroad',
+  18: 'Merge Lane Between On and Off Ramp',
+  19: 'On Ramp Entry',
+  20: 'On Ramp Proper',
+  21: 'On Ramp Terminal on Crossroad',
+  22: 'Railroad Crossing',
+  23: 'Tunnel',
+  24: 'Shared Use Path or Trails',
+  25: 'Other',
+  26: 'Not stated (Pre 2000)',
+  27: 'Intersection of Roadway (Pre 2000)',
+  28: 'Interchange Ramp (Pre 2000)',
+  29: 'Interchange Service Road (Pre 2000)'
+}
+
 weather = {
   0:"Not Stated",
   1:"Clear",
