@@ -8,7 +8,7 @@ var homeJS = {
   lastShape: undefined,
   roadsegments: undefined,
   heatmap: undefined,
-  currentVisualMode: 'markers',
+  currentVisualMode: 'markers',// other two options, 'segments', 'heatmap'
   globalDataList: undefined    
 }
 
@@ -150,7 +150,7 @@ function getEventCB(data){
     getRoadSegmentsCB(homeJSLocal.map, data.data);
   } else {
     enableDrawing();
-    eetAccidentMarkerCB(homeJSLocal.map, data.data);
+    getAccidentMarkerCB(homeJSLocal.map, data.data);
   }
 
   // udpate the table
