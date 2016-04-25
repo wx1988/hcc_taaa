@@ -4,9 +4,11 @@
  * */
 
 // TODO, rename
-var lastSelectCaseno = undefined;
-var table = undefined;  // google table view
-var data = undefined;   // google data 
+detailViewData = {
+  lastSelectCaseno: undefined,
+  table: undefined,  // google table view
+  data : undefined   // google data 
+}
 
 function createAccData(acc_list){
   var data = new google.visualization.DataTable();
@@ -59,29 +61,30 @@ function createSegData(seg_list){
 function rowSelectCB() {
   var acc_list = homeJS.globalDataList;
   
-  var row = table.getSelection()[0].row;
-  console.log('You selected ' + data.getValue(row, 0));
+  var row = detailViewData.table.getSelection()[0].row;
+  console.log('You selected ' + detailViewData.data.getValue(row, 0));
   // TODO
   // if any marker/polyline is currently selected
   // destroy the effect first
 
   if( homeJSLocal.visualModeToApply == 'markers'){
     // TODO, need to merge Yue's code
-    var caseno = data.getValue(row, 0);
-    if( lastSelectCaseno == caseno){
+    var caseno = detailViewData.data.getValue(row, 0);
+    if( detailViewData.lastSelectCaseno == caseno){
       return;
     }
 
     for( var i = 0;i < homeJS.onscreenMarker.length;i++){
 
-      if( homeJS.onscreenMarker[i].accidentID == lastSelectCaseno){
+      if( homeJS.onscreenMarker[i].accidentID == 
+          detailViewData.lastSelectCaseno){
         console.log("remove effet on old one");
         homeJS.onscreenMarker[i].setMap(null);
         homeJS.onscreenMarker[i] = new google.maps.Marker({
           position: new google.maps.LatLng(acc_list[i].lat, acc_list[i].lng), 
           map: homeJSLocal.map,
           icon: '/static/imgs/red_cross_12.png',
-          accidentID: lastSelectCaseno
+          accidentID: detailViewData.lastSelectCaseno
         });
         var infoWindow = new google.maps.InfoWindow();
         makeAccInfowindowEvent(
@@ -111,7 +114,7 @@ function rowSelectCB() {
       }
     }
     // update the last select
-    lastSelectCaseno = caseno;
+    detailViewData.lastSelectCaseno = caseno;
   }else{
     console.log("TODO");
     // for polygon, change the line width
@@ -119,31 +122,22 @@ function rowSelectCB() {
 }
 
 function drawTableEvent() {
-  var acc_list = homeJS.globalDataList;
   // update by Xing, 4/22,  plot the actual data instead of the dummy data.
-  // TODO 1, need to rewrite after merging Yue's code
-  // TODO 2, the datatable should be updated when the map is moved. 
-  // TODO 3, also need to update the table when the region is selected as polygon
-
-  if(homeJSLocal.visualModeToApply == "segment"){
-    // show the road segment information
-    //acc_list is currently holding all the segment information
-  }else{
-    // show the accident information
-    // acc_list is currendly holding all the events
-  }
+  // the datatable should be updated when the map is moved. 
 
   google.charts.setOnLoadCallback(drawTable);
   function drawTable() {
-    if(homeJSLocal.visualModeToApply == "roadsegments"){
-      data = createSegData(homeJS.globalDataList);
+    // TODO, also need to update the table when the region is selected as polygon
+    // The createXXXData function need to be changed
+    if(homeJSLocal.visualModeToApply == "segments"){
+      detailViewData.data = createSegData(homeJS.globalDataList);
     }else{ 
-      data = createAccData(homeJS.globalDataList);
+      detailViewData.data = createAccData(homeJS.globalDataList);
     }
 
-    table = new google.visualization.Table(document.getElementById('table_div'));
-    google.visualization.events.addListener(table, 'select', rowSelectCB);
-    table.draw(data, {showRowNumber: true, width: '100%', height: '40%'}); 
+    detailViewData.table = new google.visualization.Table(document.getElementById('table_div'));
+    google.visualization.events.addListener(detailViewData.table, 'select', rowSelectCB);
+    detailViewData.table.draw(detailViewData.data, {showRowNumber: true, width: '100%', height: '40%'}); 
   }
 }
 

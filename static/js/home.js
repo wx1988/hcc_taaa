@@ -8,7 +8,7 @@ var homeJS = {
   lastShape: undefined,
   roadsegments: undefined,
   heatmap: undefined,
-  currentVisualMode: 'markers',
+  currentVisualMode: 'markers',// other two options, 'segments', 'heatmap'
   globalDataList: undefined    
 }
 
