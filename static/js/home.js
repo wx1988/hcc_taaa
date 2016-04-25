@@ -50,6 +50,7 @@ function initMap() {
   homeJSLocal.searchBox = createSearchBox(homeJSLocal.map, input);
 
   homeJSLocal.map.addListener('idle', function() {
+    add_record('mapMoved');
     if(homeJS.lastShape != undefined) {
       if(homeJS.currentVisualMode === 'markers'
           &&  homeJSLocal.visualModeToApply === 'markers') return;
@@ -164,12 +165,16 @@ $(function() {
   add_record('homepage'); 
   homeJSLocal.facetObj = constructEmptyFacetObj(homeJSLocal.facetObj);
   $('#facets :checkbox').click(function(){
+    // TODO, detail facets
+    add_record('checkboxFacet');
     getFacetsCheckboxes(homeJSLocal.facetObj);
     logFacetObj(homeJSLocal.facetObj);
     getEvents();
   });
 
   $('#facets :radio').click(function(){
+    // TODO, detail
+    add_record('radioFacet');
     getFacetsRadiobuttons(homeJSLocal.facetObj);
     logFacetObj(homeJSLocal.facetObj);
     getEvents();
@@ -177,6 +182,7 @@ $(function() {
 
   $("#start-date").datepicker({
     onSelect: function(dateText) {
+      add_record('changeStartDate');
       homeJSLocal.facetObj.date_range[0] = dateText;
       logFacetObj(homeJSLocal.facetObj);
       getEvents();
@@ -185,6 +191,7 @@ $(function() {
 
   $("#end-date").datepicker({
     onSelect: function(dateText) {
+      add_record('changeEndDate');
       homeJSLocal.facetObj.date_range[1] = dateText;
       logFacetObj(homeJSLocal.facetObj);
       getEvents();
@@ -193,6 +200,7 @@ $(function() {
 
   $("#start-time").timepicker({
     change: function(time) {
+      add_record('changeStartTime');
       var element =  $(this), text;
       var timepicker = element.timepicker();
       text = timepicker.format(time);
@@ -205,6 +213,7 @@ $(function() {
 
   $("#end-time").timepicker({
     change: function(time) {
+      add_record('changeEndTime');
       var element =  $(this), text;
       var timepicker = element.timepicker();
       text = timepicker.format(time);
@@ -216,6 +225,7 @@ $(function() {
   });
 
   $('#accidents').click(function () {
+    add_record("accidentViewMode");
     homeJSLocal.visualModeToApply = "markers";
     document.getElementById("details").disabled = false;
     document.getElementById("export").disabled = false;
@@ -223,6 +233,7 @@ $(function() {
   });
 
   $('#roadsegments').click(function () {
+    add_record("roadViewMode");
     document.getElementById("details").disabled = true;
     document.getElementById("export").disabled = true;
     homeJSLocal.visualModeToApply = "segments";
@@ -230,6 +241,7 @@ $(function() {
   });
 
   $('#heatpmap').click(function () {
+    add_record("heatmapViewMode");
     document.getElementById("details").disabled = true;
     document.getElementById("export").disabled = true;
     homeJSLocal.visualModeToApply = "heatmap";
@@ -237,6 +249,7 @@ $(function() {
   });
 
   $("#export").click(function(){
+    add_record("exportData");
     exportData();
   });
 
@@ -248,6 +261,7 @@ $(function() {
 
     // TODO, state , change to a better name
     if(homeJSLocal.detailViewState == false) {
+      add_record("viewDetail");
       homeJSLocal.detailViewState = true;
       $('#details').text('Hide details');
       $("#map").css("height", "50%");
@@ -256,6 +270,7 @@ $(function() {
       getEvents();    
 
     } else {
+      add_record("closeViewDetail");
       homeJSLocal.detailViewState = false;
       $('#details').text('View details');
       $("#map").css("height", "100%");

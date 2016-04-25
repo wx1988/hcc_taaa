@@ -64,6 +64,7 @@ function createSegData(seg_list){
 
 
 function rowSelectCB() {
+  add_record('detailRowClicked');
   var acc_list = homeJS.globalDataList;
   
   var row = detailViewData.table.getSelection()[0].row;

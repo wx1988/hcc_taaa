@@ -32,6 +32,7 @@ function renderNewMarkers(map, oldMarkers, newMarkers){
 function makeAccInfowindowEvent(map, infowindow, contentString, marker)
 {
   google.maps.event.addListener(marker, 'click', function() {
+    add_record('markerClicked');
     infowindow.setContent(contentString);
     infowindow.open(map, marker);
   });
