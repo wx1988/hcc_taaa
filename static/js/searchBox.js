@@ -3,6 +3,7 @@ function createSearchBox(map, inputElement) {
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(inputElement);
 
   searchBox.addListener('places_changed', function() {
+    add_record('searchPlace');
     var places = searchBox.getPlaces();
     if (places.length == 0) {
       return;
