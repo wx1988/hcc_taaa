@@ -99,9 +99,8 @@ function SetDrawingEvent(drawingManager, map) {
         }
       }
     }
-
-    var accNumInfo = homeJS.selectedMarker.length + " accident(s) has been selected";
-    $('#info-box').html(accNumInfo);
+    
+    drawMarkerInfoBox( homeJS.selectedMarker.length );
     
     // only show the markers in the current selected region
     renderNewMarkers(map, homeJS.onscreenMarker, homeJS.selectedMarker);

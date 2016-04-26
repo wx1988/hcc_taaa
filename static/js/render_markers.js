@@ -1,11 +1,26 @@
+
+function drawMarkerInfoBox(acc_num){
+  var accNumInfo = acc_num + " accident(s) showing in screen";
+  var colorInfo = "Color: severity K, <span style='color:red'>A</span>, "+
+    "<span style='color:orange;'>B</span>, "+
+    "<span style='color:green'>C</span>";
+  var iconInfo = "<img src='/static/imgs/collision/head_on_black_50p.png' /> Head on<br/>"+
+    "<img src='/static/imgs/collision/rear_end_black_50p.png' />Rear end <br/>"+
+    "<img src='/static/imgs/collision/pedestrian_black_50p.png' />Pedestrian<br/>"+
+    "<img src='/static/imgs/collision/bicycle_black_50p.png' />Bicycle<br/>"+
+    "<img src='/static/imgs/collision/dear_black_50p.png' />Animal";
+  
+  var whoInfo = accNumInfo+"<br/>"+colorInfo+"<br/>"+iconInfo;
+  $('#info-box').html(whoInfo);
+}
+
 function getAccidentMarkerCB(map, accidents) {
   /* main entrance to render the markers
    */
   clearVisual();
   set_markers(homeJS.onscreenMarker, null);
   homeJS.onscreenMarker = getAndRenderMarkers(map, accidents);
-  var accNumInfo = homeJS.onscreenMarker.length + " accident(s) showing in screen";
-  $('#info-box').html(accNumInfo);
+  drawMarkerInfoBox(  homeJS.onscreenMarker.length );
 
   // TODO, why set the visual mode here? should be controled by human?
   homeJS.currentVisualMode = 'markers';
@@ -36,7 +51,7 @@ function getAccidentIcon(accident){
   // cyclist 15
   // head-on 27
   // rear end 21, 22
-  console.log(accident.events);
+  //console.log(accident.events);
   var collision_type = '';
   if( accident.events.length > 1){
     if( (21 in accident.events) || (22 in accident.events))
