@@ -1,3 +1,5 @@
+
+
 function createAndRenderDrawing(map) {
   //Drawing control
   var shapeOptions = {

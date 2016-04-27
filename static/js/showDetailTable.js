@@ -1,19 +1,23 @@
 /*
  * create by sumeet
  * complete by xing
+ * refactorize, move the column name, type as common variable, add log to row selection and column sorted
  * */
 
-// TODO, rename
 detailViewData = {
   lastSelectCaseno: undefined,
   table: undefined,  // google table view
-  data : undefined   // google data 
+  data : undefined,   // google data 
+  acc_column_list : ['Caseno', 'date', 'time', 'road surface','Alcohol Flag', 'Light', 'Driver Gender', 'Location Type','Driver age', 'NumK', 'NumA', 'NumB', 'NumC'],
+  acc_type_list : ['number', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'number', 'number', 'number', 'number'],
+  road_column_list : ['Route Number', 'Begin Milepost', 'End Milepost', 'Accident Num'],
+  road_type_list : ['string', 'number', 'number', 'number']
 }
 
 function createAccData(acc_list){
   var data = new google.visualization.DataTable();
-  var name_list = ['Caseno', 'date', 'time', 'road surface','Alcohol Flag', 'Light', 'Driver Gender', 'Location Type','Driver age', 'NumK', 'NumA', 'NumB', 'NumC'];
-  var type_list = ['number', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'number', 'number', 'number', 'number'];
+  var name_list = detailViewData.acc_column_list;
+  var type_list = detailViewData.acc_type_list;
 
   for( var i = 0;i < name_list.length;i++){
     data.addColumn(type_list[i], name_list[i]);
@@ -42,8 +46,8 @@ function createAccData(acc_list){
 function createSegData(seg_list){
   var acc_list = seg_list;
   var data = new google.visualization.DataTable();
-  var name_list = ['Route Number', 'Begin Milepost', 'End Milepost', 'Accident Num'];
-  var type_list = ['string', 'number', 'number', 'number'];
+  var name_list = detailViewData.road_column_list;
+  var type_list = detailViewData.road_type_list;
 
   for( var i = 0;i < name_list.length;i++){
     data.addColumn(type_list[i], name_list[i]);
@@ -63,8 +67,7 @@ function createSegData(seg_list){
 }
 
 
-function rowSelectCB() {
-  add_record('detailRowClicked');
+function rowSelectCB() {  
   var acc_list = homeJS.globalDataList;
   
   var row = detailViewData.table.getSelection()[0].row;
@@ -79,6 +82,11 @@ function rowSelectCB() {
     if( detailViewData.lastSelectCaseno == caseno){
       return;
     }
+
+    add_record_refined({
+      "action":"detailRowClicked", 
+      "caseno": caseno
+    });
 
     for( var i = 0;i < homeJS.onscreenMarker.length;i++){
 
@@ -127,6 +135,17 @@ function rowSelectCB() {
   }
 }
 
+function columnSortedCB(){
+  sortInfo = detailViewData.table.getSortInfo();
+  add_record_refined({
+    'action': 'columnSorted',
+    'sortInfo' : {
+      'columnName': detailViewData.acc_column_list[sortInfo.column], 
+      'ascending': sortInfo.ascending
+    }
+  });
+}
+
 function drawTableEvent() {
   // update by Xing, 4/22,  plot the actual data instead of the dummy data.
   // the datatable should be updated when the map is moved. 
@@ -143,6 +162,7 @@ function drawTableEvent() {
 
     detailViewData.table = new google.visualization.Table(document.getElementById('table_div'));
     google.visualization.events.addListener(detailViewData.table, 'select', rowSelectCB);
+    google.visualization.events.addListener(detailViewData.table, 'sort', columnSortedCB);
     detailViewData.table.draw(detailViewData.data, {showRowNumber: true, width: '100%', height: '40%'}); 
   }
 }

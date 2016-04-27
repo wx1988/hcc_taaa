@@ -32,7 +32,12 @@ function renderNewMarkers(map, oldMarkers, newMarkers){
 function makeAccInfowindowEvent(map, infowindow, contentString, marker)
 {
   google.maps.event.addListener(marker, 'click', function() {
-    add_record('markerClicked');
+    add_record_refined({
+      "action": "markerClicked", 
+      "caseno": marker.accidentID,
+      "bound": getMapBound(map),
+      "facetObj": homeJSLocal.facetObj
+    });
     infowindow.setContent(contentString);
     infowindow.open(map, marker);
   });

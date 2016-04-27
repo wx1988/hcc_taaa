@@ -8,12 +8,12 @@ var homeJS = {
   lastShape: undefined,
   roadsegments: undefined,
   heatmap: undefined,
-  currentVisualMode: 'markers',// other two options, 'segments', 'heatmap'
+  currentVisualMode: 'markers', // other two options, 'segments', 'heatmap'
   globalDataList: undefined    
 }
 
 var homeJSLocal = {        
-  visualModeToApply: "markers",
+  visualModeToApply: "markers", // to keep the old visual mode and clear existing things
   map: undefined,
   facetObj: undefined,
   searchBox: undefined,
@@ -50,7 +50,6 @@ function initMap() {
   homeJSLocal.searchBox = createSearchBox(homeJSLocal.map, input);
 
   homeJSLocal.map.addListener('idle', function() {
-    add_record('mapMoved');
     if(homeJS.lastShape != undefined) {
       if(homeJS.currentVisualMode === 'markers'
           &&  homeJSLocal.visualModeToApply === 'markers') return;
@@ -160,21 +159,34 @@ function getEventCB(data){
   }
 }
 
-$(function() {
-  google.charts.load('current', {'packages':['table']});
-  add_record('homepage'); 
-  homeJSLocal.facetObj = constructEmptyFacetObj(homeJSLocal.facetObj);
+function facetSelectionInit(){
   $('#facets :checkbox').click(function(){
-    // TODO, detail facets
-    add_record('checkboxFacet');
+    var status = "disabled"
+    if(this.checked) status = "enabled";
+    if(this.name == 'severity'){
+      add_record('severity-'+this.value+'-'+status);
+    }else if(this.name == "Col-type"){
+      add_record('collisionType-'+this.value+'-'+status);
+    }else if(this.name == "nbrlane"){
+      add_record('laneNumber-'+this.value+'-'+status);
+    }
+    else{
+      console.log("WARNING: unknow checkbox type");
+    }
+
     getFacetsCheckboxes(homeJSLocal.facetObj);
     logFacetObj(homeJSLocal.facetObj);
     getEvents();
   });
 
   $('#facets :radio').click(function(){
-    // TODO, detail
-    add_record('radioFacet');
+    //console.log(this);
+    if(this.name == 'loc-type'){
+      add_record('locationType-'+this.value+'-enabled');      
+    }else{
+      console.log("WARNING: unknow radio button type");
+    }
+
     getFacetsRadiobuttons(homeJSLocal.facetObj);
     logFacetObj(homeJSLocal.facetObj);
     getEvents();
@@ -182,7 +194,11 @@ $(function() {
 
   $("#start-date").datepicker({
     onSelect: function(dateText) {
-      add_record('changeStartDate');
+      add_record_refined({
+        "action":"changeStartDate",
+        "value":dateText
+      });
+
       homeJSLocal.facetObj.date_range[0] = dateText;
       logFacetObj(homeJSLocal.facetObj);
       getEvents();
@@ -191,7 +207,11 @@ $(function() {
 
   $("#end-date").datepicker({
     onSelect: function(dateText) {
-      add_record('changeEndDate');
+      add_record_refined({
+        "action":"changeEndDate",
+        "value":dateText
+      });
+      
       homeJSLocal.facetObj.date_range[1] = dateText;
       logFacetObj(homeJSLocal.facetObj);
       getEvents();
@@ -200,12 +220,15 @@ $(function() {
 
   $("#start-time").timepicker({
     change: function(time) {
-      add_record('changeStartTime');
       var element =  $(this), text;
       var timepicker = element.timepicker();
       text = timepicker.format(time);
       var seconds = getSeconds(text);
       homeJSLocal.facetObj.timeofday_range[0] = seconds;
+      add_record_refined({
+        "action":"changeStartTime",
+        "value":seconds
+      });
       logFacetObj(homeJSLocal.facetObj);
       getEvents();
     }
@@ -213,17 +236,22 @@ $(function() {
 
   $("#end-time").timepicker({
     change: function(time) {
-      add_record('changeEndTime');
       var element =  $(this), text;
       var timepicker = element.timepicker();
       text = timepicker.format(time);
       var seconds = getSeconds(text);
       homeJSLocal.facetObj.timeofday_range[1] = seconds;
+      add_record_refined({
+        "action":"changeEndTime",
+        "value":seconds
+      });
       logFacetObj(homeJSLocal.facetObj);
       getEvents();
     }
   });
+}
 
+function viewModeSelectionInit(){
   $('#accidents').click(function () {
     add_record("accidentViewMode");
     homeJSLocal.visualModeToApply = "markers";
@@ -247,7 +275,9 @@ $(function() {
     homeJSLocal.visualModeToApply = "heatmap";
     getEvents();
   });
+}
 
+function viewDetailSelectionInit(){
   $("#export").click(function(){
     add_record("exportData");
     exportData();
@@ -281,10 +311,9 @@ $(function() {
       getEvents();
     }
   });
+}
 
-  initMap();
-
-  // get user information
+function initUserInfoPanel(){
   jQuery.post(
       "/get_user_info",
       {},
@@ -298,4 +327,18 @@ $(function() {
         $('#userinfo').html(tmp_str);
       },
       'json');
+}
+
+$(function() {
+  add_record('homepage'); 
+  google.charts.load('current', {'packages':['table']});
+  homeJSLocal.facetObj = constructEmptyFacetObj(homeJSLocal.facetObj);
+
+  facetSelectionInit();
+  viewModeSelectionInit();
+  viewDetailSelectionInit();    
+  initUserInfoPanel();
+  initMap();
+
+  initMapLogger(homeJSLocal.map);
 });

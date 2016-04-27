@@ -3,12 +3,6 @@ TODO, for the line segments part:
 1. need to for each segment, get the accident number.
 2. show the segment with color adjusted based on the event number.
 3. after click each road seg, show information.
-
-
-TODO, make the heatmap flexible to show the events as markers as well.
-1. draw each marker one by one.
-2. after click on each marker, show some information
-
 -->
 <html>
 <head>
@@ -217,9 +211,9 @@ html, body {
                             <!-- Road detail -->
                             <div class="no-of-lanes">
                                 <h5>No. Of Lanes</h5>
-                                <input type="checkbox" name="Col-type" value="2"> 2
-                                <input type="checkbox" name="Col-type" value="4"> 4
-                                <input type="checkbox" name="Col-type" value="6"> 6
+                                <input type="checkbox" name="nbrlane" value="2"> 2
+                                <input type="checkbox" name="nbrlane" value="4"> 4
+                                <input type="checkbox" name="nbrlane" value="6"> 6
                             </div>
                         </div>
                     </div>
@@ -261,7 +255,7 @@ html, body {
             </div>
 
             <div class="row">
-                <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+                <input id="pac-input" class="controls" type="text" placeholder="Enter location of interest">
                 <div id="map"></div>
             </div>
             <div class="row" id ="table_row">
