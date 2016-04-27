@@ -2,6 +2,17 @@
 //PAGE 64
 //
 
+accCodeEnum = {
+  event:{
+    Pedestrian: 14,
+    PedalCyclist: 15,
+    Animal: 17,
+    RearEndSlowOrStop: 21,
+    RearEndTurn: 22,
+    HeadOn: 27,
+  }
+};
+
 accCode = {
   drv_sex: {
     0: 'Not Stated',
@@ -193,4 +204,4 @@ accCode = {
     63 :"Crash Cushion",
     64 :"Other Fixed Object",
   }
-}
+};

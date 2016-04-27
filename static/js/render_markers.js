@@ -22,7 +22,7 @@ function getAccidentMarkerCB(map, accidents) {
   homeJS.onscreenMarker = getAndRenderMarkers(map, accidents);
   drawMarkerInfoBox(  homeJS.onscreenMarker.length );
 
-  // TODO, why set the visual mode here? should be controled by human?
+  // TODO, Yue, why set the visual mode here? should be controled by human?
   homeJS.currentVisualMode = 'markers';
   
   console.log("rendering the accident marker");
@@ -47,36 +47,19 @@ function getAccidentIcon(accident){
   if(accident.num_k>0) severityLevel = 'black';
 
   // collision type priority
-  // pedestrian 14
-  // cyclist 15
-  // head-on 27
-  // rear end 21, 22
-  //console.log(accident.events);
   var collision_type = '';
-  if( accident.events.length > 1){
-    if( (21 in accident.events) || (22 in accident.events))
-      collision_type = 'rear_end';
-    if( 27 in accident.events)
-      collision_type = 'head_on';
-    if( 15 in accident.events)
-      collision_type = 'bicycle';
-    if(14 in accident.events)
-      collision_type = 'pedestrian';
-    if( 17 in accident.events)
-      collision_type = 'dear';
-  }
-  if( accident.events.length == 1 ){
-    if( (21 == accident.events[0]) || (22 == accident.events[0]))
-      collision_type = 'rear_end';
-    if( 27 == accident.events[0])
-      collision_type = 'head_on';
-    if( 15 == accident.events[0])
-      collision_type = 'bicycle';
-    if(14 == accident.events[0])
-      collision_type = 'pedestrian';
-    if(17 == accident.events[0])
-      collision_type = 'dear';
-  }
+  if( $.inArray(accCodeEnum.event.Animal, accident.events) >= 0 )
+    collision_type = 'dear';
+  if( ($.inArray(accCodeEnum.event.RearEndSlowOrStop, accident.events) >= 0 ) || ($.inArray(accCodeEnum.event.RearEndTurn, accident.events)>=0 ) )
+    collision_type = 'rear_end';
+  if( $.inArray(accCodeEnum.event.HeadOn, accident.events) >= 0)
+    collision_type = 'head_on';
+  if( $.inArray(accCodeEnum.event.PedalCyclist, accident.events) >= 0)
+    collision_type = 'bicycle';
+  if( $.inArray(accCodeEnum.event.Pedstrian, accident.events) >= 0)
+    collision_type = 'pedestrian';
+  //console.log( accident.events );
+  //console.log( collision_type );
 
   var image = undefined;
   if(collision_type == ""){
