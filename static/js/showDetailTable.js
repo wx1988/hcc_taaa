@@ -24,6 +24,8 @@ function createAccData(acc_list){
   }
 
   for(var i = 0;i < acc_list.length;i++){
+    // the format of the date / time
+    //https://developers.google.com/chart/interactive/docs/reference#methods
     var date_comps = acc_list[i].acc_date.split('/');
     var h = Math.floor(acc_list[i].n_time/3600);
     var m = Math.floor( acc_list[i].n_time%3600/60 );

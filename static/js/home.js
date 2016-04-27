@@ -361,6 +361,16 @@ function initUserInfoPanel(){
       'json');
 }
 
+function initFacetPanelLogger(){
+  $('.panel').on('hidden.bs.collapse', function(e){
+    add_record(this.id+'Close');
+  });
+  $('.panel').on('show.bs.collapse', function(e){
+    add_record(this.id+'Open');
+  });
+
+}
+
 $(function() {
   add_record('homepage'); 
   google.charts.load('current', {'packages':['table']});
@@ -373,4 +383,5 @@ $(function() {
   initMap();
 
   initMapLogger(homeJSLocal.map);
+  initFacetPanelLogger();
 });
