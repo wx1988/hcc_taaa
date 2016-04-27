@@ -9,7 +9,7 @@ detailViewData = {
   table: undefined,  // google table view
   data : undefined,   // google data 
   acc_column_list : ['Caseno', 'date', 'time', 'road surface','Alcohol Flag', 'Light', 'Driver Gender', 'Location Type','Driver age', 'NumK', 'NumA', 'NumB', 'NumC'],
-  acc_type_list : ['number', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'number', 'number', 'number', 'number'],
+  acc_type_list : ['number', 'date', 'timeofday', 'string', 'string', 'string', 'string', 'string', 'string', 'number', 'number', 'number', 'number'],
   road_column_list : ['Route Number', 'Begin Milepost', 'End Milepost', 'Accident Num'],
   road_type_list : ['string', 'number', 'number', 'number']
 }
@@ -24,10 +24,16 @@ function createAccData(acc_list){
   }
 
   for(var i = 0;i < acc_list.length;i++){
+    var date_comps = acc_list[i].acc_date.split('/');
+    var h = Math.floor(acc_list[i].n_time/3600);
+    var m = Math.floor( acc_list[i].n_time%3600/60 );
+    var s = Math.floor( acc_list[i].n_time % 60);
     data.addRow([
         acc_list[i].caseno,
-        acc_list[i].acc_date,
-        acc_list[i].time,
+        new Date(parseInt(date_comps[2]), parseInt(date_comps[0]), parseInt(date_comps[1])), 
+        [h, m, s, 0],
+        //{v: acc_list[i].acc_date,  f: acc_list[i].n_acc_date},
+        //{v: acc_list[i].time, f: acc_list[i].n_time }, 
         accCode.rdsurf[acc_list[i].rdsurf],
         acc_list[i].alcflag,
         accCode.light[acc_list[i].light],
