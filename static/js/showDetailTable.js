@@ -81,7 +81,6 @@ function rowSelectCB() {
     }
 
     for( var i = 0;i < homeJS.onscreenMarker.length;i++){
-
       if( homeJS.onscreenMarker[i].accidentID == 
           detailViewData.lastSelectCaseno){
         console.log("remove effet on old one");
@@ -89,7 +88,7 @@ function rowSelectCB() {
         homeJS.onscreenMarker[i] = new google.maps.Marker({
           position: new google.maps.LatLng(acc_list[i].lat, acc_list[i].lng), 
           map: homeJSLocal.map,
-          icon: '/static/imgs/red_cross_12.png',
+          icon: getAccidentIcon(acc_list[i]),
           accidentID: detailViewData.lastSelectCaseno
         });
         var infoWindow = new google.maps.InfoWindow();
@@ -108,7 +107,7 @@ function rowSelectCB() {
           //animation: google.maps.Animation.DROP,
           animation: google.maps.Animation.BOUNCE,
           map: homeJSLocal.map,
-          icon: '/static/imgs/red_cross_12.png',
+          icon: getAccidentIcon(acc_list[i]),
           accidentID: caseno
         });
         var infoWindow = new google.maps.InfoWindow();

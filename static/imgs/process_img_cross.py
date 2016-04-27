@@ -39,9 +39,9 @@ def create_transparent_4grade(img_path, out_path, fill_color=None):
 
 if __name__ == '__main__':
     #do_it("head_on.png", "head_on_transparent.png")
-    fill_color_list = [None, (255,0,0,255), (255,127,0,255),(0,255,0,255)]
+    fill_color_list = [(0,0,0,255), (255,0,0,255), (255,127,0,255),(0,255,0,255)]
     name_list = ['black', 'red', 'orange', 'green']
-    img_name_list = ['dear', 'head_on', 'rear_end', 'bicycle', 'pedestrian']
+    img_name_list = ['red_cross_12']
     for img_name in img_name_list:
         for i in range(4):
             org_size_name = img_name+"_"+name_list[i]+".png"
@@ -50,5 +50,4 @@ if __name__ == '__main__':
                     img_name+".png", 
                     org_size_name,
                     fill_color_list[i])
-            os.system( 'convert {0} -resize 50% {1}'.format(org_size_name, reduce_size_name) )
 

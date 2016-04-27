@@ -70,8 +70,9 @@ function createAndRenderClearSelection(map) {
   return centerControlDiv;
 }
 
+
 function SetDrawingEvent(drawingManager, map) {
-  google.maps.event.addListener(drawingManager, 'overlaycomplete', function(e) {
+  function overlayCompleteCB(e){
     if (homeJS.lastShape != undefined) {
       homeJS.lastShape.setMap(null);
     }
@@ -79,25 +80,31 @@ function SetDrawingEvent(drawingManager, map) {
 
     homeJS.lastShape = e.overlay;
     homeJS.lastShape.type = e.type;
+    
+    // only valid in the accident markers view
     if(homeJS.currentVisualMode != "markers") return;
 
+    homeJS.selectedMarker = [];
     if (homeJS.lastShape.type == google.maps.drawing.OverlayType.RECTANGLE) {
       var lastBounds = homeJS.lastShape.getBounds();
-      homeJS.selectedMarker = [];
       for(var i = 0; i < homeJS.onscreenMarker.length; ++i) {
         if(lastBounds.contains(homeJS.onscreenMarker[i].getPosition())) {
           homeJS.selectedMarker.push(homeJS.onscreenMarker[i]);
         }
       }
     } else if (homeJS.lastShape.type == google.maps.drawing.OverlayType.POLYGON) {
-      homeJS.selectedMarker = [];
       for(var i = 0; i < homeJS.onscreenMarker.length; ++i) {
         if (google.maps.geometry.poly.containsLocation(homeJS.onscreenMarker[i].getPosition(), homeJS.lastShape)) {
           homeJS.selectedMarker.push(homeJS.onscreenMarker[i]);
         }
       }
     }
-    document.getElementById('info-box').textContent = homeJS.selectedMarker.length + " accident(s) has been selected";
+    
+    drawMarkerInfoBox( homeJS.selectedMarker.length );
+    
+    // only show the markers in the current selected region
     renderNewMarkers(map, homeJS.onscreenMarker, homeJS.selectedMarker);
-  });
+  }// end of definition of overlayCompleteCB
+
+  google.maps.event.addListener(drawingManager, 'overlaycomplete', overlayCompleteCB);
 }
