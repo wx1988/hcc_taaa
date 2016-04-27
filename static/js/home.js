@@ -193,6 +193,9 @@ function facetSelectionInit(){
   });
 
   $("#start-date").datepicker({
+    defaultDate: new Date(2009,1,1),
+    changeMonth: true,
+    changeYear:true,
     onSelect: function(dateText) {
       add_record_refined({
         "action":"changeStartDate",
@@ -206,6 +209,9 @@ function facetSelectionInit(){
   });
 
   $("#end-date").datepicker({
+    defaultDate: new Date(2014,12,31),
+    changeMonth: true,
+    changeYear: true,
     onSelect: function(dateText) {
       add_record_refined({
         "action":"changeEndDate",
