@@ -75,7 +75,6 @@ function createAndRenderClearSelection(map) {
 function pointInShape(p, shape){
   // p with interface of lat and lng
   // shape is as the format in SetDrawingEvent, with type filed
-  //
   if (shape.type == google.maps.drawing.OverlayType.RECTANGLE) {
     var lastBounds = shape.getBounds();
     if(lastBounds.contains(p)){
@@ -95,6 +94,8 @@ function SetDrawingEvent(drawingManager, map) {
       homeJS.lastShape.setMap(null);
     }
     drawingManager.setDrawingMode(null);
+    
+    add_record('regionSelected');
 
     homeJS.lastShape = e.overlay;
     homeJS.lastShape.type = e.type;
@@ -102,21 +103,6 @@ function SetDrawingEvent(drawingManager, map) {
     // only valid in the accident markers view
     if(homeJS.currentVisualMode != "markers") return;
     getEvents();
-    /* 
-    homeJS.selectedMarker = [];
-    for(var i = 0; i < homeJS.onscreenMarker.length; ++i) {
-      if( pointInShape( homeJS.onscreenMarker[i].getPosition(), homeJS.lastShape )){
-        homeJS.selectedMarker.push(homeJS.onscreenMarker[i]);
-      }
-    }
-
-    drawMarkerInfoBox( homeJS.selectedMarker.length );
-    
-    // only show the markers in the current selected region
-    renderNewMarkers(map, homeJS.onscreenMarker, homeJS.selectedMarker);
-
-    // TODO, besides the markers, also need to update the view detail table
-    */
     
   }// end of definition of overlayCompleteCB
 
