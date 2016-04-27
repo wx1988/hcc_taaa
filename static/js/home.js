@@ -3,9 +3,9 @@
  */
 
 var homeJS = {
-  onscreenMarker: [],
-  selectedMarker: [],
-  lastShape: undefined,
+  onscreenMarker: [], // on the markers 
+  selectedMarker: [], // markers in the selected region
+  lastShape: undefined, // the selected region
   roadsegments: undefined,
   heatmap: undefined,
   currentVisualMode: 'markers', // other two options, 'segments', 'heatmap'
