@@ -131,26 +131,44 @@ function clearVisual(){
 }
 
 function getEventCB(data){
-  if(homeJS.lastShape != undefined ){
-    homeJS.lastShape.setMap(null);
-  }
   if(data.status != 0){
     alert(data.data);
     return;
   }
 
-  // store the data globally
+  // default way
+  //
   homeJS.globalDataList = data.data;
+  if(homeJS.lastShape != undefined && homeJS.currentVisualMode == 'markers'){
+    // TODO, filter the event based on the shape
+    
+    // TODO, this should not be cleared
+    // NOTE, only clear by the event
+    //homeJS.lastShape.setMap(null);
+    
+    var dlist = data.data;
+    var newDataList = [];
+    for(var i = 0;i < dlist.length;i++){
+      var tmpp = {
+        lat: function(){return dlist[i].lat;}, 
+        lng: function(){return dlist[i].lng;}};
+      if( pointInShape(tmpp, homeJS.lastShape) ){
+        //newDataList[newDataList.length] = dlist[i];
+        newDataList.push( dlist[i] );
+      }
+    }
+    homeJS.globalDataList = newDataList;
+  }
 
   if(homeJSLocal.visualModeToApply == "heatmap") {
     disableDrawing();
-    getAccidentHeatmapCB(homeJSLocal.map, data.data);
+    getAccidentHeatmapCB(homeJSLocal.map, homeJS.globalDataList);
   } else if(homeJSLocal.visualModeToApply == "segments") {
     disableDrawing();
-    getRoadSegmentsCB(homeJSLocal.map, data.data);
+    getRoadSegmentsCB(homeJSLocal.map, homeJS.globalDataList);
   } else {
     enableDrawing();
-    getAccidentMarkerCB(homeJSLocal.map, data.data);
+    getAccidentMarkerCB(homeJSLocal.map, homeJS.globalDataList);
   }
 
   // udpate the table

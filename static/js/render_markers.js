@@ -86,8 +86,7 @@ function getAndRenderMarkers(map, accidents) {
   var pt_list = [];
   var marker_list = [];
   var infowindow = new google.maps.InfoWindow();
-  for(var i = 0; i < accidents.length; ++i)
-  {
+  for(var i = 0; i < accidents.length; ++i) {
     pt_list[i] = new google.maps.LatLng(
         accidents[i].lat, accidents[i].lng);
 
@@ -104,15 +103,14 @@ function getAndRenderMarkers(map, accidents) {
   return marker_list;
 }
 
-function renderNewMarkers(map, oldMarkers, newMarkers){
+function renderNewMarkers(map, oldMarkers, newMarkers) {
   /* remove old markers from map and put new markers on the map
    */
   set_markers(oldMarkers, null);
   set_markers(newMarkers, map);
 }
 
-function makeAccInfowindowEvent(map, infowindow, contentString, marker)
-{
+function makeAccInfowindowEvent(map, infowindow, contentString, marker) {
   google.maps.event.addListener(marker, 'click', function() {
     add_record_refined({
       "action": "markerClicked", 
