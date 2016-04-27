@@ -289,6 +289,9 @@ function viewModeSelectionInit(){
     document.getElementById("details").disabled = true;
     document.getElementById("export").disabled = true;
     homeJSLocal.visualModeToApply = "segments";
+
+    if(homeJSLocal.detailViewState == true)
+      closeDetailPanel();
     getEvents();
   });
 
@@ -297,8 +300,25 @@ function viewModeSelectionInit(){
     document.getElementById("details").disabled = true;
     document.getElementById("export").disabled = true;
     homeJSLocal.visualModeToApply = "heatmap";
+
+    if(homeJSLocal.detailViewState == true)
+      closeDetailPanel();
     getEvents();
   });
+}
+
+function openDetailPanel(){
+  homeJSLocal.detailViewState = true;
+  $('#details').text('Hide details');
+  $("#map").css("height", "50%");
+}
+
+function closeDetailPanel(){
+  homeJSLocal.detailViewState = false;
+  $('#details').text('View details');
+  $("#map").css("height", "100%");
+  $('#table_div').remove();
+  $('#table_row').append('<div id="table_div"></div>');
 }
 
 function viewDetailSelectionInit(){
@@ -313,27 +333,15 @@ function viewDetailSelectionInit(){
       return;
     }
 
-    // TODO, state , change to a better name
     if(homeJSLocal.detailViewState == false) {
       add_record("viewDetail");
-      homeJSLocal.detailViewState = true;
-      $('#details').text('Hide details');
-      $("#map").css("height", "50%");
-
-      // re-get the events, and the draw table will be called after data is loaded.
-      getEvents();    
-
+      openDetailPanel();
     } else {
       add_record("closeViewDetail");
-      homeJSLocal.detailViewState = false;
-      $('#details').text('View details');
-      $("#map").css("height", "100%");
-      $('#table_div').remove();
-      $('#table_row').append('<div id="table_div"></div>');
-
-      // re-get the events
-      getEvents();
+      closeDetailPanel();
     }
+    // re-get the events, and the draw table will be called after data is loaded.
+    getEvents();    
   });
 }
 
