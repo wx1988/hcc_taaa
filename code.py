@@ -3,7 +3,7 @@
 """
 This file provide the web interface, RESTful API
 """
-
+import os
 import web,json
 import simplejson
 
@@ -31,7 +31,25 @@ urls = (
 
 web.config.debug = False
 app = web.application(urls, globals())
-session = web.session.Session(app, web.session.DiskStore('sessions'))
+
+# REF: http://blog.csdn.net/a87b01c14/article/details/50266471
+import sqlite3
+session_db_path = 'session.db'
+if not os.path.isfile( session_db_path ):
+    conn = sqlite3.connect( session_db_path )
+    c = conn.cursor()
+    sql = """CREATE TABLE "sessions" ("session_id" VARCHAR PRIMARY KEY NOT NULL UNIQUE, "atime" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "data" TEXT)"""
+    c.execute(sql)
+    conn.commit()
+    conn.close()
+db = web.database(dbn='sqlite', db=session_db_path)
+if web.config.get('_session') is None:
+    session = web.session.Session( app, web.session.DBStore( db, 'sessions'), {'count':0} )
+    web.config._session = session
+else:
+    session = web.config._session
+# initialize DBsession
+#session = web.session.Session(app, web.session.DiskStore('sessions'))
 
 class index:
     """This page is the main user interface

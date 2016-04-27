@@ -101,7 +101,8 @@ function SetDrawingEvent(drawingManager, map) {
     
     // only valid in the accident markers view
     if(homeJS.currentVisualMode != "markers") return;
-    
+    getEvents();
+    /* 
     homeJS.selectedMarker = [];
     for(var i = 0; i < homeJS.onscreenMarker.length; ++i) {
       if( pointInShape( homeJS.onscreenMarker[i].getPosition(), homeJS.lastShape )){
@@ -115,6 +116,7 @@ function SetDrawingEvent(drawingManager, map) {
     renderNewMarkers(map, homeJS.onscreenMarker, homeJS.selectedMarker);
 
     // TODO, besides the markers, also need to update the view detail table
+    */
     
   }// end of definition of overlayCompleteCB
 

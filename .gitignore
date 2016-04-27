@@ -5,3 +5,4 @@ sessions
 .DS_Store
 sessions/
 static/imgs/collision
+session.db
