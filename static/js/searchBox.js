@@ -9,7 +9,7 @@ function createSearchBox(map, inputElement) {
       return;
     }
 
-    add_record({
+    add_record_refined({
       "action":"searchPlace",
       "value": $("#pac-input").val()
     });

@@ -190,7 +190,16 @@ function drawTableEvent() {
     detailViewData.table = new google.visualization.Table(document.getElementById('table_div'));
     google.visualization.events.addListener(detailViewData.table, 'select', rowSelectCB);
     google.visualization.events.addListener(detailViewData.table, 'sort', columnSortedCB);
-    detailViewData.table.draw(detailViewData.data, {showRowNumber: true, width: '100%', height: '40%'}); 
+    detailViewData.table.draw(detailViewData.data, {
+      showRowNumber: true, 
+      width: '100%', 
+      height: '40%',
+      cssClassNames: {headerCell: "googleTableHeaderCell"}
+    }); 
+    
+    //$(".googleTableHeaderCell"), add hover function to it. 
+    $(".googleTableHeaderCell").mouseover(function(){console.log(this.innerText); });
+    
   }
 }
 
