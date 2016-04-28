@@ -1,9 +1,10 @@
 
 function drawMarkerInfoBox(acc_num){
   var accNumInfo = acc_num + " accident(s) showing in screen";
-  var colorInfo = "Color: severity K, <span style='color:red'>A</span>, "+
-    "<span style='color:orange;'>B</span>, "+
-    "<span style='color:green'>C</span>";
+  var colorInfo = "Color: severity <span title='people killed'>K</span>"+
+    ", <span style='color:red' title='disabling injury'>A</span>, "+
+    "<span style='color:orange;' title='evident injury'>B</span>, "+
+    "<span style='color:green' title='possible injury'>C</span>";
   var iconInfo = "<img src='/static/imgs/collision/head_on_black_50p.png' /> Head on<br/>"+
     "<img src='/static/imgs/collision/rear_end_black_50p.png' />Rear end <br/>"+
     "<img src='/static/imgs/collision/pedestrian_black_50p.png' />Pedestrian<br/>"+
