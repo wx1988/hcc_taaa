@@ -1,3 +1,5 @@
+
+
 function createAndRenderDrawing(map) {
   //Drawing control
   var shapeOptions = {
@@ -70,6 +72,21 @@ function createAndRenderClearSelection(map) {
   return centerControlDiv;
 }
 
+function pointInShape(p, shape){
+  // p with interface of lat and lng
+  // shape is as the format in SetDrawingEvent, with type filed
+  if (shape.type == google.maps.drawing.OverlayType.RECTANGLE) {
+    var lastBounds = shape.getBounds();
+    if(lastBounds.contains(p)){
+      return true;
+    }
+  } else if (shape.type == google.maps.drawing.OverlayType.POLYGON) {
+    if (google.maps.geometry.poly.containsLocation(p, shape)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 function SetDrawingEvent(drawingManager, map) {
   function overlayCompleteCB(e){
@@ -77,33 +94,16 @@ function SetDrawingEvent(drawingManager, map) {
       homeJS.lastShape.setMap(null);
     }
     drawingManager.setDrawingMode(null);
+    
+    add_record('regionSelected');
 
     homeJS.lastShape = e.overlay;
     homeJS.lastShape.type = e.type;
     
     // only valid in the accident markers view
     if(homeJS.currentVisualMode != "markers") return;
-
-    homeJS.selectedMarker = [];
-    if (homeJS.lastShape.type == google.maps.drawing.OverlayType.RECTANGLE) {
-      var lastBounds = homeJS.lastShape.getBounds();
-      for(var i = 0; i < homeJS.onscreenMarker.length; ++i) {
-        if(lastBounds.contains(homeJS.onscreenMarker[i].getPosition())) {
-          homeJS.selectedMarker.push(homeJS.onscreenMarker[i]);
-        }
-      }
-    } else if (homeJS.lastShape.type == google.maps.drawing.OverlayType.POLYGON) {
-      for(var i = 0; i < homeJS.onscreenMarker.length; ++i) {
-        if (google.maps.geometry.poly.containsLocation(homeJS.onscreenMarker[i].getPosition(), homeJS.lastShape)) {
-          homeJS.selectedMarker.push(homeJS.onscreenMarker[i]);
-        }
-      }
-    }
+    getEvents();
     
-    drawMarkerInfoBox( homeJS.selectedMarker.length );
-    
-    // only show the markers in the current selected region
-    renderNewMarkers(map, homeJS.onscreenMarker, homeJS.selectedMarker);
   }// end of definition of overlayCompleteCB
 
   google.maps.event.addListener(drawingManager, 'overlaycomplete', overlayCompleteCB);

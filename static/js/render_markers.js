@@ -1,9 +1,10 @@
 
 function drawMarkerInfoBox(acc_num){
   var accNumInfo = acc_num + " accident(s) showing in screen";
-  var colorInfo = "Color: severity K, <span style='color:red'>A</span>, "+
-    "<span style='color:orange;'>B</span>, "+
-    "<span style='color:green'>C</span>";
+  var colorInfo = "Color: severity <span title='people killed'>K</span>"+
+    ", <span style='color:red' title='disabling injury'>A</span>, "+
+    "<span style='color:orange;' title='evident injury'>B</span>, "+
+    "<span style='color:green' title='possible injury'>C</span>";
   var iconInfo = "<img src='/static/imgs/collision/head_on_black_50p.png' /> Head on<br/>"+
     "<img src='/static/imgs/collision/rear_end_black_50p.png' />Rear end <br/>"+
     "<img src='/static/imgs/collision/pedestrian_black_50p.png' />Pedestrian<br/>"+
@@ -86,8 +87,7 @@ function getAndRenderMarkers(map, accidents) {
   var pt_list = [];
   var marker_list = [];
   var infowindow = new google.maps.InfoWindow();
-  for(var i = 0; i < accidents.length; ++i)
-  {
+  for(var i = 0; i < accidents.length; ++i) {
     pt_list[i] = new google.maps.LatLng(
         accidents[i].lat, accidents[i].lng);
 
@@ -104,39 +104,47 @@ function getAndRenderMarkers(map, accidents) {
   return marker_list;
 }
 
-function renderNewMarkers(map, oldMarkers, newMarkers){
+function renderNewMarkers(map, oldMarkers, newMarkers) {
   /* remove old markers from map and put new markers on the map
    */
   set_markers(oldMarkers, null);
   set_markers(newMarkers, map);
 }
 
-function makeAccInfowindowEvent(map, infowindow, contentString, marker)
-{
+function makeAccInfowindowEvent(map, infowindow, contentString, marker) {
   google.maps.event.addListener(marker, 'click', function() {
-    add_record('markerClicked');
+    add_record_refined({
+      "action": "markerClicked", 
+      "caseno": marker.accidentID,
+      "bound": getMapBound(map),
+      "facetObj": homeJSLocal.facetObj
+    });
     infowindow.setContent(contentString);
     infowindow.open(map, marker);
   });
 }
 
 function get_acc_details(accident) {
-  acc_info = 'Lat: ' + accident.lat + '<br />' + 'Lng: ' + accident.lng;
-  if(accident.acc_date != 'NAN') { acc_info += '<br />' + 'Data: ' + accident.acc_date; }
-  if(accident.time != 'NAN') { acc_info += '<br />' + 'Time: ' + accident.time; }
-  if(accident.weather1 != 'NAN') { acc_info += '<br />' + 'Weather: ' + accCode.weather[accident.weather1]; }
-  if(accident.rdsurf != 'NAN') { acc_info += '<br />' + 'Road Surface: ' + accCode.rdsurf[accident.rdsurf]; }
-  if(accident.caseno != 'NAN') { acc_info += '<br />' + 'Case Number: ' + accident.caseno; }
-  if(accident.rte_nbr != 'NAN') { acc_info += '<br />' + 'Route Number: ' + accident.rte_nbr; }
-  if(accident.alcflag!= 'NAN') { acc_info += '<br />' + 'Alcohol Flag: ' + accident.alcflag; }
-  if(accident.light!= 'NAN') { acc_info += '<br />' + 'Light Condition: ' + accCode.light[accident.light]; }
-  if(accident.drv_sex!= 'NAN') { acc_info += '<br />' + 'Driver Gender: ' + accCode.drv_sex[accident.drv_sex]; }
-  if(accident.drv_age!= 'NAN') { acc_info += '<br />' + 'Driver Age: ' + accident.drv_age; }
-  if(accident.loc_type!= 'NAN') { acc_info += '<br />' + 'Location type: ' + accCode.loc_type[accident.loc_type]; }
-  if(accident.num_k!= 'NAN') { acc_info += '<br />' + 'Number of K: ' + accident.num_k; }
-  if(accident.num_a!= 'NAN') { acc_info += '<br />' + 'Number of A: ' + accident.num_a; }
-  if(accident.num_b!= 'NAN') { acc_info += '<br />' + 'Number of B: ' + accident.num_b; }
-  if(accident.num_c!= 'NAN') { acc_info += '<br />' + 'Number of C: ' + accident.num_c; }
+  acc_info = '(Lat, Lng): ' + accident.lat.toFixed(3)+',' + accident.lng.toFixed(3);
+  acc_info +=  '; Datatime: ' + accident.acc_date +' ' +accident.time;
+  //if(accident.caseno != 'NAN') { acc_info += '<br />' + 'Case Number: ' + accident.caseno; }
+  //if(accident.rte_nbr != 'NAN') { acc_info += '<br />' + 'Route Number: ' + accident.rte_nbr; }
+  //
+  var env_info = "";
+  //if(accident.loc_type!= 'NAN') { env_info += 'Location type: ' + accCode.loc_type[accident.loc_type]; }
+  if(accident.light!= 'NAN') { env_info += '; ' + accCode.light[accident.light]; }
+  if(accident.weather1 != 'NAN') { env_info += '; ' + accCode.weather[accident.weather1]; }
+  if(accident.rdsurf != 'NAN') { env_info += ';Road Surface( ' + accCode.rdsurf[accident.rdsurf] +')'; }
+  acc_info += "<br/> Environment: "+ env_info;
+
+  var driver_info = "";
+  if(accident.drv_sex!= 'NAN') { driver_info += 'Gender('+accCode.drv_sex[accident.drv_sex]+'), '; }
+  if(accident.drv_age!= 'NAN') { driver_info += 'Age(' + accident.drv_age+'), '; }
+  if(accident.alcflag!= 'NAN') { driver_info += 'Alcohol(' + accident.alcflag+')'; }
+  acc_info += "<br/> Driver: "+driver_info;
+
+  acc_info += '<br />' + 'Number of injury with severity K, A, B, C: (' + accident.num_k + ', '+ 
+    accident.num_a + ', '+accident.num_b + ', '+  accident.num_c+')';
   return acc_info;
 }
 

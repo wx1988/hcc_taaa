@@ -29,9 +29,6 @@ def create_csv():
                     str(datetime.fromtimestamp(log['timestamp']/1000.0))
                     )
 
-# cy, phg
-task1_uid_list = [24,28]
-task2_uid_list = [25,29]
 
 def create_csv_from_db(uid_list, out_path):
     with open(out_path,'w') as outf:
@@ -48,5 +45,14 @@ def create_csv_from_db(uid_list, out_path):
 
 if __name__ == '__main__':
     #create_csv()
-    create_csv_from_db(task1_uid_list, 'task1.csv')
-    create_csv_from_db(task2_uid_list, 'task2.csv')
+
+    # cy, phg
+    task1_uid_list = [24,28]
+    task2_uid_list = [25,29]
+    #create_csv_from_db(task1_uid_list, 'task1.csv')
+    #create_csv_from_db(task2_uid_list, 'task2.csv')
+
+    stage2_task1_uid_list = [41,44]
+    stage2_task2_uid_list = [42,45]
+    #create_csv_from_db(stage2_task1_uid_list, 'stage2task1.csv')
+    create_csv_from_db(stage2_task2_uid_list, 'stage2task2.csv')

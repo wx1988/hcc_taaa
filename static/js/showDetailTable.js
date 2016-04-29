@@ -1,29 +1,50 @@
 /*
  * create by sumeet
  * complete by xing
+ * refactorize, move the column name, type as common variable, add log to row selection and column sorted
  * */
 
-// TODO, rename
 detailViewData = {
   lastSelectCaseno: undefined,
   table: undefined,  // google table view
-  data : undefined   // google data 
+  data : undefined,   // google data 
+
+  acc_column_list : ['Caseno', 'date', 'time', 'road surface','Alcohol Flag', 'Light', 'Driver Gender', 'Location Type','Driver age', 'NumK', 'NumA', 'NumB', 'NumC'],
+  acc_type_list : ['number', 'date', 'timeofday', 'string', 'string', 'string', 'string', 'string', 'string', 'number', 'number', 'number', 'number'],
+
+  // additional information to be shown here
+  new_acc_column_list : ['animal', 'rear-end', 'head-on', 'bicycle', 'pedestrian'],
+  new_acc_type_list : ['boolean', 'boolean', 'boolean', 'boolean', 'boolean'],
+  
+  road_column_list : ['Route Number', 'Begin Milepost', 'End Milepost', 'Accident Num'],
+  road_type_list : ['string', 'number', 'number', 'number']
 }
 
 function createAccData(acc_list){
   var data = new google.visualization.DataTable();
-  var name_list = ['Caseno', 'date', 'time', 'road surface','Alcohol Flag', 'Light', 'Driver Gender', 'Location Type','Driver age', 'NumK', 'NumA', 'NumB', 'NumC'];
-  var type_list = ['number', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'number', 'number', 'number', 'number'];
+
+  var name_list = detailViewData.acc_column_list;
+  var type_list = detailViewData.acc_type_list;
+  name_list = name_list.concat( detailViewData.new_acc_column_list );
+  type_list = type_list.concat( detailViewData.new_acc_type_list );
 
   for( var i = 0;i < name_list.length;i++){
     data.addColumn(type_list[i], name_list[i]);
   }
 
   for(var i = 0;i < acc_list.length;i++){
-    data.addRow([
+    // the format of the date / time
+    //https://developers.google.com/chart/interactive/docs/reference#methods
+    var date_comps = acc_list[i].acc_date.split('/');
+    var h = Math.floor(acc_list[i].n_time/3600);
+    var m = Math.floor( acc_list[i].n_time%3600/60 );
+    var s = Math.floor( acc_list[i].n_time % 60);
+    var tmpRow = [
         acc_list[i].caseno,
-        acc_list[i].acc_date,
-        acc_list[i].time,
+        new Date(parseInt(date_comps[2]), parseInt(date_comps[0]), parseInt(date_comps[1])), 
+        [h, m, s, 0],
+        //{v: acc_list[i].acc_date,  f: acc_list[i].n_acc_date},
+        //{v: acc_list[i].time, f: acc_list[i].n_time }, 
         accCode.rdsurf[acc_list[i].rdsurf],
         acc_list[i].alcflag,
         accCode.light[acc_list[i].light],
@@ -34,7 +55,18 @@ function createAccData(acc_list){
         acc_list[i].num_a,
         acc_list[i].num_b,
         acc_list[i].num_c
-        ]);
+        ];
+
+    // part 2 the colision type
+    var is_animal =  ($.inArray(accCodeEnum.event.Animal,acc_list[i].events) >= 0 );
+    var is_rear_end = ($.inArray(accCodeEnum.event.RearEndSlowOrStop, acc_list[i].events) >= 0 ) || ($.inArray(accCodeEnum.event.RearEndTurn, acc_list[i].events)>=0 ) ;
+    var is_head_on =  ($.inArray(accCodeEnum.event.HeadOn, acc_list[i].events) >= 0);
+    var is_bicycle = ( $.inArray(accCodeEnum.event.PedalCyclist, acc_list[i].events) >= 0);
+    var is_pedestrian = ($.inArray(accCodeEnum.event.Pedstrian, acc_list[i].events) >= 0);
+
+    var tmpRow2 = [ is_animal, is_rear_end, is_head_on, is_bicycle, is_pedestrian ];
+    tmpRow = tmpRow.concat(tmpRow2);
+    data.addRow( tmpRow );
   }
   return data;
 }
@@ -42,8 +74,8 @@ function createAccData(acc_list){
 function createSegData(seg_list){
   var acc_list = seg_list;
   var data = new google.visualization.DataTable();
-  var name_list = ['Route Number', 'Begin Milepost', 'End Milepost', 'Accident Num'];
-  var type_list = ['string', 'number', 'number', 'number'];
+  var name_list = detailViewData.road_column_list;
+  var type_list = detailViewData.road_type_list;
 
   for( var i = 0;i < name_list.length;i++){
     data.addColumn(type_list[i], name_list[i]);
@@ -63,8 +95,7 @@ function createSegData(seg_list){
 }
 
 
-function rowSelectCB() {
-  add_record('detailRowClicked');
+function rowSelectCB() {  
   var acc_list = homeJS.globalDataList;
   
   var row = detailViewData.table.getSelection()[0].row;
@@ -79,6 +110,11 @@ function rowSelectCB() {
     if( detailViewData.lastSelectCaseno == caseno){
       return;
     }
+
+    add_record_refined({
+      "action":"detailRowClicked", 
+      "caseno": caseno
+    });
 
     for( var i = 0;i < homeJS.onscreenMarker.length;i++){
       if( homeJS.onscreenMarker[i].accidentID == 
@@ -126,6 +162,17 @@ function rowSelectCB() {
   }
 }
 
+function columnSortedCB(){
+  sortInfo = detailViewData.table.getSortInfo();
+  add_record_refined({
+    'action': 'columnSorted',
+    'sortInfo' : {
+      'columnName': detailViewData.acc_column_list[sortInfo.column], 
+      'ascending': sortInfo.ascending
+    }
+  });
+}
+
 function drawTableEvent() {
   // update by Xing, 4/22,  plot the actual data instead of the dummy data.
   // the datatable should be updated when the map is moved. 
@@ -142,7 +189,17 @@ function drawTableEvent() {
 
     detailViewData.table = new google.visualization.Table(document.getElementById('table_div'));
     google.visualization.events.addListener(detailViewData.table, 'select', rowSelectCB);
-    detailViewData.table.draw(detailViewData.data, {showRowNumber: true, width: '100%', height: '40%'}); 
+    google.visualization.events.addListener(detailViewData.table, 'sort', columnSortedCB);
+    detailViewData.table.draw(detailViewData.data, {
+      showRowNumber: true, 
+      width: '100%', 
+      height: '40%',
+      cssClassNames: {headerCell: "googleTableHeaderCell"}
+    }); 
+    
+    //$(".googleTableHeaderCell"), add hover function to it. 
+    $(".googleTableHeaderCell").mouseover(function(){console.log(this.innerText); });
+    
   }
 }
 
