@@ -52,8 +52,8 @@ function drawSeverity(){
 
   tmpData = google.visualization.arrayToDataTable(tmpData);
   var options = { title: 'Severity Statistics' };
-  var chart = new google.visualization.PieChart( document.getElementById('googleChartDiv'));
-  chart.draw(tmpData, options );
+  var chart = new google.visualization.PieChart(document.getElementById('googleChartDiv'));
+  chart.draw(tmpData, options);
 }
 
 function drawCollisionType(){
@@ -71,12 +71,12 @@ function drawCollisionType(){
   for( var k in event2num ){
     tmpData.push([accCode.event[k], event2num[k]]);
   }
-  tmpData.sort( function(a,b){return b[1] - a[1];})
+  tmpData.sort(function(a,b){return b[1] - a[1];})
   tmpData.splice(0,0,  ['Collision Type', 'Number' ]);
   tmpData = google.visualization.arrayToDataTable(tmpData);
   var options = { title: 'Collision Type Statistics' };
-  var chart = new google.visualization.PieChart( document.getElementById('googleChartDiv'));
-  chart.draw(tmpData, options );
+  var chart = new google.visualization.PieChart(document.getElementById('googleChartDiv'));
+  chart.draw(tmpData, options);
 
 }
 
