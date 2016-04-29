@@ -1,3 +1,6 @@
+drawFigureVar = {
+  currentView : 'severity'
+};
 
 function drawFigureInit(){
   // init the draw figure here
@@ -9,11 +12,15 @@ function drawFigureInit(){
 function changeFigure(){
   console.log(this);
   console.log( this.value );
-  if( this.value == "severity"){
+  drawFigureVar.currentView = this.value;
+  reDrawFigure();
+}
+function reDrawFigure(){
+  if( drawFigureVar.currentView == "severity"){
     drawSeverity();
-  }else if (this.value == "collision"){
+  }else if ( drawFigureVar.currentView == "collision"){
     drawCollisionType();
-  }else if (this.value == "timeofday"){
+  }else if ( drawFigureVar.currentView  == "timeofday"){
     drawTimeofDay();
   }else{
     console.log("Unknow type of selection");

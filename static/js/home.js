@@ -174,6 +174,7 @@ function getEventCB(data){
   // udpate the table
   if(homeJSLocal.detailViewState){
     drawTableEvent();
+    reDrawFigure();
   }
 }
 

@@ -27,7 +27,9 @@ function urlParam(name){
 
 function getMapBound(map){
   var bound = map.getBounds();
-  if(bound == undefined)return undefined;
+  if(bound == undefined) {
+    return undefined;
+  }
   var ne = bound.getNorthEast();
   var sw = bound.getSouthWest();
   return {

@@ -116,7 +116,7 @@ class get_accidents:
                 ignore_nan=True)
         except Exception as e:
             return json.dumps({
-                'status':0,
+                'status':1,
                 'data':str(e)
                 })
 
@@ -134,7 +134,7 @@ class add_log:
             return json.dumps({'status':0})
         except Exception as e:
             return json.dumps({
-                'status':0,
+                'status':1,
                 'data':str(e)
                 })
 
@@ -161,7 +161,7 @@ class get_segs:
                 ignore_nan=True)            
         except Exception, e:
             return json.dumps({
-                'status':0,
+                'status':1,
                 'data':str(e)
                 })
 
