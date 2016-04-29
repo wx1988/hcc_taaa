@@ -48,9 +48,11 @@ Sumeet might want to add copyright of the code we used currently
 
 <!-- for detail table view -->
 <script src="/static/js/showDetailTable.js"></script>
+<script src="/static/js/drawFigure.js"></script>
 <script src="/static/js/exportData.js"></script>
 
 </head>
+
 <body>
 <div class="container">
     <div class="row">
@@ -61,7 +63,7 @@ Sumeet might want to add copyright of the code we used currently
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3" id="facets">
+        <div class="col-md-2" id="facets">
             <div class="panel-group">
 
                 <!-- Location related-->
@@ -174,7 +176,7 @@ Sumeet might want to add copyright of the code we used currently
             <!--<br/>(Only supported in Accident Mode)-->
             
         </div>
-        <div class="col-md-9">
+        <div class="col-md-10">
 
             <div class="row">
                 <div class="col-md-3">	
@@ -197,7 +199,15 @@ Sumeet might want to add copyright of the code we used currently
                 <div id="map"></div>
             </div>
             <div class="row" id ="table_row">
-                <div id="table_div"></div>
+                <div id="table_div" class="col-md-8"></div>
+                <div id="visual_div" class="col-md-4">
+                    <select id='chartSelect'>
+                        <option value="severity">Severity</option>
+                        <option value="collision">Collision Type</option>
+                        <option value="timeofday">Time of Day</option>
+                    </select>
+                    <div id="googleChartDiv" style="height: 40%;"></div>
+                </div>
             </div>
         </div>
 

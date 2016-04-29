@@ -311,14 +311,16 @@ function openDetailPanel(){
   homeJSLocal.detailViewState = true;
   $('#details').text('Hide details');
   $("#map").css("height", "50%");
+  $("#table_row").show();
 }
 
 function closeDetailPanel(){
   homeJSLocal.detailViewState = false;
   $('#details').text('View details');
   $("#map").css("height", "100%");
-  $('#table_div').remove();
-  $('#table_row').append('<div id="table_div"></div>');
+  //$('#table_div').remove();
+  //$('#table_row').append('<div id="table_div"></div>');
+  $('#table_row').hide();
 }
 
 function viewDetailSelectionInit(){
@@ -373,12 +375,17 @@ function initFacetPanelLogger(){
 
 $(function() {
   add_record('homepage'); 
-  google.charts.load('current', {'packages':['table']});
+  google.charts.load('current', {'packages':['table', 'corechart', 'bar']});
   homeJSLocal.facetObj = constructEmptyFacetObj(homeJSLocal.facetObj);
 
   facetSelectionInit();
   viewModeSelectionInit();
-  viewDetailSelectionInit();    
+  viewDetailSelectionInit();
+
+  // add callback function, draw something
+  drawFigureInit();
+  $('#table_row').hide();
+
   initUserInfoPanel();
   initMap();
 
