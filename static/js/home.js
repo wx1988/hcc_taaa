@@ -9,7 +9,7 @@ var homeJS = {
   roadsegments: undefined,
   heatmap: undefined,
   currentVisualMode: 'markers', // other two options, 'segments', 'heatmap'
-  globalDataList: undefined    
+  globalDataList: undefined
 }
 
 var homeJSLocal = {        
@@ -90,6 +90,7 @@ function getEvents(){
     'facetObj':JSON.stringify(homeJSLocal.facetObj)
   };
   console.log(filterDic);
+  homeJS.waitingDialog.show();
   if( homeJSLocal.visualModeToApply == "segments"){
     jQuery.post(
         "/get_segs",
@@ -103,6 +104,7 @@ function getEvents(){
         getEventCB,
         'json');
   }
+
 }
 
 function enableDrawing() {
@@ -131,6 +133,11 @@ function clearVisual(){
 }
 
 function getEventCB(data){
+
+  if(homeJS.lastShape != undefined ){
+    homeJS.lastShape.setMap(null);
+  }
+
   if(data.status != 0){
     alert(data.data);
     return;
@@ -176,6 +183,7 @@ function getEventCB(data){
     drawTableEvent();
     reDrawFigure();
   }
+  homeJS.waitingDialog.hide();
 }
 
 function facetSelectionInit(){
