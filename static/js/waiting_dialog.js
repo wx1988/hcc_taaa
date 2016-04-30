@@ -1,5 +1,5 @@
-
 /**
+ * code from : https://github.com/ehpc/bootstrap-waitingfor
  * Module for displaying "Waiting for..." dialog using Bootstrap
  *
  * @author Eugene Maslovich <ehpc@em42.ru>

@@ -19,7 +19,9 @@ var homeJSLocal = {
   searchBox: undefined,
   drawingManager: undefined,
   clearSelectAreaButton: undefined,
-  detailViewState: false
+  detailViewState: false,
+  waitingDialog: waitingDialog,
+  globalInit: false
 }
 
 function initMap() {
@@ -90,7 +92,11 @@ function getEvents(){
     'facetObj':JSON.stringify(homeJSLocal.facetObj)
   };
   console.log(filterDic);
-  homeJS.waitingDialog.show();
+
+  if(homeJSLocal.globalInit) {
+    homeJSLocal.waitingDialog.show();
+  }
+
   if( homeJSLocal.visualModeToApply == "segments"){
     jQuery.post(
         "/get_segs",
@@ -183,7 +189,9 @@ function getEventCB(data){
     drawTableEvent();
     reDrawFigure();
   }
-  homeJS.waitingDialog.hide();
+  // set global init to be true once the initial loading has been done. Need to prevent blocking of initial page.
+  homeJSLocal.globalInit = true;
+  homeJSLocal.waitingDialog.hide();
 }
 
 function facetSelectionInit(){
@@ -383,7 +391,8 @@ function initFacetPanelLogger(){
 }
 
 $(function() {
-  add_record('homepage'); 
+  homeJSLocal.gloabalInit = false;
+  add_record('homepage');
   google.charts.load('current', {'packages':['table', 'corechart', 'bar']});
   homeJSLocal.facetObj = constructEmptyFacetObj(homeJSLocal.facetObj);
 
