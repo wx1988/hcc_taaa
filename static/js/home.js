@@ -21,7 +21,8 @@ var homeJSLocal = {
   clearSelectAreaButton: undefined,
   detailViewState: false,
   waitingDialog: waitingDialog,
-  globalInit: false
+  globalInit: false, // this serves as the function of notifying the global initialization has been done.
+  on: false // It act as kind of mutual exclusion to allow only one thread to acquire the loading dialog box.
 }
 
 function initMap() {
@@ -93,7 +94,9 @@ function getEvents(){
   };
   console.log(filterDic);
 
-  if(homeJSLocal.globalInit) {
+  // when global loading has finished and waiting dialog is not acquired by any other thread.
+  if(homeJSLocal.globalInit && !homeJSLocal.on) {
+    homeJSLocal.on = true;
     homeJSLocal.waitingDialog.show();
   }
 
@@ -139,10 +142,6 @@ function clearVisual(){
 }
 
 function getEventCB(data){
-
-  if(homeJS.lastShape != undefined ){
-    homeJS.lastShape.setMap(null);
-  }
 
   if(data.status != 0){
     alert(data.data);
@@ -192,6 +191,7 @@ function getEventCB(data){
   // set global init to be true once the initial loading has been done. Need to prevent blocking of initial page.
   homeJSLocal.globalInit = true;
   homeJSLocal.waitingDialog.hide();
+  homeJSLocal.on = false;
 }
 
 function facetSelectionInit(){
