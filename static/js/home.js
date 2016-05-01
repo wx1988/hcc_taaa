@@ -22,7 +22,7 @@ var homeJSLocal = {
   detailViewState: false,
   waitingDialog: waitingDialog,
   globalInit: false, // this serves as the function of notifying the global initialization has been done.
-  on: false // It act as kind of mutual exclusion to allow only one thread to acquire the loading dialog box.
+  mutexWaitingDialog: false // It act as kind of mutual exclusion to allow only one thread to acquire the waiting dialog box.
 }
 
 function initMap() {
@@ -95,8 +95,8 @@ function getEvents(){
   console.log(filterDic);
 
   // when global loading has finished and waiting dialog is not acquired by any other thread.
-  if(homeJSLocal.globalInit && !homeJSLocal.on) {
-    homeJSLocal.on = true;
+  if(homeJSLocal.globalInit && !homeJSLocal.mutexWaitingDialog) {
+    homeJSLocal.mutexWaitingDialog = true;
     homeJSLocal.waitingDialog.show();
   }
 
@@ -191,7 +191,7 @@ function getEventCB(data){
   // set global init to be true once the initial loading has been done. Need to prevent blocking of initial page.
   homeJSLocal.globalInit = true;
   homeJSLocal.waitingDialog.hide();
-  homeJSLocal.on = false;
+  homeJSLocal.mutexWaitingDialog = false;
 }
 
 function facetSelectionInit(){
