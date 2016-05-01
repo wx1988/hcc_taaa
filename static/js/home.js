@@ -9,7 +9,7 @@ var homeJS = {
   roadsegments: undefined,
   heatmap: undefined,
   currentVisualMode: 'markers', // other two options, 'segments', 'heatmap'
-  globalDataList: undefined    
+  globalDataList: undefined
 }
 
 var homeJSLocal = {        
@@ -19,7 +19,10 @@ var homeJSLocal = {
   searchBox: undefined,
   drawingManager: undefined,
   clearSelectAreaButton: undefined,
-  detailViewState: false
+  detailViewState: false,
+  waitingDialog: waitingDialog,
+  globalInit: false, // this serves as the function of notifying the global initialization has been done.
+  mutexWaitingDialog: false // It act as kind of mutual exclusion to allow only one thread to acquire the waiting dialog box.
 }
 
 function initMap() {
@@ -90,6 +93,13 @@ function getEvents(){
     'facetObj':JSON.stringify(homeJSLocal.facetObj)
   };
   console.log(filterDic);
+
+  // when global loading has finished and waiting dialog is not acquired by any other thread.
+  if(homeJSLocal.globalInit && !homeJSLocal.mutexWaitingDialog) {
+    homeJSLocal.mutexWaitingDialog = true;
+    homeJSLocal.waitingDialog.show();
+  }
+
   if( homeJSLocal.visualModeToApply == "segments"){
     jQuery.post(
         "/get_segs",
@@ -103,6 +113,7 @@ function getEvents(){
         getEventCB,
         'json');
   }
+
 }
 
 function enableDrawing() {
@@ -131,6 +142,7 @@ function clearVisual(){
 }
 
 function getEventCB(data){
+
   if(data.status != 0){
     alert(data.data);
     return;
@@ -176,6 +188,10 @@ function getEventCB(data){
     drawTableEvent();
     reDrawFigure();
   }
+  // set global init to be true once the initial loading has been done. Need to prevent blocking of initial page.
+  homeJSLocal.globalInit = true;
+  homeJSLocal.waitingDialog.hide();
+  homeJSLocal.mutexWaitingDialog = false;
 }
 
 function facetSelectionInit(){
@@ -375,7 +391,8 @@ function initFacetPanelLogger(){
 }
 
 $(function() {
-  add_record('homepage'); 
+  homeJSLocal.gloabalInit = false;
+  add_record('homepage');
   google.charts.load('current', {'packages':['table', 'corechart', 'bar']});
   homeJSLocal.facetObj = constructEmptyFacetObj(homeJSLocal.facetObj);
 
