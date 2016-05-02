@@ -300,11 +300,11 @@ function facetSelectionInit(){
     range:true,
     min: 0,
     max: 100,
-    values: [18, 50],
+    values: [10, 90],
     slide: function(event, ui) {
       $("#age").val(ui.values[0] + " - " + ui.values[1]);
-      //homeJSLocal.facetObj.driver_age_range[0] = ui.values[0];
-      //homeJSLocal.facetObj.driver_age_range[1] = ui.values[1];
+      homeJSLocal.facetObj.driver_age_range[0] = ui.values[0];
+      homeJSLocal.facetObj.driver_age_range[1] = ui.values[1];
       add_record_refined({
         "action":"changedDriverAge",
         "value":ui.values

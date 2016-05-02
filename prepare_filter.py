@@ -137,6 +137,16 @@ def af_driver_sex(webinput):
     if webinput['driver_sex'] == 'both':
         return {'drv_sex': {'$in':['1','2']}}
 
+def af_driver_alc(webinput):
+    if not webinput.has_key('alcflag'):
+        return {}
+    if webinput['alcflag'] == 'Y':
+        return {'alcflag':'Y'}
+    if webinput['alcflag'] == 'N':
+        return {'alcflag':'N'}
+    if webinput['alcflag'] == 'both':
+        return {}
+
 def af_severity(webinput):
     """set up the severity filter for mongodb query
 
@@ -202,12 +212,13 @@ def accident_filter(webinput):
     final_dict = {}
     filter_list = [af_bound, af_collision_type,
             af_date_range, af_tod_range,
-            af_driver_age, af_driver_sex, 
+            af_driver_age, af_driver_sex, af_driver_alc, 
             af_severity, af_loc_type, 
             af_lane_number]
     for af in filter_list:
         tmpdic = af(webinput)
         final_dict.update( tmpdic )
+    print 'final filter dict', final_dict
     return final_dict
 
 """
