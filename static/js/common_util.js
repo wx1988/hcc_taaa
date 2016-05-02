@@ -64,11 +64,11 @@ function getFacetsRadiobuttons(facetObj) {
   }
 
   // TODO seems like bug at the backend. Uncomment when resolved.
-  /*
+
   facetObj.driver_sex = $('input[name=Gender-type]:checked', '.gender-type').val();
   if(facetObj.driver_sex == undefined) {
     facetObj.driver_sex = "both";
-  } */
+  }
 
   facetObj.alcflag = $('input[name=Alcohol-type]:checked', '.alcohol-type').val();
   if(facetObj.alcflag == undefined) {
@@ -84,7 +84,7 @@ function constructEmptyFacetObj(facetObj) {
   var loc_type = "both";
   var timePeriod = ["-1/-1/-1", "-1/-1/-1"];
   var timeOfDay = ["-1", "-1"];
-  var driver_age_range = ["-1", "-1"];
+  var driver_age_range = ["0", "100"];
   var driver_sex = "both";
   var alcflag = "N";
 
@@ -92,8 +92,7 @@ function constructEmptyFacetObj(facetObj) {
   facetObj = {
     'collision': collision, 'severity': severity, 'no_of_lanes': no_of_lanes, 'loc_type': loc_type,
     'date_range': timePeriod, 'timeofday_range': timeOfDay, 'alcflag': alcflag,
-    //'driver_age_range' : driver_age_range, 'driver_sex' : driver_sex};
-  };
+    'driver_age_range' : driver_age_range, 'driver_sex' : driver_sex};
   return facetObj;
 }
 
@@ -107,8 +106,8 @@ function  logFacetObj(facetObj) {
   console.log("Time of day is " + facetObj.timeofday_range );
   console.log("alcohol fla is " + facetObj.alcflag);
   //TODO uncomment once working
-  //console.log("Range for driver age is " + facetObj.driver_age_range);
-  //console.log("Driver Sex is " + facetObj.driver_sex);
+  console.log("Range for driver age is " + facetObj.driver_age_range);
+  console.log("Driver Sex is " + facetObj.driver_sex);
 }
 
 function  getSeconds(time) {
