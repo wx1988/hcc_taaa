@@ -1,6 +1,6 @@
 """
 Remove white part of the image to make it transparent
-Create four color, black, red, orange, green to indicate accident of different severity. 
+Create four color, black, red, orange, green to indicate accident of different severity.
 """
 import os
 from PIL import Image
@@ -27,7 +27,7 @@ def create_transparent_4grade(img_path, out_path, fill_color=None):
             # transparent
             newData.append((255, 255, 255, 0))
         else:
-            
+
             if fill_color == None:
                 newData.append( item )
             else:
@@ -39,15 +39,20 @@ def create_transparent_4grade(img_path, out_path, fill_color=None):
 
 if __name__ == '__main__':
     #do_it("head_on.png", "head_on_transparent.png")
-    fill_color_list = [(0,0,0,255), (255,0,0,255), (255,127,0,255),(0,255,0,255)]
+
+    fill_color_list = [
+        (0,0,0,255),
+        (254, 117, 105, 255),# from google marker icon
+        (246, 156,85,255),# from stackoverflow
+        (52, 186, 70, 255)# from google marker icon
+        ]
     name_list = ['black', 'red', 'orange', 'green']
     img_name_list = ['red_cross_12']
     for img_name in img_name_list:
         for i in range(4):
-            org_size_name = img_name+"_"+name_list[i]+".png"
-            reduce_size_name = img_name+"_"+name_list[i]+"_50p.png"
+            org_size_name = "cross_12_"+name_list[i]+".png"
             create_transparent_4grade(
-                    img_name+".png", 
+                    img_name+".png",
                     org_size_name,
                     fill_color_list[i])
 
