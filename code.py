@@ -8,7 +8,7 @@ import web,json
 import simplejson
 
 from hsis_codebook import *
-from db_api import get_accidents_api, get_segs_by_bound
+from db_api import get_accidents_api, get_segs_by_bound, get_acc_info_by_caseno
 from user import get_next_uid
 
 urls = (
@@ -17,6 +17,7 @@ urls = (
 
     # restful api part
     '/get_accidents', 'get_accidents',
+    '/get_accident_by_caseno', 'get_accident_by_caseno',
     '/get_segs', 'get_segs',
     '/add_log', 'add_log',
     '/get_user_info', 'get_user_info',
@@ -114,6 +115,24 @@ class get_accidents:
                 'status':0,
                 'data':data},
                 ignore_nan=True)
+        except Exception as e:
+            return json.dumps({
+                'status':1,
+                'data':str(e)
+                })
+
+    def POST(self):
+        return self.GET()
+
+class get_accident_by_caseno:
+    def GET(self):
+        try:
+            d = web.input()
+            caseno = int(d['caseno'])
+            accinfo = get_acc_info_by_caseno(caseno)
+            return simplejson.dumps({
+                'status':0,
+                'data': accinfo}, ignore_nan=True)
         except Exception as e:
             return json.dumps({
                 'status':1,

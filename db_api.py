@@ -182,12 +182,15 @@ def get_acc_info_by_caseno(caseno):
     get the accident infor by case number
     """
     data = {}
+
+    # Basic accident information
     acc = acc_col.find_one( {'caseno':caseno} )
     if not acc:
         return "Not found"
     del acc['_id']
     data['acc'] = replace_acc_coding(acc)
 
+    # Vehicle information
     veh_cur = veh_col.find({'caseno':caseno})
     veh_list = []
     for veh in veh_cur:
@@ -195,6 +198,19 @@ def get_acc_info_by_caseno(caseno):
         veh = replace_veh_coding(veh)
         veh_list.append(veh)
     data['veh_list'] = veh_list
+
+    # Road information
+    r = route_col.find_one({
+        'cntyrte': acc['cnty_rte'], 
+        'begmp':{'$lt': acc['milepost']}, 
+        'endmp':{'$gt': acc['milepost']}
+        } )
+    if r:
+        del r['_id']
+        r['yradd'] = str(r['yradd'])
+        r['yr_impr1'] = str(r['yr_impr1'])
+        data['route'] = r
+    
     return data
 
 
