@@ -108,4 +108,22 @@ html, body {
     content:">";
 }
 
+#showcase {
+	margin: 0 20px;
+	text-align: center;
+}
+#range {
+	width: 300px;
+	margin: 0 auto 30px;
+}
+#value-span,
+#value-input {
+	width: 50%;
+	float: left;
+	display: block;
+	text-align: center;
+	margin: 0;
+}
+
+
 
