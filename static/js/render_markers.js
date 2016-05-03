@@ -9,7 +9,8 @@ function drawMarkerInfoBox(acc_num){
     "<img src='/static/imgs/collision/rear_end_black_50p.png' />Rear end <br/>"+
     "<img src='/static/imgs/collision/pedestrian_black_50p.png' />Pedestrian<br/>"+
     "<img src='/static/imgs/collision/bicycle_black_50p.png' />Bicycle<br/>"+
-    "<img src='/static/imgs/collision/dear_black_50p.png' />Animal";
+    "<img src='/static/imgs/collision/dear_black_50p.png' />Animal<br/>"+
+    "<img src='/static/imgs/cross_12_black.png' />Others";
   
   var whoInfo = accNumInfo+"<br/>"+colorInfo+"<br/>"+iconInfo;
   $('#info-box').html(whoInfo);
@@ -24,6 +25,7 @@ function getAccidentMarkerCB(map, accidents) {
   drawMarkerInfoBox(  homeJS.onscreenMarker.length );
 
   // TODO, Yue, why set the visual mode here? should be controled by human?
+  // The currentMode is set after the render, due to the need to clear the object of previous state
   homeJS.currentVisualMode = 'markers';
   
   console.log("rendering the accident marker");
@@ -98,8 +100,31 @@ function getAndRenderMarkers(map, accidents) {
       //icon: '/static/imgs/red_cross_12.png'
       icon: getAccidentIcon(accidents[i])
     });
+
+    // TODO, Xingwang, make this information window more complete
+    google.maps.event.addListener( marker_list[i], 'click', function(){
+      var tmpMarker = this;
+      // TODO, create ajax call to get more complete information
+      $.post(
+        '/get_accident_by_caseno',
+        {'caseno': this.accidentID}, 
+        function(res){
+          if(res.status != 0){
+            alert(res.data);
+            return;
+          }
+
+          var tmpInfoWindow = new google.maps.InfoWindow();
+          var tmpContent = getAccDetailsFull( res.data ); 
+          tmpInfoWindow.setContent(tmpContent);
+          tmpInfoWindow.open(map, tmpMarker);
+        },
+        'json');
+    });  
+    /*
     makeAccInfowindowEvent(map, infowindow, 
         get_acc_details(accidents[i]), marker_list[i]);
+        */
   }
   return marker_list;
 }
@@ -127,11 +152,8 @@ function makeAccInfowindowEvent(map, infowindow, contentString, marker) {
 function get_acc_details(accident) {
   acc_info = '(Lat, Lng): ' + accident.lat.toFixed(3)+',' + accident.lng.toFixed(3);
   acc_info +=  '; Datatime: ' + accident.acc_date +' ' +accident.time;
-  //if(accident.caseno != 'NAN') { acc_info += '<br />' + 'Case Number: ' + accident.caseno; }
-  //if(accident.rte_nbr != 'NAN') { acc_info += '<br />' + 'Route Number: ' + accident.rte_nbr; }
-  //
+  
   var env_info = "";
-  //if(accident.loc_type!= 'NAN') { env_info += 'Location type: ' + accCode.loc_type[accident.loc_type]; }
   if(accident.light!= 'NAN') { env_info += '; ' + accCode.light[accident.light]; }
   if(accident.weather1 != 'NAN') { env_info += '; ' + accCode.weather[accident.weather1]; }
   if(accident.rdsurf != 'NAN') { env_info += ';Road Surface( ' + accCode.rdsurf[accident.rdsurf] +')'; }
@@ -148,3 +170,47 @@ function get_acc_details(accident) {
   return acc_info;
 }
 
+
+function getVehDetails(vehList) {
+  // List contributing factors and sequence of event
+  vehList = vehList.sort(function(a,b){return a.vehno - b.vehno;});
+  var veh_str = "";
+  for(var i = 0;i < vehList.length;i++){
+    var one_veh_str = "Vehicle "+(i+1)+": ";
+    var contrib_str = "";
+    for(var j = 1; j < 5;j++){
+      var k = 'contrib'+j;
+      if( vehList[i][k] != null && vehList[i][k] != undefined){
+        contrib_str += vehList[i][k]+',';
+      }
+    }
+    var event_str = "";
+    for(var j = 1; j < 5;j++){
+      var k = 'event'+j;
+      if( vehList[i][k] != null && vehList[i][k] != undefined){
+        event_str += vehList[i][k]+',';
+      }
+    }
+    one_veh_str += contrib_str +';'+event_str;
+    veh_str += one_veh_str+"<br/>";
+  }
+  return veh_str;
+}
+
+function getAccDetailsFull(accident) {
+  /*
+   * accident Detail includes the vehicle information and the road detail.
+   * */
+  var acc_info = get_acc_details(accident.acc);
+
+  var veh_info = '';
+  if(accident.veh_list != undefined) {
+    veh_info = getVehDetails(accident.veh_list);
+  }
+
+  var road_info = "";
+  if(accident.route != undefined) {
+    road_info = get_seg_details(accident.route);
+  }
+  return acc_info + '<hr/>'+veh_info +'<hr/>'+ road_info;
+}
