@@ -119,7 +119,7 @@ def af_driver_age(webinput):
         cond_dic['$gte'] = min_age
     if max_age >=0:
         cond_dic['$lte'] = max_age
-    tmp_dic = {'drv_age':cond_dic}
+    tmp_dic = {'n_drv_age':cond_dic}
     return tmp_dic
 
 def af_driver_sex(webinput):
@@ -131,11 +131,21 @@ def af_driver_sex(webinput):
     if not webinput.has_key('driver_sex'):
         return {}
     if webinput['driver_sex'] == 'male':
-        return {'drv_sex': 1}
+        return {'drv_sex': '1'}
     if webinput['driver_sex'] == 'female':
-        return {'drv_sex': 2}
+        return {'drv_sex': '2'}
     if webinput['driver_sex'] == 'both':
-        return {'drv_sex': {'$in':[1,2]}}
+        return {'drv_sex': {'$in':['1','2']}}
+
+def af_driver_alc(webinput):
+    if not webinput.has_key('alcflag'):
+        return {}
+    if webinput['alcflag'] == 'Y':
+        return {'alcflag':'Y'}
+    if webinput['alcflag'] == 'N':
+        return {'alcflag':'N'}
+    if webinput['alcflag'] == 'both':
+        return {}
 
 def af_severity(webinput):
     """set up the severity filter for mongodb query
@@ -201,12 +211,14 @@ def af_lane_number(webinput):
 def accident_filter(webinput):
     final_dict = {}
     filter_list = [af_bound, af_collision_type,
-            af_date_range, af_tod_range,af_driver_age,
-            af_driver_sex, af_severity, af_loc_type, 
+            af_date_range, af_tod_range,
+            af_driver_age, af_driver_sex, af_driver_alc, 
+            af_severity, af_loc_type, 
             af_lane_number]
     for af in filter_list:
         tmpdic = af(webinput)
         final_dict.update( tmpdic )
+    print 'final filter dict', final_dict
     return final_dict
 
 """

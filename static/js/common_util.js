@@ -62,6 +62,19 @@ function getFacetsRadiobuttons(facetObj) {
   if(facetObj.loc_type == undefined) {
     facetObj.loc_type = "both";
   }
+
+
+  facetObj.driver_sex = $('input[name=Gender-type]:checked', '.gender-type').val();
+  if(facetObj.driver_sex == undefined) {
+    facetObj.driver_sex = "both";
+  }
+
+  facetObj.alcflag = $('input[name=Alcohol-type]:checked', '.alcohol-type').val();
+  if(facetObj.alcflag == undefined) {
+    facetObj.alcflag = "both";
+  }
+  
+
 }
 
 function constructEmptyFacetObj(facetObj) {
@@ -71,9 +84,15 @@ function constructEmptyFacetObj(facetObj) {
   var loc_type = "both";
   var timePeriod = ["-1/-1/-1", "-1/-1/-1"];
   var timeOfDay = ["-1", "-1"];
+  var driver_age_range = [0, 100];
+  var driver_sex = "both";
+  var alcflag = "both";
 
-  facetObj = {'collision' : collision, 'severity' : severity, 'no_of_lanes' : no_of_lanes, 'loc_type' : loc_type,
-    'date_range' : timePeriod, 'timeofday_range' : timeOfDay};
+  facetObj = {
+    'collision': collision, 'severity': severity, 'no_of_lanes': no_of_lanes, 'loc_type': loc_type,
+    'date_range': timePeriod, 'timeofday_range': timeOfDay, 'alcflag': alcflag,
+    'driver_age_range' : driver_age_range, 'driver_sex' : driver_sex
+  };
   return facetObj;
 }
 
@@ -85,6 +104,9 @@ function  logFacetObj(facetObj) {
   console.log("Location type is " + facetObj.loc_type);
   console.log("Time period is " +  facetObj.date_range);
   console.log("Time of day is " + facetObj.timeofday_range );
+  console.log("alcohol fla is " + facetObj.alcflag);
+  console.log("Range for driver age is " + facetObj.driver_age_range);
+  console.log("Driver Sex is " + facetObj.driver_sex);
 }
 
 function  getSeconds(time) {

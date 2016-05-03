@@ -218,10 +218,13 @@ function facetSelectionInit(){
     //console.log(this);
     if(this.name == 'loc-type'){
       add_record('locationType-'+this.value+'-enabled');      
-    }else{
-      console.log("WARNING: unknow radio button type");
+    } else if(this.name == 'Gender-type') {
+      add_record('Gender-type-'+this.value+'selected');
+    } else if(this.name == 'Alcohol-type') {
+      add_record('Alcohol-type-'+this.value+'selected');
+    } else{
+        console.log("WARNING: unknow radio button type");
     }
-
     getFacetsRadiobuttons(homeJSLocal.facetObj);
     logFacetObj(homeJSLocal.facetObj);
     getEvents();
@@ -290,6 +293,27 @@ function facetSelectionInit(){
       getEvents();
     }
   });
+
+  // adding the slider for driver age.
+  $("#driver_range").slider({
+    range:true,
+    min: 0,
+    max: 100,
+    values: [10, 90],
+    slide: function(event, ui) {
+      $("#age").val(ui.values[0] + " - " + ui.values[1]);
+      homeJSLocal.facetObj.driver_age_range[0] = ui.values[0];
+      homeJSLocal.facetObj.driver_age_range[1] = ui.values[1];
+      add_record_refined({
+        "action":"changedDriverAge",
+        "value":ui.values
+      });
+      logFacetObj(homeJSLocal.facetObj);
+      getEvents();
+    }
+  });
+  $("#age").val($("#driver_range").slider("values", 0) +
+            " - " + $("#driver_range").slider("values", 1));
 }
 
 function viewModeSelectionInit(){
@@ -395,7 +419,7 @@ $(function() {
   add_record('homepage');
   google.charts.load('current', {'packages':['table', 'corechart', 'bar']});
   homeJSLocal.facetObj = constructEmptyFacetObj(homeJSLocal.facetObj);
-
+  
   facetSelectionInit();
   viewModeSelectionInit();
   viewDetailSelectionInit();
